@@ -7,11 +7,16 @@ import { after, before, describe, test } from "node:test";
 import { Client, StreamableHTTPClientTransport } from "@modelcontextprotocol/client";
 import type { CallToolResult } from "@modelcontextprotocol/client";
 import { createHash, randomBytes, randomUUID } from "node:crypto";
+import { createServer } from "node:http";
+import type { Server } from "node:http";
+import type { AddressInfo } from "node:net";
 import { SignJWT, decodeJwt, decodeProtectedHeader, exportJWK, generateKeyPair } from "jose";
 import type { JWK } from "jose";
 import { Browser, TEST_SECRET, TestOAuthClient, csrfFrom, signInAndAllow, startTestBroker } from "../mcp/testkit.ts";
+import { onFreePorts } from "../test-ports.ts";
 import { StateAdapter } from "./adapter.ts";
 import { SignInLimiter, sourceOf } from "./interaction.ts";
+import { AUTH_FETCH_DEADLINE_MS } from "./provider.ts";
 import { sourcePrefix } from "./sources.ts";
 import { sha256b64u } from "./state.ts";
 import type { BindingState } from "./state.ts";
@@ -701,6 +706,133 @@ describe("authorization server: fetching client metadata documents (spec 4.3 rul
     assert.equal(failFetches() - before, 1, "the same failing document is fetched once, then the failure is cached");
     for (let i = 1; i <= 5; i++) assert.equal(await authorize(`https://fail${i}.vendor.example/client.json`), 400);
     assert.equal(failFetches() - before, 3, "three fetches a minute from one requester, then none");
+  });
+});
+
+describe("authorization server: a fetch whose body never ends holds up no one", () => {
+  // Node's fetch can leave a response body pending forever, with neither data nor an error: when its signal fires after
+  // the body's last bytes arrived but before a compressed body was decoded (decoding runs on the libuv threadpool, so a
+  // busy threadpool or a stalled event loop can put the signal there). oidc-provider makes every later authorization of
+  // a client wait on the first fetch of its metadata document, so one such fetch kept that client from signing in until
+  // a restart, while others still could. Nor may a body that never ends keep its connection open.
+  const STALLED = "https://stalled.vendor.example/client.json";
+  const OTHER = "https://other.vendor.example/client.json";
+  const KEYS = "https://keys.vendor.example/client.json";
+  /** Fetched with Node's own fetch, from the loopback server below. */
+  const DRIPPING = "https://drip.vendor.example/client.json";
+  const docs: Record<string, Record<string, unknown>> = {
+    [STALLED]: { client_id: STALLED, client_name: "Stalled", redirect_uris: [REDIRECT], grant_types: ["authorization_code", "refresh_token"], response_types: ["code"], token_endpoint_auth_method: "none" },
+    [OTHER]: { client_id: OTHER, client_name: "Other", redirect_uris: [REDIRECT], grant_types: ["authorization_code", "refresh_token"], response_types: ["code"], token_endpoint_auth_method: "none" },
+    [KEYS]: { client_id: KEYS, client_name: "Keys", redirect_uris: [REDIRECT], token_endpoint_auth_method: "private_key_jwt", token_endpoint_auth_signing_alg: "RS256", jwks_uri: "https://keys.vendor.example/jwks.json", grant_types: ["authorization_code"], response_types: ["code"] },
+  };
+  const stalledUrls = new Set([STALLED, "https://keys.vendor.example/jwks.json"]);
+  const served: string[] = [];
+  /** What each request to the loopback server asked for, when it came and when its connection closed. */
+  const drips: { acceptEncoding: string | undefined; at: number; closedAt?: number }[] = [];
+  let dripServer: Server | undefined;
+  let dripBase = "";
+  const stallingFetch = async (input: string | URL | Request, init?: RequestInit): Promise<Response> => {
+    const url = typeof input === "string" ? input : input instanceof URL ? input.href : input.url;
+    served.push(url);
+    // The request as the broker made it (headers, signal, no redirects), without oidc-provider's dispatcher, which
+    // refuses loopback addresses.
+    if (url === DRIPPING) return fetch(`${dripBase}/client.json`, { headers: init?.headers ?? {}, redirect: init?.redirect ?? "manual", signal: init?.signal ?? null });
+    const json = { "content-type": "application/json" };
+    if (stalledUrls.has(url)) {
+      // The headers and a first chunk, then nothing more: no data, no end and no error, whatever the signal says.
+      const first = new TextEncoder().encode('{"client_id":');
+      return new Response(new ReadableStream({ start: (c) => c.enqueue(first) }), { status: 200, headers: json });
+    }
+    const doc = docs[url];
+    return doc ? new Response(JSON.stringify(doc), { status: 200, headers: json }) : new Response("no", { status: 404 });
+  };
+  let t: TestBroker;
+  before(async () => {
+    // Answers 404 and goes on sending the body, a few bytes every 100 ms, for as long as the connection stays open.
+    // Another test process may take a pooled port between the check and the listen: onFreePorts tries new ones.
+    dripServer = await onFreePorts(1, ([port]) =>
+      new Promise<Server>((resolve, reject) => {
+        const s = createServer((req, res) => {
+          const drip: (typeof drips)[number] = { acceptEncoding: req.headers["accept-encoding"], at: Date.now() };
+          drips.push(drip);
+          res.writeHead(404, { "content-type": "text/plain" });
+          res.write("not here");
+          const timer = setInterval(() => res.write(", not here"), 100);
+          res.on("close", () => {
+            clearInterval(timer);
+            drip.closedAt = Date.now();
+          });
+        });
+        s.once("listening", () => resolve(s));
+        s.once("error", reject);
+        s.listen(port ?? 0, "127.0.0.1");
+      }),
+    );
+    dripBase = `http://127.0.0.1:${(dripServer.address() as AddressInfo).port}`;
+    t = await startTestBroker({ fetch: stallingFetch });
+  });
+  after(async () => {
+    await t?.close();
+    dripServer?.closeAllConnections();
+    await new Promise<void>((done) => (dripServer ? dripServer.close(() => done()) : done()));
+  });
+
+  /** The status, or "no answer" when none came within `waitMs`. */
+  const answer = async (url: string, init: RequestInit = {}, waitMs = 10_000): Promise<number | "no answer"> => {
+    try {
+      const res = await fetch(url, { ...init, redirect: "manual", signal: AbortSignal.timeout(waitMs) });
+      await res.text();
+      return res.status;
+    } catch {
+      return "no answer";
+    }
+  };
+  const authorize = (clientId: string): Promise<number | "no answer"> => {
+    const verifier = randomBytes(32).toString("base64url");
+    const q = new URLSearchParams({ response_type: "code", client_id: clientId, redirect_uri: REDIRECT, code_challenge: createHash("sha256").update(verifier).digest("base64url"), code_challenge_method: "S256", scope: "read send", resource: `${t.base}/mcp` });
+    return answer(`${t.base}/oauth/authorize?${q}`);
+  };
+  const fetchesOf = (url: string): number => served.filter((u) => u === url).length;
+
+  test("the authorizations waiting on a stalled metadata document fail by the fetch deadline; other clients sign in meanwhile", { timeout: 60_000 }, async () => {
+    const started = Date.now();
+    const first = authorize(STALLED);
+    await new Promise((r) => setTimeout(r, 300));
+    const later = authorize(STALLED);
+    assert.equal(await authorize(OTHER), 303, "an unrelated client signs in while the fetch is stuck");
+    assert.equal(await authorize("not-a-url-client"), 400, "an unknown client is refused at once");
+    assert.deepEqual([await first, await later], [400, 400], "both authorizations answer: the fetch was given up");
+    const took = Date.now() - started;
+    assert.ok(took < AUTH_FETCH_DEADLINE_MS + 3000, `answered after ${took} ms`);
+    assert.equal(fetchesOf(STALLED), 1, "the later authorization waited on the same fetch");
+    assert.equal(await authorize(STALLED), 400, "for a while after, the client is refused at once");
+    assert.equal(fetchesOf(STALLED), 1, "without fetching the document again");
+  });
+
+  test("a token request whose client key set stalls fails by the fetch deadline", { timeout: 60_000 }, async () => {
+    const key = await generateKeyPair("RS256");
+    const assertion = await new SignJWT({}).setProtectedHeader({ alg: "RS256" }).setIssuer(KEYS).setSubject(KEYS).setAudience(`${t.base}/oauth/token`).setJti(randomUUID()).setIssuedAt().setExpirationTime("2m").sign(key.privateKey);
+    const body = new URLSearchParams({ grant_type: "authorization_code", code: "not-a-code", redirect_uri: REDIRECT, code_verifier: "v".repeat(43), client_id: KEYS, client_assertion_type: "urn:ietf:params:oauth:client-assertion-type:jwt-bearer", client_assertion: assertion }).toString();
+    const started = Date.now();
+    const status = await answer(`${t.base}/oauth/token`, { method: "POST", headers: { "content-type": "application/x-www-form-urlencoded" }, body });
+    assert.equal(status, 401, "the client can't authenticate: its keys never arrived");
+    assert.ok(Date.now() - started < AUTH_FETCH_DEADLINE_MS + 3000, `answered after ${Date.now() - started} ms`);
+    assert.equal(fetchesOf("https://keys.vendor.example/jwks.json"), 1);
+  });
+
+  test("a metadata document URL that answers 404 with a body that never ends: the authorization fails, and the broker closes the connection by the fetch deadline", { timeout: 60_000 }, async () => {
+    const started = Date.now();
+    assert.equal(await authorize(DRIPPING), 400, "the client is refused: its document isn't there");
+    assert.ok(Date.now() - started < AUTH_FETCH_DEADLINE_MS + 3000, `answered after ${Date.now() - started} ms`);
+    assert.equal(fetchesOf(DRIPPING), 1);
+    const drip = drips[0];
+    assert.ok(drip && drips.length === 1, "the loopback server got the one request");
+    assert.equal(drip.acceptEncoding, "identity", "asking for an uncompressed body");
+    // The server would go on sending forever: only the broker can end the connection. oidc-provider never reads the
+    // body of a status other than 200, so the broker cancels it.
+    while (drip.closedAt === undefined && Date.now() - drip.at < AUTH_FETCH_DEADLINE_MS + 3000) await new Promise((done) => setTimeout(done, 50));
+    assert.ok(drip.closedAt !== undefined, `the connection was still open ${Date.now() - drip.at} ms after the request`);
+    assert.ok(drip.closedAt - drip.at < AUTH_FETCH_DEADLINE_MS + 3000, `closed after ${drip.closedAt - drip.at} ms`);
   });
 });
 
