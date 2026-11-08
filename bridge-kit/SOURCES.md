@@ -29,11 +29,11 @@ Every vendor fact in the bridge kit comes from these pages, except what the brid
 - Adding an existing MCP server to a Copilot Studio agent: https://learn.microsoft.com/en-us/microsoft-copilot-studio/mcp-add-existing-server-to-agent
 - Consumer Copilot (no custom MCP door found), *secondary*: https://skillsplayground.com/integrations/microsoft-copilot/
 
-## xAI: Grok and Grok Bot ([grok.md](grok.md))
+## SpaceXSI (formerly xAI): Grok and Grok Bot ([grok.md](grok.md))
 
 - Grok connectors: https://docs.x.ai/grok/connectors.md and connector management for teams: https://docs.x.ai/grok/connector-management.md
 - Grok Bot: https://docs.x.ai/grok-bot/overview.md, https://docs.x.ai/grok-bot/skills-routines-and-automations.md, https://docs.x.ai/grok-bot/approvals-security-and-privacy.md, https://docs.x.ai/grok-bot/computer-and-apps.md, https://docs.x.ai/grok-bot/teams-and-enterprises.md, https://docs.x.ai/x-subscription/grok-bot.md
-- Terms, *secondary* (current wording unverified): https://x.ai/legal/terms-of-service
+- Consumer terms, *secondary*: https://x.ai/legal/terms-of-service (SpaceX Super Intelligence LLC, last updated October 27, 2026; read in a browser on November 8, 2026, since the page answers scripts with HTTP 403)
 
 ## Google: Gemini ([gemini.md](gemini.md))
 

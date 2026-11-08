@@ -2,6 +2,20 @@
 
 All notable changes to the Agent Liaison Protocol (ALP) specification, schemas and vectors are recorded here. The specification uses semantic versioning; while the major version is 0, any release may change things incompatibly.
 
+## [0.1.1] - Unreleased
+
+A patch: the protocol version (`"alp": "0.1"`), the schemas and the vectors don't change.
+
+### Fixed
+
+- Reference broker, `alp_whoami` (spec 6.14, 12.1.2): `scopes` in the structured result, which is all the REST mirror returns, now lists every scope the agent can use. Before, it listed only what the person's relationships allow; the scopes the agent may use with the person's other agents, and with `include_scopes` their body schemas, were only in the MCP text. A REST client, or an MCP client that reads only `structuredContent`, whose person had no relationships got `"scopes": []`: it couldn't learn the fields for writing to the person's other agents, and a send to them with wrong fields was refused with `schema_invalid`, whose advice ("alp_whoami with include_scopes returns the schemas") it couldn't follow. Now `scopes` also lists, while the person has another agent that can receive a message, what the agent may send the person's other agents (the types that start a thread and those an open one takes), merged per scope with what relationships allow: one entry per scope, sorted by id, with the types of both and, with `include_scopes`, a body schema for each type. It lists at most 64, as `tools.json` allows; past that, what relationships allow is kept first, so connecting another agent never pushes out a scope that 0.1.0 listed. In `enforce` mode, the organization's list of agents limits both, as before. `schemas/client/tools.json` and `schemas/client/openapi.json` don't change, so the result still validates against a client's 0.1 tool snapshot; the tool's description already said "the scopes you can use". [KNOWN-GAPS.md](KNOWN-GAPS.md) keeps what is left: structured results don't name the person's other agents or say which listed types work with them; either would change the output schema.
+- Reference broker, `alp_whoami` text: it still says which scopes work with other people and which with the person's own agents; when the person has other agents, the first list reads "Scopes you can use with other people". With `include_scopes`, it says that every body schema is in `structuredContent.scopes[].schemas`, and still carries the schemas for writing to the person's other agents, for platforms that show only text.
+- Specification 12.1.2: the usable `scopes` of `alp_whoami` are those the delegate may use with other people under its principal's relationships, and those it may use with its principal's other agents (Section 6.14); a scope usable both ways is listed once, with the types of both. This says what the table and the tool's description meant; no schema changes.
+
+### Changed
+
+- Bridge kit (the Grok guide, its sources and the bridge-kit README) and CLAIMS.md: Grok's provider is named SpaceXSI (formerly xAI), as its documentation and consumer terms now say, and the Grok guide states what the consumer terms of October 27, 2026 say about agent actions. What the Acceptable Use Policy says about automated use stays unverified.
+
 ## [0.1.0] - 2026-11-09 (draft for implementers)
 
 First public draft.

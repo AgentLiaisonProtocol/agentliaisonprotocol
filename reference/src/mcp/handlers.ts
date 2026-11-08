@@ -280,7 +280,7 @@ async function contactViews(c: ToolContext, owner: PrincipalRecord, now: Date): 
 }
 
 // ---------------------------------------------------------------------------------------------
-// The person's own agents (spec 6.14), as whoami's text shows them.
+// The person's own agents (spec 6.14), as whoami shows them.
 
 /**
  * The person's other agents that can receive a message now: active delegates of this principal (an earlier holder of
@@ -417,37 +417,69 @@ async function shapeInbound(c: ToolContext, owner: PrincipalRecord, e: Envelope,
 
 type Args = Record<string, unknown>;
 
+function addTypes(byScope: Map<ScopeId, Set<MessageType>>, id: ScopeId, types: Iterable<MessageType>): void {
+  const set = byScope.get(id) ?? new Set<MessageType>();
+  for (const t of types) set.add(t);
+  byScope.set(id, set);
+}
+
+interface ListedScope {
+  scope: CompiledScope;
+  types: MessageType[];
+}
+
+/**
+ * Scopes and their types as whoami lists them: sorted by id, each scope's types in the protocol's order, at most 10
+ * (tools.json). A scope that isn't registered, or that has no types, is left out.
+ */
+function listScopes(c: ToolContext, byScope: ReadonlyMap<ScopeId, ReadonlySet<MessageType>>): ListedScope[] {
+  const out: ListedScope[] = [];
+  for (const [id, types] of [...byScope.entries()].sort((a, b) => a[0].localeCompare(b[0]))) {
+    const scope = c.broker.scopes.get(id);
+    if (scope && types.size > 0) out.push({ scope, types: typeOrder(types).slice(0, 10) });
+  }
+  return out;
+}
+
 async function whoami(c: ToolContext, auth: AuthContext, args: Args): Promise<ToolOutcome> {
   const w = await c.broker.whoami(auth.caller);
   const owner = await principalOf(c, auth);
   const policy = policyFor(c, owner.address);
   const rule = policy?.clients?.mode === "enforce" ? clientRule(policy, auth.caller.client_id) : undefined;
   const allowed = policy?.clients?.mode === "enforce" ? new Set(rule?.scopes ?? []) : null;
+  // What the person's relationships allow, in the scopes this agent's client may use.
   const byScope = new Map<ScopeId, Set<MessageType>>();
   const views = await contactViews(c, owner, c.now());
   for (const cv of views) {
     if (cv.status !== "active") continue;
-    for (const s of cv.scopes) {
-      if (allowed && !allowed.has(s.scope)) continue;
-      const set = byScope.get(s.scope) ?? new Set<MessageType>();
-      s.may.forEach((m) => set.add(m));
-      byScope.set(s.scope, set);
-    }
+    for (const s of cv.scopes) if (!allowed || allowed.has(s.scope)) addTypes(byScope, s.scope, s.may);
   }
+  // What it may send the person's other agents, which needs no relationship (spec 6.14), in the same scopes: only while
+  // the person has another agent that can receive a message now.
+  const others = await ownAgents(c, owner, w.delegate);
+  const own = others.length ? ownScopeViews(c, allowed) : [];
+  // `scopes` lists every scope this agent can use, as tools.json describes it: both of the above, merged per scope. The
+  // output schema has no member that names the person's other agents or says which scope works with whom; the text does.
+  const usable = new Map<ScopeId, Set<MessageType>>();
+  for (const [id, types] of byScope) addTypes(usable, id, types);
+  for (const v of own) addTypes(usable, v.scope.id, [...v.starts, ...v.continues]);
   const include = args["include_scopes"] === true;
-  const scopes: JsonRecord[] = [];
-  for (const [id, types] of [...byScope.entries()].sort((a, b) => a[0].localeCompare(b[0]))) {
-    const scope = c.broker.scopes.get(id);
-    if (!scope || types.size === 0) continue;
-    const list = typeOrder(types).slice(0, 10);
-    const entry: JsonRecord = { id, title: scope.def.title.slice(0, 64), types: list };
+  // At most 64 (tools.json). What relationships allow is kept first, as before, so connecting another agent never pushes
+  // out a scope the agent can use with other people (the text names them all); the scopes only the person's other agents
+  // add fill the rest, in id order. The list stays sorted by id.
+  const withPeople = listScopes(c, byScope);
+  const listed = listScopes(c, usable);
+  const kept = new Set(withPeople.slice(0, 64).map((s) => s.scope.id));
+  for (const s of listed) if (kept.size < 64) kept.add(s.scope.id);
+  const scopes = listed.filter((s) => kept.has(s.scope.id)).map(({ scope, types }) => {
+    const entry: JsonRecord = { id: scope.id, title: scope.def.title.slice(0, 64), types };
     if (include) {
       const schemas: JsonRecord = {};
-      for (const t of list) schemas[t] = bodySchemaFor(scope, t) as JsonValue;
+      for (const t of types) schemas[t] = bodySchemaFor(scope, t) as JsonValue;
       entry["schemas"] = schemas;
     }
-    scopes.push(entry);
-  }
+    return entry;
+  });
   const structured: JsonRecord = {
     id: w.principal_id,
     address: w.principal,
@@ -457,18 +489,15 @@ async function whoami(c: ToolContext, auth: AuthContext, args: Args): Promise<To
     class: w.class,
     broker: w.broker,
     alp: PROTOCOL.version,
-    scopes: scopes.slice(0, 64),
+    scopes,
   };
-  // Writing to the person's other agents needs no relationship (spec 6.14), so `scopes` above, which lists what the
-  // person's relationships allow, doesn't cover it. Only the text says who they are and what this agent may send them;
-  // the structured result stays as tools.json defines it.
-  const others = await ownAgents(c, owner, w.delegate);
-  const own = others.length ? ownScopeViews(c, allowed) : [];
   const named = others.slice(0, 32).map((d) => `${d.label} (${d.class}, ${d.attestation}-attested)`).join(", ");
   const schemaText: string[] = [];
   if (!include) schemaText.push("Call again with include_scopes: true for the body schemas.");
   else {
-    if (scopes.length || own.length === 0) schemaText.push("The body schema for each type is in structuredContent.scopes[].schemas.");
+    schemaText.push("The body schema for each type is in structuredContent.scopes[].schemas.");
+    // The text still carries the schemas for the person's other agents, as when only the text had them: a platform that
+    // shows only text (spec 12.1.5) can't follow the pointer above.
     if (own.length) {
       const schemas: JsonRecord = {};
       for (const v of own) {
@@ -482,8 +511,10 @@ async function whoami(c: ToolContext, auth: AuthContext, args: Args): Promise<To
   const text = [
     `You act for ${w.display}${w.display_name ? ` (${w.display_name})` : ""} as delegate ${w.delegate}, through the broker ${w.broker}.`,
     `Recorded for this agent: attestation ${w.attestation}, class ${w.class}.`,
-    scopes.length
-      ? `Scopes you can use: ${scopes.map((s) => `${String(s["id"])} (${(s["types"] as string[]).join(", ")})`).join("; ")}.`
+    // From relationships only, never `scopes`, which also lists what works only with the person's own agents: so it never
+    // speaks of relationships the person doesn't have.
+    withPeople.length
+      ? `Scopes you can use${others.length ? " with other people" : ""}: ${withPeople.map((s) => `${s.scope.id} (${s.types.join(", ")})`).join("; ")}.`
       : views.some((cv) => cv.status === "active")
         ? "Your person has relationships with other people, but this agent's client may use none of their scopes."
         : others.length

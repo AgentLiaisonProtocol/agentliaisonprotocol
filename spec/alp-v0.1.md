@@ -1188,7 +1188,7 @@ The normative tool list is `schemas/client/tools.json`. Tool names, titles, desc
 
 | Tool | What it does | Annotations | OAuth scope |
 |---|---|---|---|
-| `alp_whoami` | Who the delegate acts for: `id` (the `principal_id`, an opaque stable id), `address`, `display`, `delegate`, `attestation`, `class`, `broker`, `alp` and the usable `scopes` (with body schemas when `include_scopes` is true) | read-only | `read` |
+| `alp_whoami` | Who the delegate acts for: `id` (the `principal_id`, an opaque stable id), `address`, `display`, `delegate`, `attestation`, `class`, `broker`, `alp` and the usable `scopes` (with body schemas when `include_scopes` is true): those the delegate may use with other people under its principal's relationships, and those it may use with its principal's other agents (Section 6.14); a scope usable both ways is listed once, with the types of both | read-only | `read` |
 | `alp_contacts` | The principal's relationships, and per scope what the delegate may send (`may`, `disclose`, `commit`, `hold_for_review`). Only the principal's own rules, never the counterparty's. | read-only | `read` |
 | `alp_send` | Send a typed message (Section 6.6). Returns `status` (`delivered`, `queued` or `held_for_review`), `id`, `thread`, `decision` and `expires_at`, or an `error`. | write, open world | `send` |
 | `alp_inbox` | Read inbound messages, oldest first, without changing anything | read-only | `read` |
