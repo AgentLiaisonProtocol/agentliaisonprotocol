@@ -105,6 +105,15 @@ export const CIMD_LIMITS = { perSourcePerMinute: 20, totalPerMinute: 200, failur
 /** Size caps for what the authorization server fetches (spec 4.3 rule 4; oidc-provider's own cap for metadata documents). */
 export const AUTH_FETCH_LIMITS = { "client_id metadata document": 5 * 1024, jwks_uri: 64 * 1024, sector_identifier_uri: 64 * 1024 } as const;
 
+/** How long one fetch may take, its body included: oidc-provider's own timeout (2.5 s), enforced on the whole fetch. */
+export const AUTH_FETCH_DEADLINE_MS = 2500;
+
+/** The largest body any fetch here may have; oidc-provider then applies each purpose's own cap, to the body in memory. */
+const AUTH_FETCH_MAX_BYTES = Math.max(...Object.values(AUTH_FETCH_LIMITS));
+
+/** Statuses whose responses can't carry a body. */
+const NULL_BODY_STATUSES = new Set([204, 205, 304]);
+
 /** Store model of the agent binding each connection (oidc-provider grant) was authorized for (spec 5.4). */
 const GRANT_BINDING = "AlpGrantBinding";
 
@@ -157,6 +166,32 @@ async function readCapped(res: Response, max: number): Promise<Buffer> {
     }
   }
   return Buffer.concat(chunks);
+}
+
+/**
+ * Runs `work` with a signal that aborts when `outer` does or after `ms`, and settles by then whatever `work` does. An
+ * aborted fetch doesn't always end: Node's fetch can leave a response body pending forever, with neither data nor an
+ * error, when its signal fires after the body's last bytes arrived but before a compressed body was decoded (decoding
+ * runs on the libuv threadpool, so a busy threadpool or a stalled event loop can put the signal there). oidc-provider
+ * makes every later request for a client wait on the first fetch of its metadata document (or key set), so one such
+ * fetch would hold that client out until a restart.
+ */
+async function withDeadline<T>(ms: number, outer: AbortSignal | null | undefined, work: (signal: AbortSignal) => Promise<T>): Promise<T> {
+  const ac = new AbortController();
+  const expired = new Promise<never>((_, reject) => {
+    ac.signal.addEventListener("abort", () => reject(ac.signal.reason), { once: true });
+  });
+  const fromOuter = (): void => ac.abort(outer?.reason);
+  const timer = setTimeout(() => ac.abort(new Error(`no complete response within ${ms} ms`)), ms);
+  timer.unref();
+  if (outer?.aborted) fromOuter();
+  else outer?.addEventListener("abort", fromOuter, { once: true });
+  try {
+    return await Promise.race([work(ac.signal), expired]);
+  } finally {
+    clearTimeout(timer);
+    outer?.removeEventListener("abort", fromOuter);
+  }
 }
 
 /** Whether a fetched client ID metadata document is one oidc-provider can use: a JSON object naming its own URL. */
@@ -216,10 +251,13 @@ export function createAuthServer(opts: AuthServerOptions): AuthServer {
   };
 
   // Spec 4.3: a client ID metadata document, and the JWKS it names, are URLs chosen by whoever sent the request. They
-  // are fetched over https on port 443 only, to a host name, with no redirects, `Cache-Control: no-cache`, a JSON
-  // content type and size caps (AUTH_FETCH_LIMITS). oidc-provider adds a 2.5-second timeout and, in production,
-  // refuses special-use addresses (it checks once connected, not before). Metadata documents are also budgeted per requester and in all,
-  // and one that failed isn't fetched again for a while; oidc-provider caches only the ones that worked.
+  // are fetched over https on port 443 only, to a host name, with no redirects, `Cache-Control: no-cache`,
+  // `Accept-Encoding: identity`, a JSON content type and size caps (AUTH_FETCH_LIMITS). oidc-provider adds a 2.5-second
+  // timeout and, in production, refuses special-use addresses (it checks once connected, not before). The whole fetch,
+  // its body included, settles within that time whatever the fetch does (withDeadline); the body is read here, or
+  // cancelled where oidc-provider wouldn't read it, so oidc-provider only ever reads one in memory and no response is
+  // still being received after the deadline. Metadata documents are also budgeted per requester and in all, and one
+  // that failed (or timed out) isn't fetched again for a while; oidc-provider caches only the ones that worked.
   const baseFetch = opts.fetch ?? ((input: string | URL | Request, init?: RequestInit) => globalThis.fetch(input, init));
   const cimd = { ...CIMD_LIMITS, ...opts.cimdLimits };
   const windows = opts.windows ?? new MemoryWindows();
@@ -237,19 +275,26 @@ export function createAuthServer(opts: AuthServerOptions): AuthServer {
       if (!cimdUrlAllowed(url)) throw new Error("only https URLs on port 443 with a host name are fetched");
       const headers = new Headers(init?.headers);
       headers.set("cache-control", "no-cache");
-      const res = await baseFetch(url, { ...init, headers, redirect: "manual" });
-      if (res.status === 200 && !isJsonContentType(res.headers.get("content-type") ?? undefined)) {
-        await res.body?.cancel().catch(() => undefined);
-        throw new Error("not a JSON content type");
-      }
-      if (!isCimd) return res;
-      if (res.status !== 200) {
-        await noteCimdFailure(url);
-        return res;
-      }
-      const body = await readCapped(res, AUTH_FETCH_LIMITS["client_id metadata document"]);
-      if (!cimdLooksValid(url, body)) await noteCimdFailure(url);
-      return new Response(body, { status: res.status, headers: res.headers });
+      // An uncompressed body: Node's fetch decodes a compressed one off the event loop, which is where an abort can
+      // leave it pending forever (withDeadline). A server may compress anyway, so the deadline stays.
+      headers.set("accept-encoding", "identity");
+      return await withDeadline(AUTH_FETCH_DEADLINE_MS, init?.signal, async (signal) => {
+        const res = await baseFetch(url, { ...init, headers, redirect: "manual", signal });
+        if (res.status === 200 && !isJsonContentType(res.headers.get("content-type") ?? undefined)) {
+          await res.body?.cancel().catch(() => undefined);
+          throw new Error("not a JSON content type");
+        }
+        if (isCimd && res.status !== 200) {
+          // oidc-provider refuses any other status without reading the body. Cancelling it here closes the connection
+          // now, however long the server would go on sending, and oidc-provider gets the status and headers only.
+          await res.body?.cancel().catch(() => undefined);
+          await noteCimdFailure(url);
+          return new Response(null, { status: res.status, headers: res.headers });
+        }
+        const body = await readCapped(res, isCimd ? AUTH_FETCH_LIMITS["client_id metadata document"] : AUTH_FETCH_MAX_BYTES);
+        if (isCimd && !cimdLooksValid(url, body)) await noteCimdFailure(url);
+        return new Response(NULL_BODY_STATUSES.has(res.status) ? null : body, { status: res.status, headers: res.headers });
+      });
     } catch (err) {
       if (isCimd) await noteCimdFailure(url);
       throw err;
