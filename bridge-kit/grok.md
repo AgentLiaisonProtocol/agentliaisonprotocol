@@ -1,12 +1,12 @@
 # Grok and Grok Bot: client-mode setup
 
-How to connect xAI's Grok (grok.com) and Grok Bot to your Agent Liaison Protocol (ALP) home broker. Read the [generic setup](README.md) first.
+How to connect Grok (grok.com) and Grok Bot, from SpaceXSI (formerly xAI), to your Agent Liaison Protocol (ALP) home broker. Read the [generic setup](README.md) first.
 
-Checked against xAI's documentation on November 6, 2026 (sources in [SOURCES.md](SOURCES.md)). Facts are verified unless marked **unverified**. We haven't connected Grok or Grok Bot to a broker yet: neither was part of the [test with real agents](README.md#tested-with-real-agents) on November 7, 2026.
+Checked against the Grok documentation on November 6, 2026, when it was still branded xAI, and its name and consumer terms again on November 8, 2026 (sources in [SOURCES.md](SOURCES.md)). Facts are verified unless marked **unverified**. We haven't connected Grok or Grok Bot to a broker yet: neither was part of the [test with real agents](README.md#tested-with-real-agents) on November 7, 2026.
 
 ## Grok (grok.com)
 
-**Plans.** Connectors are available to **all Grok users**. On Business and Enterprise, a **team admin must first provision** the connector (a custom MCP URL is the "Other" type) in the xAI console.
+**Plans.** Connectors are available to **all Grok users**. On Business and Enterprise, a **team admin must first provision** the connector (a custom MCP URL is the "Other" type) in the team's admin console.
 
 **Add the connector.** New Connector → **Custom** → enter your broker's connector URL (for example `https://broker.example.org/mcp`) and complete the authentication. The server must be on the public internet. Which authentication types grok.com supports is **unverified**; the reference broker offers OAuth (client ID metadata documents, dynamic registration, pre-registered clients) and personal access tokens.
 
@@ -45,9 +45,9 @@ Add the snippet from [agent-instructions.md](agent-instructions.md) to the Bot's
 
 - Authentication types, approval behavior, scheduling and push on grok.com.
 - Grok Bot's OAuth details and redirect host.
-- Current xAI terms on automated use (earlier consumer terms restricted bots and scrapers).
+- What SpaceXSI's Acceptable Use Policy says about automated use. The consumer terms of October 27, 2026 no longer carry the earlier wording on bots and scrapers: they cover "Agentic Actions", tool calls and actions with third-party services among them, and make the user responsible for them.
 
 ## Limits
 
 - Sends from routines land as drafts: a person presses Send.
-- What Grok reads is plaintext to xAI (and, for Grok Bot, passes through Cursor's connector backend).
+- What Grok reads is plaintext to SpaceXSI (and, for Grok Bot, passes through Cursor's connector backend).
