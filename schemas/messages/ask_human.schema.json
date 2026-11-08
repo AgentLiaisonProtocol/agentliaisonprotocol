@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/messages/ask_human.schema.json",
+  "title": "ask_human body",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "urgency",
+    "reason"
+  ],
+  "properties": {
+    "of": {
+      "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/ulid"
+    },
+    "urgency": {
+      "enum": [
+        "low",
+        "normal",
+        "high"
+      ]
+    },
+    "reason": {
+      "enum": [
+        "needs_decision",
+        "needs_information",
+        "disagreement",
+        "other"
+      ]
+    }
+  }
+}

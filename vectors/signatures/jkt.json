@@ -1,0 +1,94 @@
+{
+  "description": "RFC 7638 thumbprints of the TEST public keys.",
+  "cases": [
+    {
+      "name": "broker.example.org/federation-1",
+      "jwk": {
+        "kty": "OKP",
+        "crv": "Ed25519",
+        "x": "FB6gZo5XXqZcCaaQfcHZuMMct-_x7RHJamPcRdBSE0Y",
+        "kid": "Qlbvmc8DWyTQ_pE2ysLApn4T03jw-c6Vq65LODOzGFk",
+        "alg": "Ed25519"
+      },
+      "expected_jkt": "Qlbvmc8DWyTQ_pE2ysLApn4T03jw-c6Vq65LODOzGFk"
+    },
+    {
+      "name": "broker.partner.example/federation-1",
+      "jwk": {
+        "kty": "OKP",
+        "crv": "Ed25519",
+        "x": "6cu0sQ7rfFRfUNrf4fY4kQNl3SlZ-U5Kd4K_HY63KmM",
+        "kid": "GY2JlxfWsu0ofz81Rg2H3JbT6dBe-y72s55Jv6EKrHs",
+        "alg": "Ed25519"
+      },
+      "expected_jkt": "GY2JlxfWsu0ofz81Rg2H3JbT6dBe-y72s55Jv6EKrHs"
+    },
+    {
+      "name": "broker.partner.example/federation-2",
+      "jwk": {
+        "kty": "EC",
+        "crv": "P-256",
+        "x": "ypMX5Xo-E6PBPF3ly2ErNLmuvY3QJo_W3NxAmqABf9g",
+        "y": "hIpEaMOX0nBNJqF8CFlR7uczqPxjuGbI7bxqvBHsuSM",
+        "kid": "91NSzo2nXkDLwfnUXSV2cuY2cJ1QIPngF8CWRhfX1B8",
+        "alg": "ES256"
+      },
+      "expected_jkt": "91NSzo2nXkDLwfnUXSV2cuY2cJ1QIPngF8CWRhfX1B8"
+    },
+    {
+      "name": "broker.partner.example/unpinned",
+      "jwk": {
+        "kty": "OKP",
+        "crv": "Ed25519",
+        "x": "orVW6HfQw9Kepi5kr7K_BWdkg-t_ZFGORuEX8JHrK2A",
+        "kid": "jVNj2xEESYUDWvi6YP--QuOUbc3QZeVENyweMgzZMM4",
+        "alg": "Ed25519"
+      },
+      "expected_jkt": "jVNj2xEESYUDWvi6YP--QuOUbc3QZeVENyweMgzZMM4"
+    },
+    {
+      "name": "rogue.example/federation-1",
+      "jwk": {
+        "kty": "OKP",
+        "crv": "Ed25519",
+        "x": "da3fSpb1u957y4CeJ37w0452ORy15lPUJTlsrni3yV4",
+        "kid": "KDVF__UM5K-jAY1YNtY6K6FlktVoq6u_ToNaTzK-Ons",
+        "alg": "Ed25519"
+      },
+      "expected_jkt": "KDVF__UM5K-jAY1YNtY6K6FlktVoq6u_ToNaTzK-Ons"
+    },
+    {
+      "name": "hosted.example.net/federation-1",
+      "jwk": {
+        "kty": "OKP",
+        "crv": "Ed25519",
+        "x": "xheaOEurBjiKO4vifhh-yuZpO_jjsN_mp5NGLunmLX4",
+        "kid": "ZqZe_gv4v1WAxBpfLZrWBfWhvD8ZY0r63gw9kuLJAuU",
+        "alg": "Ed25519"
+      },
+      "expected_jkt": "ZqZe_gv4v1WAxBpfLZrWBfWhvD8ZY0r63gw9kuLJAuU"
+    },
+    {
+      "name": "old-broker.example.org/federation-1",
+      "jwk": {
+        "kty": "OKP",
+        "crv": "Ed25519",
+        "x": "PuOKP3R4mBUKm7ltOkYIl9ujNKgdW3Lg2tdeLzX0N1s",
+        "kid": "g_gmi09_5Z4G1KXRh2Y7wbqaZZMlVi5jmB7MHFGBzTU",
+        "alg": "Ed25519"
+      },
+      "expected_jkt": "g_gmi09_5Z4G1KXRh2Y7wbqaZZMlVi5jmB7MHFGBzTU"
+    },
+    {
+      "name": "broker.outside.example/federation-1",
+      "jwk": {
+        "kty": "OKP",
+        "crv": "Ed25519",
+        "x": "Z2Wpx-z3t13zmF4DLeHIt70ZL4l3R8cybezHaBWUoF8",
+        "kid": "FjxD_y7KSw-RM1VSSgAZLqW0lnk4BLPlAEWXepufj1k",
+        "alg": "Ed25519"
+      },
+      "expected_jkt": "FjxD_y7KSw-RM1VSSgAZLqW0lnk4BLPlAEWXepufj1k"
+    }
+  ]
+}

@@ -1,0 +1,85 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/receipt.schema.json",
+  "title": "ALP receipt (JWS typ alp-receipt+jws)",
+  "description": "Signed by the receiving broker and returned in the response to a federation inbox POST.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "alp",
+    "id",
+    "envelope_id",
+    "envelope_hash",
+    "status",
+    "created_at",
+    "expires_at",
+    "origin_broker",
+    "aud",
+    "broker_sig"
+  ],
+  "properties": {
+    "alp": {
+      "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/version"
+    },
+    "id": {
+      "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/ulid"
+    },
+    "envelope_id": {
+      "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/ulid"
+    },
+    "envelope_hash": {
+      "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/sha256"
+    },
+    "status": {
+      "enum": [
+        "accepted",
+        "refused"
+      ]
+    },
+    "code": {
+      "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/error_code"
+    },
+    "ledger_hash": {
+      "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/sha256"
+    },
+    "created_at": {
+      "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/timestamp"
+    },
+    "expires_at": {
+      "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/timestamp"
+    },
+    "origin_broker": {
+      "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/broker_id"
+    },
+    "aud": {
+      "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/broker_id"
+    },
+    "broker_sig": {
+      "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/detached_jws"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "refused"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "code"
+        ],
+        "properties": {
+          "ledger_hash": false
+        }
+      },
+      "else": {
+        "properties": {
+          "code": false
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,464 @@
+{
+  "id": "alp.document_request/1",
+  "title": "Document request",
+  "maturity": "core",
+  "description": "Ask for a document. The owner's side proposes access to a link that only the requester can open after signing in with their own identity; both people ratify; the owner's agent grants the access in the owner's own system and commits.",
+  "starts": [
+    "request"
+  ],
+  "common_types": [
+    "ack",
+    "decline",
+    "error",
+    "ask_human"
+  ],
+  "negotiable": true,
+  "committer": "proposer",
+  "types": {
+    "request": {
+      "description": "Which document, and why.",
+      "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "description",
+          "purpose"
+        ],
+        "properties": {
+          "description": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 280,
+            "x-alp-text": "untrusted"
+          },
+          "ref": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256,
+            "x-alp-text": "untrusted"
+          },
+          "purpose": {
+            "enum": [
+              "review",
+              "reference",
+              "approval",
+              "other"
+            ]
+          },
+          "needed_by": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      }
+    },
+    "propose": {
+      "description": "Offer access to a resource on stated terms.",
+      "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "terms"
+        ],
+        "properties": {
+          "terms": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "resource",
+              "access"
+            ],
+            "properties": {
+              "resource": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "url",
+                  "title",
+                  "requires_sign_in"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "link"
+                  },
+                  "url": {
+                    "type": "string",
+                    "format": "uri",
+                    "maxLength": 2048,
+                    "description": "Resolves only for the requester, after the requester signs in with their own identity at the owner's system. Never a bearer or capability URL."
+                  },
+                  "title": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 200,
+                    "x-alp-text": "untrusted"
+                  },
+                  "requires_sign_in": {
+                    "const": true
+                  },
+                  "classification": {
+                    "type": "string",
+                    "maxLength": 64,
+                    "minLength": 1,
+                    "description": "The owner's own label for the resource, for display."
+                  }
+                }
+              },
+              "access": {
+                "enum": [
+                  "view",
+                  "comment",
+                  "edit"
+                ]
+              },
+              "until": {
+                "type": "string",
+                "format": "date-time"
+              }
+            }
+          }
+        }
+      }
+    },
+    "counter": {
+      "description": "Different access terms.",
+      "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "terms"
+        ],
+        "properties": {
+          "terms": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "resource",
+              "access"
+            ],
+            "properties": {
+              "resource": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "url",
+                  "title",
+                  "requires_sign_in"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "link"
+                  },
+                  "url": {
+                    "type": "string",
+                    "format": "uri",
+                    "maxLength": 2048,
+                    "description": "Resolves only for the requester, after the requester signs in with their own identity at the owner's system. Never a bearer or capability URL."
+                  },
+                  "title": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 200,
+                    "x-alp-text": "untrusted"
+                  },
+                  "requires_sign_in": {
+                    "const": true
+                  },
+                  "classification": {
+                    "type": "string",
+                    "maxLength": 64,
+                    "minLength": 1,
+                    "description": "The owner's own label for the resource, for display."
+                  }
+                }
+              },
+              "access": {
+                "enum": [
+                  "view",
+                  "comment",
+                  "edit"
+                ]
+              },
+              "until": {
+                "type": "string",
+                "format": "date-time"
+              }
+            }
+          }
+        }
+      }
+    },
+    "accept": {
+      "description": "Fix the terms.",
+      "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "terms"
+        ],
+        "properties": {
+          "terms": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "resource",
+              "access"
+            ],
+            "properties": {
+              "resource": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "url",
+                  "title",
+                  "requires_sign_in"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "link"
+                  },
+                  "url": {
+                    "type": "string",
+                    "format": "uri",
+                    "maxLength": 2048,
+                    "description": "Resolves only for the requester, after the requester signs in with their own identity at the owner's system. Never a bearer or capability URL."
+                  },
+                  "title": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 200,
+                    "x-alp-text": "untrusted"
+                  },
+                  "requires_sign_in": {
+                    "const": true
+                  },
+                  "classification": {
+                    "type": "string",
+                    "maxLength": 64,
+                    "minLength": 1,
+                    "description": "The owner's own label for the resource, for display."
+                  }
+                }
+              },
+              "access": {
+                "enum": [
+                  "view",
+                  "comment",
+                  "edit"
+                ]
+              },
+              "until": {
+                "type": "string",
+                "format": "date-time"
+              }
+            }
+          }
+        }
+      }
+    },
+    "commit": {
+      "description": "Access has been granted on the agreed terms.",
+      "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "terms"
+        ],
+        "properties": {
+          "terms": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "resource",
+              "access"
+            ],
+            "properties": {
+              "resource": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "url",
+                  "title",
+                  "requires_sign_in"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "link"
+                  },
+                  "url": {
+                    "type": "string",
+                    "format": "uri",
+                    "maxLength": 2048,
+                    "description": "Resolves only for the requester, after the requester signs in with their own identity at the owner's system. Never a bearer or capability URL."
+                  },
+                  "title": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 200,
+                    "x-alp-text": "untrusted"
+                  },
+                  "requires_sign_in": {
+                    "const": true
+                  },
+                  "classification": {
+                    "type": "string",
+                    "maxLength": 64,
+                    "minLength": 1,
+                    "description": "The owner's own label for the resource, for display."
+                  }
+                }
+              },
+              "access": {
+                "enum": [
+                  "view",
+                  "comment",
+                  "edit"
+                ]
+              },
+              "until": {
+                "type": "string",
+                "format": "date-time"
+              }
+            }
+          }
+        }
+      }
+    },
+    "inform": {
+      "description": "What happened after the commit.",
+      "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "event",
+          "as_of"
+        ],
+        "properties": {
+          "event": {
+            "enum": [
+              "shared",
+              "revoked",
+              "unavailable"
+            ]
+          },
+          "as_of": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      }
+    }
+  },
+  "replies": {
+    "request": [
+      "propose",
+      "request",
+      "decline",
+      "ack",
+      "ask_human",
+      "error"
+    ],
+    "propose": [
+      "accept",
+      "counter",
+      "decline",
+      "ask_human",
+      "error",
+      "ack"
+    ],
+    "counter": [
+      "accept",
+      "counter",
+      "decline",
+      "ask_human",
+      "error",
+      "ack"
+    ],
+    "accept": [
+      "commit",
+      "decline",
+      "ack",
+      "ask_human",
+      "error"
+    ],
+    "commit": [
+      "inform",
+      "ack",
+      "error"
+    ],
+    "inform": [
+      "inform",
+      "ack",
+      "ask_human",
+      "error"
+    ]
+  },
+  "classification": {
+    "/body/description": [
+      "internal"
+    ],
+    "/body/ref": [
+      "internal"
+    ],
+    "/body/purpose": [
+      "internal"
+    ],
+    "/body/needed_by": [
+      "internal"
+    ],
+    "/body/terms": [
+      "internal"
+    ],
+    "/body/event": [
+      "internal"
+    ],
+    "/body/as_of": [
+      "internal"
+    ]
+  },
+  "suggested": {
+    "request": [
+      "/body/description",
+      "/body/purpose",
+      "/body/needed_by"
+    ],
+    "propose": [
+      "/body/terms/resource/kind",
+      "/body/terms/resource/url",
+      "/body/terms/resource/title",
+      "/body/terms/resource/requires_sign_in",
+      "/body/terms/access",
+      "/body/terms/until"
+    ],
+    "accept": [
+      "/body/terms/resource/kind",
+      "/body/terms/resource/url",
+      "/body/terms/resource/title",
+      "/body/terms/resource/requires_sign_in",
+      "/body/terms/access",
+      "/body/terms/until"
+    ],
+    "commit": [
+      "/body/terms/resource/kind",
+      "/body/terms/resource/url",
+      "/body/terms/resource/title",
+      "/body/terms/resource/requires_sign_in",
+      "/body/terms/access",
+      "/body/terms/until"
+    ],
+    "inform": [
+      "/body/event",
+      "/body/as_of"
+    ]
+  }
+}

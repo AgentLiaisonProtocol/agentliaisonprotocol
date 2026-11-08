@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/messages/error.schema.json",
+  "title": "error body",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "code",
+    "retryable"
+  ],
+  "properties": {
+    "of": {
+      "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/ulid"
+    },
+    "code": {
+      "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/error_code"
+    },
+    "retryable": {
+      "type": "boolean"
+    }
+  }
+}

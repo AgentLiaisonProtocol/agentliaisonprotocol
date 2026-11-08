@@ -1,0 +1,198 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/grant.schema.json",
+  "title": "ALP relationship grant",
+  "description": "Held and sealed by one principal about one counterparty. disclose governs what leaves (outbound); receive governs what is accepted (inbound). Grants are local to the holder's home broker and never sent to another broker.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "alp",
+    "id",
+    "principal",
+    "principal_id",
+    "counterparty",
+    "basis",
+    "status",
+    "scopes",
+    "created_at",
+    "updated_at"
+  ],
+  "properties": {
+    "alp": {
+      "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/version"
+    },
+    "id": {
+      "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/ulid"
+    },
+    "principal": {
+      "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/address"
+    },
+    "principal_id": {
+      "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/principal_id"
+    },
+    "counterparty": {
+      "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/address"
+    },
+    "counterparty_principal_id": {
+      "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/principal_id"
+    },
+    "basis": {
+      "enum": [
+        "consent",
+        "narrowing"
+      ]
+    },
+    "status": {
+      "enum": [
+        "pending",
+        "active",
+        "revoked"
+      ]
+    },
+    "scopes": {
+      "type": "object",
+      "propertyNames": {
+        "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/scope_id"
+      },
+      "minProperties": 1,
+      "maxProperties": 32,
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "may",
+          "disclose",
+          "receive",
+          "commit",
+          "redaction"
+        ],
+        "properties": {
+          "may": {
+            "type": "array",
+            "items": {
+              "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/message_type"
+            },
+            "minItems": 0,
+            "maxItems": 10,
+            "uniqueItems": true
+          },
+          "disclose": {
+            "type": "array",
+            "items": {
+              "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/pointer"
+            },
+            "minItems": 0,
+            "maxItems": 64,
+            "uniqueItems": true
+          },
+          "receive": {
+            "type": "array",
+            "items": {
+              "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/pointer"
+            },
+            "minItems": 0,
+            "maxItems": 64,
+            "uniqueItems": true
+          },
+          "commit": {
+            "enum": [
+              "ask_me",
+              "within_limits"
+            ]
+          },
+          "limits": {
+            "type": "object",
+            "description": "Scope-defined commit limits; required when commit is within_limits."
+          },
+          "redaction": {
+            "enum": [
+              "reject",
+              "redact"
+            ]
+          },
+          "hold_for_review": {
+            "type": "boolean"
+          }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "commit": {
+                  "const": "within_limits"
+                }
+              }
+            },
+            "then": {
+              "required": [
+                "limits"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "rate_limit": {
+      "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/rate_limit"
+    },
+    "quiet_hours": {
+      "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/quiet_hours"
+    },
+    "connection": {
+      "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/ulid"
+    },
+    "created_at": {
+      "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/timestamp"
+    },
+    "updated_at": {
+      "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/timestamp"
+    },
+    "expires_at": {
+      "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/timestamp"
+    },
+    "sealed": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "by",
+        "method",
+        "at"
+      ],
+      "properties": {
+        "by": {
+          "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/principal_id"
+        },
+        "method": {
+          "enum": [
+            "webauthn-uv",
+            "sso-stepup",
+            "native-uv",
+            "reauth-dev"
+          ]
+        },
+        "at": {
+          "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/timestamp"
+        }
+      }
+    },
+    "broker_sig": {
+      "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/detached_jws"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "active"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "sealed"
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/messages/decline.schema.json",
+  "title": "decline body",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "of",
+    "reason"
+  ],
+  "properties": {
+    "of": {
+      "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/ulid"
+    },
+    "reason": {
+      "enum": [
+        "not_available",
+        "not_permitted",
+        "not_interested",
+        "ratification_declined",
+        "withdrawn",
+        "other"
+      ]
+    }
+  }
+}

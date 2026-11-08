@@ -1,0 +1,71 @@
+{
+  "WARNING": "TEST KEYS ONLY. These private keys are published on purpose so anyone can reproduce the vectors. Never use them, or anything derived from them, outside tests.",
+  "derivation": "Ed25519 seed = SHA-256('TEST-ONLY-key-v0.1:' + name); P-256 scalar = SHA-256('TEST-ONLY-p256-v0.1:' + name). kid = RFC 7638 thumbprint.",
+  "keys": {
+    "broker.example.org/federation-1": {
+      "kty": "OKP",
+      "crv": "Ed25519",
+      "x": "FB6gZo5XXqZcCaaQfcHZuMMct-_x7RHJamPcRdBSE0Y",
+      "d": "Y_pdMU_9xdMbJAK-sKZHUPwTFNTAE39pHIfe9_Ay5sU",
+      "kid": "Qlbvmc8DWyTQ_pE2ysLApn4T03jw-c6Vq65LODOzGFk",
+      "alg": "Ed25519"
+    },
+    "broker.partner.example/federation-1": {
+      "kty": "OKP",
+      "crv": "Ed25519",
+      "x": "6cu0sQ7rfFRfUNrf4fY4kQNl3SlZ-U5Kd4K_HY63KmM",
+      "d": "QS9ftJIbw9aRR6G3ljuzxWEZktwM2tC5mtM_iLqF0eQ",
+      "kid": "GY2JlxfWsu0ofz81Rg2H3JbT6dBe-y72s55Jv6EKrHs",
+      "alg": "Ed25519"
+    },
+    "broker.partner.example/federation-2": {
+      "kty": "EC",
+      "crv": "P-256",
+      "x": "ypMX5Xo-E6PBPF3ly2ErNLmuvY3QJo_W3NxAmqABf9g",
+      "y": "hIpEaMOX0nBNJqF8CFlR7uczqPxjuGbI7bxqvBHsuSM",
+      "d": "faEcyPb8QzWPOoz_ohSIwzIoOrzSpO9YRQ2Gm28lfSs",
+      "kid": "91NSzo2nXkDLwfnUXSV2cuY2cJ1QIPngF8CWRhfX1B8",
+      "alg": "ES256"
+    },
+    "broker.partner.example/unpinned": {
+      "kty": "OKP",
+      "crv": "Ed25519",
+      "x": "orVW6HfQw9Kepi5kr7K_BWdkg-t_ZFGORuEX8JHrK2A",
+      "d": "UjToVu5s04Z8uCItGJC6k9MmdvdPHz0g0O3ZeM4UTdQ",
+      "kid": "jVNj2xEESYUDWvi6YP--QuOUbc3QZeVENyweMgzZMM4",
+      "alg": "Ed25519"
+    },
+    "rogue.example/federation-1": {
+      "kty": "OKP",
+      "crv": "Ed25519",
+      "x": "da3fSpb1u957y4CeJ37w0452ORy15lPUJTlsrni3yV4",
+      "d": "0He-M79G-thKc2DrB1nW9lBnDIyr6Gx1ZHgr5KyCJ_Q",
+      "kid": "KDVF__UM5K-jAY1YNtY6K6FlktVoq6u_ToNaTzK-Ons",
+      "alg": "Ed25519"
+    },
+    "hosted.example.net/federation-1": {
+      "kty": "OKP",
+      "crv": "Ed25519",
+      "x": "xheaOEurBjiKO4vifhh-yuZpO_jjsN_mp5NGLunmLX4",
+      "d": "oKuwkrNE37lSVHRYNFnpwcKvTVOav6TaBnAg17pr7Hs",
+      "kid": "ZqZe_gv4v1WAxBpfLZrWBfWhvD8ZY0r63gw9kuLJAuU",
+      "alg": "Ed25519"
+    },
+    "old-broker.example.org/federation-1": {
+      "kty": "OKP",
+      "crv": "Ed25519",
+      "x": "PuOKP3R4mBUKm7ltOkYIl9ujNKgdW3Lg2tdeLzX0N1s",
+      "d": "6vWUISUb0Hw4cfffHoYTlfeWhUrEzry5Lq6tGMTzqbM",
+      "kid": "g_gmi09_5Z4G1KXRh2Y7wbqaZZMlVi5jmB7MHFGBzTU",
+      "alg": "Ed25519"
+    },
+    "broker.outside.example/federation-1": {
+      "kty": "OKP",
+      "crv": "Ed25519",
+      "x": "Z2Wpx-z3t13zmF4DLeHIt70ZL4l3R8cybezHaBWUoF8",
+      "d": "BRKmJ2eZkKJtVbnNgCKneM4x22ixyL-1cAEdyNfroUM",
+      "kid": "FjxD_y7KSw-RM1VSSgAZLqW0lnk4BLPlAEWXepufj1k",
+      "alg": "Ed25519"
+    }
+  }
+}

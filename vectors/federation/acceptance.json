@@ -1,0 +1,569 @@
+{
+  "description": "Acceptance steps 0-6 at the receiving broker (spec 12.2.4). context.domain_documents maps each domain to a key of world.domain_documents (absent: the domain has no document); JWKS come from world.jwks. A result of authenticated means steps 0-6 passed and evaluation continues with steps 7-11 (policy/recipient.json).",
+  "now": "2026-11-09T14:00:00Z",
+  "cases": [
+    {
+      "name": "good: cross-organization request",
+      "context": {
+        "receiving_broker": "https://broker.example.org",
+        "served_domains": {
+          "example.org": "https://broker.example.org"
+        },
+        "domain_documents": {
+          "partner.example": "partner.example@7",
+          "example.org": "example.org@42"
+        },
+        "last_seen_serial": {
+          "example.org": 42,
+          "partner.example": 7
+        },
+        "seen": []
+      },
+      "request_body": "{\"alp\":\"0.1\",\"id\":\"01M709DBMR81TJCEEE4AN4X0PD\",\"thread\":\"01M709DBMR81TJCEEE4AN4X0PD\",\"from\":{\"address\":\"alp:pat@partner.example\",\"principal_id\":\"pat-91c0e4a7b3d2f816\",\"delegate\":\"alp:pat@partner.example/agent-c\",\"attestation\":\"self\",\"class\":\"consumer\"},\"to\":{\"address\":\"alp:lee@example.org\"},\"aud\":\"https://broker.example.org\",\"scope\":\"alp.status/1\",\"type\":\"request\",\"body\":{\"subject\":\"Launch-day dashboards\"},\"grant\":\"01M6V4Y6R0ZP55BRGVHFME05BR\",\"labels\":[\"internal\"],\"created_at\":\"2026-11-09T13:59:00Z\",\"expires_at\":\"2026-11-10T14:00:00Z\",\"origin_broker\":\"https://broker.partner.example\",\"decision\":{\"outcome\":\"allowed\",\"redacted\":[],\"policy_ids\":[\"partner.example#3\"]},\"broker_sig\":\"eyJhbGciOiJFZDI1NTE5Iiwia2lkIjoiR1kySmx4ZldzdTBvZno4MVJnMkgzSmJUNmRCZS15NzJzNTVKdjZFS3JIcyIsInR5cCI6ImFscC1lbnZlbG9wZStqd3MifQ..EDsln4uRPdWJBOQFjuIdxPd60pp-9aRER5qsy8dMrzDvXAQGLFIFkubQ2AnLK8zL8qSbxm7sarYdYWtmiF-pCA\"}",
+      "expected": {
+        "result": "authenticated",
+        "typ": "alp-envelope+jws",
+        "home_broker": "https://broker.partner.example"
+      }
+    },
+    {
+      "name": "good: control envelope (connection request)",
+      "context": {
+        "receiving_broker": "https://broker.example.org",
+        "served_domains": {
+          "example.org": "https://broker.example.org"
+        },
+        "domain_documents": {
+          "partner.example": "partner.example@7",
+          "example.org": "example.org@42"
+        },
+        "last_seen_serial": {
+          "example.org": 42,
+          "partner.example": 7
+        },
+        "seen": []
+      },
+      "request_body": "{\"alp\":\"0.1\",\"id\":\"01M709EESR1SDZ3ZGKM6NZZJAP\",\"thread\":\"01M709EESR1SDZ3ZGKM6NZZJAP\",\"from\":{\"address\":\"alp:pat@partner.example\",\"principal_id\":\"pat-91c0e4a7b3d2f816\",\"delegate\":\"alp:pat@partner.example/agent-c\",\"attestation\":\"self\",\"class\":\"consumer\"},\"to\":{\"address\":\"alp:lee@example.org\"},\"aud\":\"https://broker.example.org\",\"type\":\"connection_request\",\"body\":{\"scopes\":[\"alp.status/1\"],\"purpose\":\"status_updates\",\"display_name\":\"Pat P.\"},\"note\":\"Partner team; weekly status?\",\"created_at\":\"2026-11-09T13:59:00Z\",\"expires_at\":\"2026-11-16T13:59:00Z\",\"origin_broker\":\"https://broker.partner.example\",\"broker_sig\":\"eyJhbGciOiJFZDI1NTE5Iiwia2lkIjoiR1kySmx4ZldzdTBvZno4MVJnMkgzSmJUNmRCZS15NzJzNTVKdjZFS3JIcyIsInR5cCI6ImFscC1jb250cm9sK2p3cyJ9..p8TRelXYT9AFYmbe8Pklx78bYlAhU8sooYCju5Y8MQvKx1OL5lnN8MRt6z5RyhDWm69Ub5Z5LmDUVVpk5XeBAw\"}",
+      "expected": {
+        "result": "authenticated",
+        "typ": "alp-control+jws",
+        "home_broker": "https://broker.partner.example"
+      }
+    },
+    {
+      "name": "good: ES256 key pinned as the next key",
+      "context": {
+        "receiving_broker": "https://broker.example.org",
+        "served_domains": {
+          "example.org": "https://broker.example.org"
+        },
+        "domain_documents": {
+          "partner.example": "partner.example@7",
+          "example.org": "example.org@42"
+        },
+        "last_seen_serial": {
+          "example.org": 42,
+          "partner.example": 7
+        },
+        "seen": []
+      },
+      "request_body": "{\"alp\":\"0.1\",\"id\":\"01M70981Q8PX4WT0R4BES22QHY\",\"thread\":\"01M70981Q8PX4WT0R4BES22QHY\",\"from\":{\"address\":\"alp:pat@partner.example\",\"principal_id\":\"pat-91c0e4a7b3d2f816\",\"delegate\":\"alp:pat@partner.example/agent-c\",\"attestation\":\"self\",\"class\":\"consumer\"},\"to\":{\"address\":\"alp:lee@example.org\"},\"aud\":\"https://broker.example.org\",\"scope\":\"alp.status/1\",\"type\":\"request\",\"body\":{\"subject\":\"Launch-day dashboards\"},\"grant\":\"g-pat\",\"labels\":[\"internal\"],\"created_at\":\"2026-11-09T13:59:00Z\",\"expires_at\":\"2026-11-10T14:00:00Z\",\"origin_broker\":\"https://broker.partner.example\",\"decision\":{\"outcome\":\"allowed\",\"redacted\":[],\"policy_ids\":[]},\"broker_sig\":\"eyJhbGciOiJFUzI1NiIsImtpZCI6IjkxTlN6bzJuWGtETHdmblVYU1YyY3VZMmNKMVFJUG5nRjhDV1JoZlgxQjgiLCJ0eXAiOiJhbHAtZW52ZWxvcGUrandzIn0..hN6_CNd76jsnVrjLr39SfwEer0ffACSjTp1FqbgFNYEJmdenS8p_XgTGF6hK8tY1RdXPU5e6Jni4uKQthyINpw\"}",
+      "expected": {
+        "result": "authenticated",
+        "typ": "alp-envelope+jws",
+        "home_broker": "https://broker.partner.example"
+      }
+    },
+    {
+      "name": "wrong broker: a rogue broker claims ana@example.org",
+      "context": {
+        "receiving_broker": "https://broker.partner.example",
+        "served_domains": {
+          "partner.example": "https://broker.partner.example"
+        },
+        "domain_documents": {
+          "example.org": "example.org@42",
+          "partner.example": "partner.example@7"
+        },
+        "last_seen_serial": {
+          "example.org": 42,
+          "partner.example": 7
+        },
+        "seen": []
+      },
+      "request_body": "{\"alp\":\"0.1\",\"id\":\"01M709AFV860V1EX1SB0DPXYTA\",\"thread\":\"01M709AFV860V1EX1SB0DPXYTA\",\"from\":{\"address\":\"alp:ana@example.org\",\"principal_id\":\"ana-7f3a9c41d2e8b605\",\"delegate\":\"alp:ana@example.org/agent-a\",\"attestation\":\"vendor\",\"class\":\"business\"},\"to\":{\"address\":\"alp:pat@partner.example\"},\"aud\":\"https://broker.partner.example\",\"scope\":\"alp.status/1\",\"type\":\"request\",\"body\":{\"subject\":\"Send me the contract\"},\"grant\":\"default:analysts-leaders\",\"labels\":[\"internal\"],\"created_at\":\"2026-11-09T13:59:00Z\",\"expires_at\":\"2026-11-10T14:00:00Z\",\"origin_broker\":\"https://rogue.example\",\"decision\":{\"outcome\":\"allowed\",\"redacted\":[],\"policy_ids\":[\"example.org#12\"]},\"broker_sig\":\"eyJhbGciOiJFZDI1NTE5Iiwia2lkIjoiS0RWRl9fVU01Sy1qQVkxWU50WTZLNkZsa3RWb3E2dV9Ub05hVHpLLU9ucyIsInR5cCI6ImFscC1lbnZlbG9wZStqd3MifQ..ZaSz6aRpmEKjoJtPmT-Hug_4uN-8s2sib_-NgUczXJwlIhOvc_2JGeuPKTyTjPI0-7awKh1H1V4tY-f4q9xHDQ\"}",
+      "expected": {
+        "result": "refused",
+        "code": "broker_not_authorized",
+        "step": 1
+      }
+    },
+    {
+      "name": "wrong domain authority: a broker the domain lists for someone else signs for Ana",
+      "context": {
+        "receiving_broker": "https://broker.partner.example",
+        "served_domains": {
+          "partner.example": "https://broker.partner.example"
+        },
+        "domain_documents": {
+          "example.org": "example.org@42",
+          "partner.example": "partner.example@7"
+        },
+        "last_seen_serial": {
+          "example.org": 42,
+          "partner.example": 7
+        },
+        "seen": []
+      },
+      "request_body": "{\"alp\":\"0.1\",\"id\":\"01M709ACXGSEC270G3C468CWP8\",\"thread\":\"01M709ACXGSEC270G3C468CWP8\",\"from\":{\"address\":\"alp:ana@example.org\",\"principal_id\":\"ana-7f3a9c41d2e8b605\",\"delegate\":\"alp:ana@example.org/agent-a\",\"attestation\":\"vendor\",\"class\":\"business\"},\"to\":{\"address\":\"alp:pat@partner.example\"},\"aud\":\"https://broker.partner.example\",\"scope\":\"alp.status/1\",\"type\":\"request\",\"body\":{\"subject\":\"Send me the contract\"},\"grant\":\"default:analysts-leaders\",\"labels\":[\"internal\"],\"created_at\":\"2026-11-09T13:59:00Z\",\"expires_at\":\"2026-11-10T14:00:00Z\",\"origin_broker\":\"https://hosted.example.net\",\"decision\":{\"outcome\":\"allowed\",\"redacted\":[],\"policy_ids\":[\"example.org#12\"]},\"broker_sig\":\"eyJhbGciOiJFZDI1NTE5Iiwia2lkIjoiWnFaZV9ndjR2MVdBeEJwZkxacldCZldodkQ4WlkwcjYzZ3c5a3VMSkF1VSIsInR5cCI6ImFscC1lbnZlbG9wZStqd3MifQ..AhXaSe2P1w7UwbZITmVRAvJQoeGrG5c4oTVvQvpi-uxMxTCz_wg6192Kr09EG8GS4IQLfEkECf7ZNOAZam1NAA\"}",
+      "expected": {
+        "result": "refused",
+        "code": "broker_not_authorized",
+        "step": 6
+      }
+    },
+    {
+      "name": "de-listed broker after the document moved to serial 42",
+      "context": {
+        "receiving_broker": "https://broker.partner.example",
+        "served_domains": {
+          "partner.example": "https://broker.partner.example"
+        },
+        "domain_documents": {
+          "example.org": "example.org@42",
+          "partner.example": "partner.example@7"
+        },
+        "last_seen_serial": {
+          "example.org": 42,
+          "partner.example": 7
+        },
+        "seen": []
+      },
+      "request_body": "{\"alp\":\"0.1\",\"id\":\"01M7095AT0C1MQCNQJH7C80J54\",\"thread\":\"01M7095AT0C1MQCNQJH7C80J54\",\"from\":{\"address\":\"alp:ana@example.org\",\"principal_id\":\"ana-7f3a9c41d2e8b605\",\"delegate\":\"alp:ana@example.org/agent-a\",\"attestation\":\"vendor\",\"class\":\"business\"},\"to\":{\"address\":\"alp:pat@partner.example\"},\"aud\":\"https://broker.partner.example\",\"scope\":\"alp.status/1\",\"type\":\"request\",\"body\":{\"subject\":\"Status?\"},\"grant\":\"default:analysts-leaders\",\"labels\":[\"internal\"],\"created_at\":\"2026-11-09T13:59:00Z\",\"expires_at\":\"2026-11-10T14:00:00Z\",\"origin_broker\":\"https://old-broker.example.org\",\"decision\":{\"outcome\":\"allowed\",\"redacted\":[],\"policy_ids\":[\"example.org#12\"]},\"broker_sig\":\"eyJhbGciOiJFZDI1NTE5Iiwia2lkIjoiZ19nbWkwOV81WjRHMUtYUmgyWTd3YnFhWlpNbFZpNWptQjdNSEZHQnpUVSIsInR5cCI6ImFscC1lbnZlbG9wZStqd3MifQ..V2YZZi6C0WGiWa4LX0R0xpUIpsRLHVYOL_OpaW9D1zvtkiiqRWj40aKRW0PFmmBxaWdhivoJmSO6wVYMvsPoDg\"}",
+      "expected": {
+        "result": "refused",
+        "code": "broker_not_authorized",
+        "step": 1
+      }
+    },
+    {
+      "name": "rollback: a lower serial than one already seen",
+      "context": {
+        "receiving_broker": "https://broker.partner.example",
+        "served_domains": {
+          "partner.example": "https://broker.partner.example"
+        },
+        "domain_documents": {
+          "example.org": "example.org@41",
+          "partner.example": "partner.example@7"
+        },
+        "last_seen_serial": {
+          "example.org": 42,
+          "partner.example": 7
+        },
+        "seen": []
+      },
+      "request_body": "{\"alp\":\"0.1\",\"id\":\"01M7095AT0C1MQCNQJH7C80J54\",\"thread\":\"01M7095AT0C1MQCNQJH7C80J54\",\"from\":{\"address\":\"alp:ana@example.org\",\"principal_id\":\"ana-7f3a9c41d2e8b605\",\"delegate\":\"alp:ana@example.org/agent-a\",\"attestation\":\"vendor\",\"class\":\"business\"},\"to\":{\"address\":\"alp:pat@partner.example\"},\"aud\":\"https://broker.partner.example\",\"scope\":\"alp.status/1\",\"type\":\"request\",\"body\":{\"subject\":\"Status?\"},\"grant\":\"default:analysts-leaders\",\"labels\":[\"internal\"],\"created_at\":\"2026-11-09T13:59:00Z\",\"expires_at\":\"2026-11-10T14:00:00Z\",\"origin_broker\":\"https://old-broker.example.org\",\"decision\":{\"outcome\":\"allowed\",\"redacted\":[],\"policy_ids\":[\"example.org#12\"]},\"broker_sig\":\"eyJhbGciOiJFZDI1NTE5Iiwia2lkIjoiZ19nbWkwOV81WjRHMUtYUmgyWTd3YnFhWlpNbFZpNWptQjdNSEZHQnpUVSIsInR5cCI6ImFscC1lbnZlbG9wZStqd3MifQ..V2YZZi6C0WGiWa4LX0R0xpUIpsRLHVYOL_OpaW9D1zvtkiiqRWj40aKRW0PFmmBxaWdhivoJmSO6wVYMvsPoDg\"}",
+      "expected": {
+        "result": "refused",
+        "code": "discovery_failed",
+        "step": 1
+      }
+    },
+    {
+      "name": "replay: a seen id with different content",
+      "context": {
+        "receiving_broker": "https://broker.example.org",
+        "served_domains": {
+          "example.org": "https://broker.example.org"
+        },
+        "domain_documents": {
+          "partner.example": "partner.example@7",
+          "example.org": "example.org@42"
+        },
+        "last_seen_serial": {
+          "example.org": 42,
+          "partner.example": 7
+        },
+        "seen": [
+          {
+            "origin_broker": "https://broker.partner.example",
+            "id": "01M70971G0E3NG2Y7AW176Y9KS",
+            "envelope_hash": "sha256:8We8MGgsS1FpmzK159HqpD74zakXwrn6tOxsp078FOg",
+            "expires_at": "2026-11-10T14:00:00Z"
+          }
+        ]
+      },
+      "request_body": "{\"alp\":\"0.1\",\"id\":\"01M70971G0E3NG2Y7AW176Y9KS\",\"thread\":\"01M70971G0E3NG2Y7AW176Y9KS\",\"from\":{\"address\":\"alp:pat@partner.example\",\"principal_id\":\"pat-91c0e4a7b3d2f816\",\"delegate\":\"alp:pat@partner.example/agent-c\",\"attestation\":\"self\",\"class\":\"consumer\"},\"to\":{\"address\":\"alp:lee@example.org\"},\"aud\":\"https://broker.example.org\",\"scope\":\"alp.status/1\",\"type\":\"request\",\"body\":{\"subject\":\"Replay me, changed\"},\"grant\":\"01M6V4Y6R0ZP55BRGVHFME05BR\",\"labels\":[\"internal\"],\"created_at\":\"2026-11-09T13:59:00Z\",\"expires_at\":\"2026-11-10T14:00:00Z\",\"origin_broker\":\"https://broker.partner.example\",\"decision\":{\"outcome\":\"allowed\",\"redacted\":[],\"policy_ids\":[\"partner.example#3\"]},\"broker_sig\":\"eyJhbGciOiJFZDI1NTE5Iiwia2lkIjoiR1kySmx4ZldzdTBvZno4MVJnMkgzSmJUNmRCZS15NzJzNTVKdjZFS3JIcyIsInR5cCI6ImFscC1lbnZlbG9wZStqd3MifQ..UO3Fp7Uvp6tVAUsEA9bLu8B5vqRm3rSWBNuOXO1QYewjK-UA9MqIrTvWZBR6YuODARCqCE2mLkgvtAYsDIhzBA\"}",
+      "expected": {
+        "result": "refused",
+        "code": "replay",
+        "step": 5
+      }
+    },
+    {
+      "name": "duplicate delivery of the same envelope is idempotent",
+      "context": {
+        "receiving_broker": "https://broker.example.org",
+        "served_domains": {
+          "example.org": "https://broker.example.org"
+        },
+        "domain_documents": {
+          "partner.example": "partner.example@7",
+          "example.org": "example.org@42"
+        },
+        "last_seen_serial": {
+          "example.org": 42,
+          "partner.example": 7
+        },
+        "seen": [
+          {
+            "origin_broker": "https://broker.partner.example",
+            "id": "01M70971G0E3NG2Y7AW176Y9KS",
+            "envelope_hash": "sha256:8We8MGgsS1FpmzK159HqpD74zakXwrn6tOxsp078FOg",
+            "expires_at": "2026-11-10T14:00:00Z"
+          }
+        ]
+      },
+      "request_body": "{\"alp\":\"0.1\",\"id\":\"01M70971G0E3NG2Y7AW176Y9KS\",\"thread\":\"01M70971G0E3NG2Y7AW176Y9KS\",\"from\":{\"address\":\"alp:pat@partner.example\",\"principal_id\":\"pat-91c0e4a7b3d2f816\",\"delegate\":\"alp:pat@partner.example/agent-c\",\"attestation\":\"self\",\"class\":\"consumer\"},\"to\":{\"address\":\"alp:lee@example.org\"},\"aud\":\"https://broker.example.org\",\"scope\":\"alp.status/1\",\"type\":\"request\",\"body\":{\"subject\":\"Replay me\"},\"grant\":\"01M6V4Y6R0ZP55BRGVHFME05BR\",\"labels\":[\"internal\"],\"created_at\":\"2026-11-09T13:59:00Z\",\"expires_at\":\"2026-11-10T14:00:00Z\",\"origin_broker\":\"https://broker.partner.example\",\"decision\":{\"outcome\":\"allowed\",\"redacted\":[],\"policy_ids\":[\"partner.example#3\"]},\"broker_sig\":\"eyJhbGciOiJFZDI1NTE5Iiwia2lkIjoiR1kySmx4ZldzdTBvZno4MVJnMkgzSmJUNmRCZS15NzJzNTVKdjZFS3JIcyIsInR5cCI6ImFscC1lbnZlbG9wZStqd3MifQ..tCPH2Kqf4e6LRfa6SOiI0vVmgpn2qq4vYM6fcNRUev9O0aSQ8BcR5svzvWLyBGp4esWTmvWA2868t6T0JB4_CQ\"}",
+      "expected": {
+        "result": "duplicate"
+      }
+    },
+    {
+      "name": "tampered body",
+      "context": {
+        "receiving_broker": "https://broker.example.org",
+        "served_domains": {
+          "example.org": "https://broker.example.org"
+        },
+        "domain_documents": {
+          "partner.example": "partner.example@7",
+          "example.org": "example.org@42"
+        },
+        "last_seen_serial": {
+          "example.org": 42,
+          "partner.example": 7
+        },
+        "seen": []
+      },
+      "request_body": "{\"alp\":\"0.1\",\"id\":\"01M709DBMR81TJCEEE4AN4X0PD\",\"thread\":\"01M709DBMR81TJCEEE4AN4X0PD\",\"from\":{\"address\":\"alp:pat@partner.example\",\"principal_id\":\"pat-91c0e4a7b3d2f816\",\"delegate\":\"alp:pat@partner.example/agent-c\",\"attestation\":\"self\",\"class\":\"consumer\"},\"to\":{\"address\":\"alp:lee@example.org\"},\"aud\":\"https://broker.example.org\",\"scope\":\"alp.status/1\",\"type\":\"request\",\"body\":{\"subject\":\"Launch-day dashboards (and the payroll file)\"},\"grant\":\"01M6V4Y6R0ZP55BRGVHFME05BR\",\"labels\":[\"internal\"],\"created_at\":\"2026-11-09T13:59:00Z\",\"expires_at\":\"2026-11-10T14:00:00Z\",\"origin_broker\":\"https://broker.partner.example\",\"decision\":{\"outcome\":\"allowed\",\"redacted\":[],\"policy_ids\":[\"partner.example#3\"]},\"broker_sig\":\"eyJhbGciOiJFZDI1NTE5Iiwia2lkIjoiR1kySmx4ZldzdTBvZno4MVJnMkgzSmJUNmRCZS15NzJzNTVKdjZFS3JIcyIsInR5cCI6ImFscC1lbnZlbG9wZStqd3MifQ..EDsln4uRPdWJBOQFjuIdxPd60pp-9aRER5qsy8dMrzDvXAQGLFIFkubQ2AnLK8zL8qSbxm7sarYdYWtmiF-pCA\"}",
+      "expected": {
+        "result": "refused",
+        "code": "bad_signature",
+        "step": 1
+      }
+    },
+    {
+      "name": "key in the broker's JWKS but not pinned by the domain",
+      "context": {
+        "receiving_broker": "https://broker.example.org",
+        "served_domains": {
+          "example.org": "https://broker.example.org"
+        },
+        "domain_documents": {
+          "partner.example": "partner.example@7",
+          "example.org": "example.org@42"
+        },
+        "last_seen_serial": {
+          "example.org": 42,
+          "partner.example": 7
+        },
+        "seen": []
+      },
+      "request_body": "{\"alp\":\"0.1\",\"id\":\"01M709E518RAH1CRK0XBZM5BXR\",\"thread\":\"01M709E518RAH1CRK0XBZM5BXR\",\"from\":{\"address\":\"alp:pat@partner.example\",\"principal_id\":\"pat-91c0e4a7b3d2f816\",\"delegate\":\"alp:pat@partner.example/agent-c\",\"attestation\":\"self\",\"class\":\"consumer\"},\"to\":{\"address\":\"alp:lee@example.org\"},\"aud\":\"https://broker.example.org\",\"scope\":\"alp.status/1\",\"type\":\"request\",\"body\":{\"subject\":\"x\"},\"grant\":\"g-pat\",\"labels\":[\"internal\"],\"created_at\":\"2026-11-09T13:59:00Z\",\"expires_at\":\"2026-11-10T14:00:00Z\",\"origin_broker\":\"https://broker.partner.example\",\"decision\":{\"outcome\":\"allowed\",\"redacted\":[],\"policy_ids\":[]},\"broker_sig\":\"eyJhbGciOiJFZDI1NTE5Iiwia2lkIjoialZOajJ4RUVTWVVEV3ZpNllQLS1RdU9VYmMzUVplVkVOeXdlTWd6Wk1NNCIsInR5cCI6ImFscC1lbnZlbG9wZStqd3MifQ..6DNCYLbRSvNCorL5efGxXfEGJuHoeYTvF9mN_IFInvH999GQ-0gIzZrQ5Qxrz1WCXLirT1K4eeHPgxbn8itrDQ\"}",
+      "expected": {
+        "result": "refused",
+        "code": "bad_signature",
+        "step": 1
+      }
+    },
+    {
+      "name": "extra protected header member (jku) is refused, never followed",
+      "context": {
+        "receiving_broker": "https://broker.example.org",
+        "served_domains": {
+          "example.org": "https://broker.example.org"
+        },
+        "domain_documents": {
+          "partner.example": "partner.example@7",
+          "example.org": "example.org@42"
+        },
+        "last_seen_serial": {
+          "example.org": 42,
+          "partner.example": 7
+        },
+        "seen": []
+      },
+      "request_body": "{\"alp\":\"0.1\",\"id\":\"01M7097QYRHMRTS1A8AYS7NVJ0\",\"thread\":\"01M7097QYRHMRTS1A8AYS7NVJ0\",\"from\":{\"address\":\"alp:pat@partner.example\",\"principal_id\":\"pat-91c0e4a7b3d2f816\",\"delegate\":\"alp:pat@partner.example/agent-c\",\"attestation\":\"self\",\"class\":\"consumer\"},\"to\":{\"address\":\"alp:lee@example.org\"},\"aud\":\"https://broker.example.org\",\"scope\":\"alp.status/1\",\"type\":\"request\",\"body\":{\"subject\":\"Header check\"},\"grant\":\"01M6V4Y6R0ZP55BRGVHFME05BR\",\"labels\":[\"internal\"],\"created_at\":\"2026-11-09T13:59:00Z\",\"expires_at\":\"2026-11-10T14:00:00Z\",\"origin_broker\":\"https://broker.partner.example\",\"decision\":{\"outcome\":\"allowed\",\"redacted\":[],\"policy_ids\":[\"partner.example#3\"]},\"broker_sig\":\"eyJhbGciOiJFZDI1NTE5Iiwia2lkIjoiR1kySmx4ZldzdTBvZno4MVJnMkgzSmJUNmRCZS15NzJzNTVKdjZFS3JIcyIsInR5cCI6ImFscC1lbnZlbG9wZStqd3MiLCJqa3UiOiJodHRwczovL2F0dGFja2VyLmV4YW1wbGUvandrcy5qc29uIn0..TDIx_NaiIEhPnRkBx_2kV0sx1QETHGWbntHmEv1K6mGludxGAcGSuj5NyWAgKd0CWdmiL4Fz6LwIdLC7Gn8JAw\"}",
+      "expected": {
+        "result": "refused",
+        "code": "bad_signature",
+        "step": 1
+      }
+    },
+    {
+      "name": "wrong typ (signed as a receipt)",
+      "context": {
+        "receiving_broker": "https://broker.example.org",
+        "served_domains": {
+          "example.org": "https://broker.example.org"
+        },
+        "domain_documents": {
+          "partner.example": "partner.example@7",
+          "example.org": "example.org@42"
+        },
+        "last_seen_serial": {
+          "example.org": 42,
+          "partner.example": 7
+        },
+        "seen": []
+      },
+      "request_body": "{\"alp\":\"0.1\",\"id\":\"01M70993X08W0PQAWJ15C2E2VM\",\"thread\":\"01M709DBMR81TJCEEE4AN4X0PD\",\"from\":{\"address\":\"alp:pat@partner.example\",\"principal_id\":\"pat-91c0e4a7b3d2f816\",\"delegate\":\"alp:pat@partner.example/agent-c\",\"attestation\":\"self\",\"class\":\"consumer\"},\"to\":{\"address\":\"alp:lee@example.org\"},\"aud\":\"https://broker.example.org\",\"scope\":\"alp.status/1\",\"type\":\"request\",\"body\":{\"subject\":\"Launch-day dashboards\"},\"grant\":\"01M6V4Y6R0ZP55BRGVHFME05BR\",\"labels\":[\"internal\"],\"created_at\":\"2026-11-09T13:59:00Z\",\"expires_at\":\"2026-11-10T14:00:00Z\",\"origin_broker\":\"https://broker.partner.example\",\"decision\":{\"outcome\":\"allowed\",\"redacted\":[],\"policy_ids\":[\"partner.example#3\"]},\"broker_sig\":\"eyJhbGciOiJFZDI1NTE5Iiwia2lkIjoiR1kySmx4ZldzdTBvZno4MVJnMkgzSmJUNmRCZS15NzJzNTVKdjZFS3JIcyIsInR5cCI6ImFscC1yZWNlaXB0K2p3cyJ9..FyAcmeUq2UOe2mB3r9xHECN-rcOVUltii_nOswRIb8bhQUgwrcOPpJQZZSPVyXOv9iowRAtzsRszo819fxC_Bg\"}",
+      "expected": {
+        "result": "refused",
+        "code": "bad_signature",
+        "step": 2
+      }
+    },
+    {
+      "name": "control message signed with the envelope typ",
+      "context": {
+        "receiving_broker": "https://broker.example.org",
+        "served_domains": {
+          "example.org": "https://broker.example.org"
+        },
+        "domain_documents": {
+          "partner.example": "partner.example@7",
+          "example.org": "example.org@42"
+        },
+        "last_seen_serial": {
+          "example.org": 42,
+          "partner.example": 7
+        },
+        "seen": []
+      },
+      "request_body": "{\"alp\":\"0.1\",\"id\":\"01M7099FM03EJGV313B3DAZ19A\",\"thread\":\"01M7099FM03EJGV313B3DAZ19A\",\"from\":{\"address\":\"alp:pat@partner.example\",\"principal_id\":\"pat-91c0e4a7b3d2f816\",\"delegate\":\"alp:pat@partner.example/agent-c\",\"attestation\":\"self\",\"class\":\"consumer\"},\"to\":{\"address\":\"alp:lee@example.org\"},\"aud\":\"https://broker.example.org\",\"type\":\"connection_request\",\"body\":{\"scopes\":[\"alp.status/1\"],\"purpose\":\"status_updates\"},\"created_at\":\"2026-11-09T13:59:00Z\",\"expires_at\":\"2026-11-16T13:59:00Z\",\"origin_broker\":\"https://broker.partner.example\",\"broker_sig\":\"eyJhbGciOiJFZDI1NTE5Iiwia2lkIjoiR1kySmx4ZldzdTBvZno4MVJnMkgzSmJUNmRCZS15NzJzNTVKdjZFS3JIcyIsInR5cCI6ImFscC1lbnZlbG9wZStqd3MifQ..fOAlFCppJ8kRiDyO7mbTtLlsylX6NCRniA7d_Jglnc9T4EO0wHksea6CxYoCDUJ-RCi_6PMl2bOT8yJqHFikAA\"}",
+      "expected": {
+        "result": "refused",
+        "code": "bad_signature",
+        "step": 2
+      }
+    },
+    {
+      "name": "aud is another broker",
+      "context": {
+        "receiving_broker": "https://broker.example.org",
+        "served_domains": {
+          "example.org": "https://broker.example.org"
+        },
+        "domain_documents": {
+          "partner.example": "partner.example@7",
+          "example.org": "example.org@42"
+        },
+        "last_seen_serial": {
+          "example.org": 42,
+          "partner.example": 7
+        },
+        "seen": []
+      },
+      "request_body": "{\"alp\":\"0.1\",\"id\":\"01M7099QE0MNMT73AADZMG37XZ\",\"thread\":\"01M7099QE0MNMT73AADZMG37XZ\",\"from\":{\"address\":\"alp:pat@partner.example\",\"principal_id\":\"pat-91c0e4a7b3d2f816\",\"delegate\":\"alp:pat@partner.example/agent-c\",\"attestation\":\"self\",\"class\":\"consumer\"},\"to\":{\"address\":\"alp:lee@example.org\"},\"aud\":\"https://broker.elsewhere.example\",\"scope\":\"alp.status/1\",\"type\":\"request\",\"body\":{\"subject\":\"Aud check\"},\"grant\":\"01M6V4Y6R0ZP55BRGVHFME05BR\",\"labels\":[\"internal\"],\"created_at\":\"2026-11-09T13:59:00Z\",\"expires_at\":\"2026-11-10T14:00:00Z\",\"origin_broker\":\"https://broker.partner.example\",\"decision\":{\"outcome\":\"allowed\",\"redacted\":[],\"policy_ids\":[\"partner.example#3\"]},\"broker_sig\":\"eyJhbGciOiJFZDI1NTE5Iiwia2lkIjoiR1kySmx4ZldzdTBvZno4MVJnMkgzSmJUNmRCZS15NzJzNTVKdjZFS3JIcyIsInR5cCI6ImFscC1lbnZlbG9wZStqd3MifQ..mFb8dSjE5mdnhF4eAzigpJDBdHJPM1pu4TyHaeDB1mkoyQv16xh7zudfMzf5lanj6zt05GPORqQSQNPVQKpDDg\"}",
+      "expected": {
+        "result": "refused",
+        "code": "wrong_audience",
+        "step": 3
+      }
+    },
+    {
+      "name": "recipient is not homed at this broker",
+      "context": {
+        "receiving_broker": "https://broker.example.org",
+        "served_domains": {
+          "example.org": "https://broker.example.org"
+        },
+        "domain_documents": {
+          "partner.example": "partner.example@7",
+          "example.org": "example.org@42"
+        },
+        "last_seen_serial": {
+          "example.org": 42,
+          "partner.example": 7
+        },
+        "seen": []
+      },
+      "request_body": "{\"alp\":\"0.1\",\"id\":\"01M709CV1GBJ93ZRBN0AYY0HXM\",\"thread\":\"01M709CV1GBJ93ZRBN0AYY0HXM\",\"from\":{\"address\":\"alp:pat@partner.example\",\"principal_id\":\"pat-91c0e4a7b3d2f816\",\"delegate\":\"alp:pat@partner.example/agent-c\",\"attestation\":\"self\",\"class\":\"consumer\"},\"to\":{\"address\":\"alp:kim@partner.example\"},\"aud\":\"https://broker.example.org\",\"scope\":\"alp.status/1\",\"type\":\"request\",\"body\":{\"subject\":\"x\"},\"grant\":\"g-pat\",\"labels\":[\"internal\"],\"created_at\":\"2026-11-09T13:59:00Z\",\"expires_at\":\"2026-11-10T14:00:00Z\",\"origin_broker\":\"https://broker.partner.example\",\"decision\":{\"outcome\":\"allowed\",\"redacted\":[],\"policy_ids\":[]},\"broker_sig\":\"eyJhbGciOiJFZDI1NTE5Iiwia2lkIjoiR1kySmx4ZldzdTBvZno4MVJnMkgzSmJUNmRCZS15NzJzNTVKdjZFS3JIcyIsInR5cCI6ImFscC1lbnZlbG9wZStqd3MifQ..BsMiYyODJh8fTsBiG_ML-8EDlxxUTdBNKo48C519B8pYwdcHcphMa8qIZz4HfmC7XY3te1K_o_BWGuhS6ivhDg\"}",
+      "expected": {
+        "result": "refused",
+        "code": "wrong_audience",
+        "step": 3
+      }
+    },
+    {
+      "name": "expired",
+      "context": {
+        "receiving_broker": "https://broker.example.org",
+        "served_domains": {
+          "example.org": "https://broker.example.org"
+        },
+        "domain_documents": {
+          "partner.example": "partner.example@7",
+          "example.org": "example.org@42"
+        },
+        "last_seen_serial": {
+          "example.org": 42,
+          "partner.example": 7
+        },
+        "seen": []
+      },
+      "request_body": "{\"alp\":\"0.1\",\"id\":\"01M709BNY092TE0MY11MH8XZM4\",\"thread\":\"01M709BNY092TE0MY11MH8XZM4\",\"from\":{\"address\":\"alp:pat@partner.example\",\"principal_id\":\"pat-91c0e4a7b3d2f816\",\"delegate\":\"alp:pat@partner.example/agent-c\",\"attestation\":\"self\",\"class\":\"consumer\"},\"to\":{\"address\":\"alp:lee@example.org\"},\"aud\":\"https://broker.example.org\",\"scope\":\"alp.status/1\",\"type\":\"request\",\"body\":{\"subject\":\"Old news\"},\"grant\":\"01M6V4Y6R0ZP55BRGVHFME05BR\",\"labels\":[\"internal\"],\"created_at\":\"2026-11-06T14:00:00Z\",\"expires_at\":\"2026-11-08T14:00:00Z\",\"origin_broker\":\"https://broker.partner.example\",\"decision\":{\"outcome\":\"allowed\",\"redacted\":[],\"policy_ids\":[\"partner.example#3\"]},\"broker_sig\":\"eyJhbGciOiJFZDI1NTE5Iiwia2lkIjoiR1kySmx4ZldzdTBvZno4MVJnMkgzSmJUNmRCZS15NzJzNTVKdjZFS3JIcyIsInR5cCI6ImFscC1lbnZlbG9wZStqd3MifQ..IhhfoWZU0W8xpUqn780OX4TCUJo6SyQGWXVhW3vsT3maW5VFUFBGgy4zpR8PGyb8PR37Y6EfRofp6w8uNKPCDg\"}",
+      "expected": {
+        "result": "refused",
+        "code": "expired",
+        "step": 4
+      }
+    },
+    {
+      "name": "created in the future beyond the clock skew",
+      "context": {
+        "receiving_broker": "https://broker.example.org",
+        "served_domains": {
+          "example.org": "https://broker.example.org"
+        },
+        "domain_documents": {
+          "partner.example": "partner.example@7",
+          "example.org": "example.org@42"
+        },
+        "last_seen_serial": {
+          "example.org": 42,
+          "partner.example": 7
+        },
+        "seen": []
+      },
+      "request_body": "{\"alp\":\"0.1\",\"id\":\"01M70998S8WDZWY2GV5CVRGDNM\",\"thread\":\"01M70998S8WDZWY2GV5CVRGDNM\",\"from\":{\"address\":\"alp:pat@partner.example\",\"principal_id\":\"pat-91c0e4a7b3d2f816\",\"delegate\":\"alp:pat@partner.example/agent-c\",\"attestation\":\"self\",\"class\":\"consumer\"},\"to\":{\"address\":\"alp:lee@example.org\"},\"aud\":\"https://broker.example.org\",\"scope\":\"alp.status/1\",\"type\":\"request\",\"body\":{\"subject\":\"From the future\"},\"grant\":\"01M6V4Y6R0ZP55BRGVHFME05BR\",\"labels\":[\"internal\"],\"created_at\":\"2026-11-09T15:00:00Z\",\"expires_at\":\"2026-11-10T14:00:00Z\",\"origin_broker\":\"https://broker.partner.example\",\"decision\":{\"outcome\":\"allowed\",\"redacted\":[],\"policy_ids\":[\"partner.example#3\"]},\"broker_sig\":\"eyJhbGciOiJFZDI1NTE5Iiwia2lkIjoiR1kySmx4ZldzdTBvZno4MVJnMkgzSmJUNmRCZS15NzJzNTVKdjZFS3JIcyIsInR5cCI6ImFscC1lbnZlbG9wZStqd3MifQ..MA9VK9CIlRkqWodhhpIYIbjCwX8ihWP9L0MWR9CRf3voUuwte7-jabuH8XmVJ8hTLHaflOQ7QUAqWJT0h-HIDg\"}",
+      "expected": {
+        "result": "refused",
+        "code": "bad_envelope",
+        "step": 0
+      }
+    },
+    {
+      "name": "duplicate member name",
+      "context": {
+        "receiving_broker": "https://broker.example.org",
+        "served_domains": {
+          "example.org": "https://broker.example.org"
+        },
+        "domain_documents": {
+          "partner.example": "partner.example@7",
+          "example.org": "example.org@42"
+        },
+        "last_seen_serial": {
+          "example.org": 42,
+          "partner.example": 7
+        },
+        "seen": []
+      },
+      "request_body": "{\"alp\":\"0.1\",\"alp\":\"0.1\",\"id\":\"01M709DBMR81TJCEEE4AN4X0PD\",\"thread\":\"01M709DBMR81TJCEEE4AN4X0PD\",\"from\":{\"address\":\"alp:pat@partner.example\",\"principal_id\":\"pat-91c0e4a7b3d2f816\",\"delegate\":\"alp:pat@partner.example/agent-c\",\"attestation\":\"self\",\"class\":\"consumer\"},\"to\":{\"address\":\"alp:lee@example.org\"},\"aud\":\"https://broker.example.org\",\"scope\":\"alp.status/1\",\"type\":\"request\",\"body\":{\"subject\":\"Launch-day dashboards\"},\"grant\":\"01M6V4Y6R0ZP55BRGVHFME05BR\",\"labels\":[\"internal\"],\"created_at\":\"2026-11-09T13:59:00Z\",\"expires_at\":\"2026-11-10T14:00:00Z\",\"origin_broker\":\"https://broker.partner.example\",\"decision\":{\"outcome\":\"allowed\",\"redacted\":[],\"policy_ids\":[\"partner.example#3\"]},\"broker_sig\":\"eyJhbGciOiJFZDI1NTE5Iiwia2lkIjoiR1kySmx4ZldzdTBvZno4MVJnMkgzSmJUNmRCZS15NzJzNTVKdjZFS3JIcyIsInR5cCI6ImFscC1lbnZlbG9wZStqd3MifQ..EDsln4uRPdWJBOQFjuIdxPd60pp-9aRER5qsy8dMrzDvXAQGLFIFkubQ2AnLK8zL8qSbxm7sarYdYWtmiF-pCA\"}",
+      "expected": {
+        "result": "refused",
+        "code": "bad_envelope",
+        "step": 0
+      }
+    },
+    {
+      "name": "good: to.delegate names one of the recipient's agents (whether it exists is decided later, and never told; spec 6.7)",
+      "context": {
+        "receiving_broker": "https://broker.example.org",
+        "served_domains": {
+          "example.org": "https://broker.example.org"
+        },
+        "domain_documents": {
+          "partner.example": "partner.example@7",
+          "example.org": "example.org@42"
+        },
+        "last_seen_serial": {
+          "example.org": 42,
+          "partner.example": 7
+        },
+        "seen": []
+      },
+      "request_body": "{\"alp\":\"0.1\",\"id\":\"01M7098X28VMX4PC3H2DFQC4HP\",\"thread\":\"01M7098X28VMX4PC3H2DFQC4HP\",\"from\":{\"address\":\"alp:pat@partner.example\",\"principal_id\":\"pat-91c0e4a7b3d2f816\",\"delegate\":\"alp:pat@partner.example/agent-c\",\"attestation\":\"self\",\"class\":\"consumer\"},\"to\":{\"address\":\"alp:lee@example.org\",\"delegate\":\"alp:lee@example.org/dot\"},\"aud\":\"https://broker.example.org\",\"scope\":\"alp.status/1\",\"type\":\"request\",\"body\":{\"subject\":\"For Lee's agent\"},\"grant\":\"01M6V4Y6R0ZP55BRGVHFME05BR\",\"labels\":[\"internal\"],\"created_at\":\"2026-11-09T13:59:00Z\",\"expires_at\":\"2026-11-10T14:00:00Z\",\"origin_broker\":\"https://broker.partner.example\",\"decision\":{\"outcome\":\"allowed\",\"redacted\":[],\"policy_ids\":[\"partner.example#3\"]},\"broker_sig\":\"eyJhbGciOiJFZDI1NTE5Iiwia2lkIjoiR1kySmx4ZldzdTBvZno4MVJnMkgzSmJUNmRCZS15NzJzNTVKdjZFS3JIcyIsInR5cCI6ImFscC1lbnZlbG9wZStqd3MifQ..-LvjW0_MVdNQPjbqZ0xJY2pev9zHF_mLzQwLwWXazTf9fzo1TkiWLT7fV2Kr2KPvTH_bpwjToqKTBjaybXp0BQ\"}",
+      "expected": {
+        "result": "authenticated",
+        "typ": "alp-envelope+jws",
+        "home_broker": "https://broker.partner.example"
+      }
+    },
+    {
+      "name": "to.delegate names another person's agent",
+      "context": {
+        "receiving_broker": "https://broker.example.org",
+        "served_domains": {
+          "example.org": "https://broker.example.org"
+        },
+        "domain_documents": {
+          "partner.example": "partner.example@7",
+          "example.org": "example.org@42"
+        },
+        "last_seen_serial": {
+          "example.org": 42,
+          "partner.example": 7
+        },
+        "seen": []
+      },
+      "request_body": "{\"alp\":\"0.1\",\"id\":\"01M709BKZGY8PA1PMQ2XWWB2MD\",\"thread\":\"01M709BKZGY8PA1PMQ2XWWB2MD\",\"from\":{\"address\":\"alp:pat@partner.example\",\"principal_id\":\"pat-91c0e4a7b3d2f816\",\"delegate\":\"alp:pat@partner.example/agent-c\",\"attestation\":\"self\",\"class\":\"consumer\"},\"to\":{\"address\":\"alp:lee@example.org\",\"delegate\":\"alp:ana@example.org/muse\"},\"aud\":\"https://broker.example.org\",\"scope\":\"alp.status/1\",\"type\":\"request\",\"body\":{\"subject\":\"For someone else's agent\"},\"grant\":\"01M6V4Y6R0ZP55BRGVHFME05BR\",\"labels\":[\"internal\"],\"created_at\":\"2026-11-09T13:59:00Z\",\"expires_at\":\"2026-11-10T14:00:00Z\",\"origin_broker\":\"https://broker.partner.example\",\"decision\":{\"outcome\":\"allowed\",\"redacted\":[],\"policy_ids\":[\"partner.example#3\"]},\"broker_sig\":\"eyJhbGciOiJFZDI1NTE5Iiwia2lkIjoiR1kySmx4ZldzdTBvZno4MVJnMkgzSmJUNmRCZS15NzJzNTVKdjZFS3JIcyIsInR5cCI6ImFscC1lbnZlbG9wZStqd3MifQ..W5ZQYywNNCJJEqgszzOwLOczT5PBpXsY_hSCkkQRmL43xpZL2HTkKA_uc7BQWyRnc11z-tv2V2j3b34OI1knAA\"}",
+      "expected": {
+        "result": "refused",
+        "code": "bad_envelope",
+        "step": 0
+      }
+    },
+    {
+      "name": "from.delegate names an agent of another address than the sender's",
+      "context": {
+        "receiving_broker": "https://broker.example.org",
+        "served_domains": {
+          "example.org": "https://broker.example.org"
+        },
+        "domain_documents": {
+          "partner.example": "partner.example@7",
+          "example.org": "example.org@42"
+        },
+        "last_seen_serial": {
+          "example.org": 42,
+          "partner.example": 7
+        },
+        "seen": []
+      },
+      "request_body": "{\"alp\":\"0.1\",\"id\":\"01M709BMYR74EYMJMTP6PJYGH4\",\"thread\":\"01M709BMYR74EYMJMTP6PJYGH4\",\"from\":{\"address\":\"alp:pat@partner.example\",\"principal_id\":\"pat-91c0e4a7b3d2f816\",\"delegate\":\"alp:ana@example.org/agent-a\",\"attestation\":\"self\",\"class\":\"consumer\"},\"to\":{\"address\":\"alp:lee@example.org\"},\"aud\":\"https://broker.example.org\",\"scope\":\"alp.status/1\",\"type\":\"request\",\"body\":{\"subject\":\"From someone else's agent\"},\"grant\":\"01M6V4Y6R0ZP55BRGVHFME05BR\",\"labels\":[\"internal\"],\"created_at\":\"2026-11-09T13:59:00Z\",\"expires_at\":\"2026-11-10T14:00:00Z\",\"origin_broker\":\"https://broker.partner.example\",\"decision\":{\"outcome\":\"allowed\",\"redacted\":[],\"policy_ids\":[\"partner.example#3\"]},\"broker_sig\":\"eyJhbGciOiJFZDI1NTE5Iiwia2lkIjoiR1kySmx4ZldzdTBvZno4MVJnMkgzSmJUNmRCZS15NzJzNTVKdjZFS3JIcyIsInR5cCI6ImFscC1lbnZlbG9wZStqd3MifQ..WsSjqkvX07unFxwAq3curiktO_bXmx7N2wNy0YolcjzTB7WmtsgApOtz4jHooZQspYKNDVm29gYBmQrj1R4bAA\"}",
+      "expected": {
+        "result": "refused",
+        "code": "bad_envelope",
+        "step": 0
+      }
+    },
+    {
+      "name": "sender's domain publishes no document",
+      "context": {
+        "receiving_broker": "https://broker.example.org",
+        "served_domains": {
+          "example.org": "https://broker.example.org"
+        },
+        "domain_documents": {
+          "example.org": "example.org@42"
+        },
+        "last_seen_serial": {
+          "example.org": 42,
+          "partner.example": 7
+        },
+        "seen": []
+      },
+      "request_body": "{\"alp\":\"0.1\",\"id\":\"01M709DBMR81TJCEEE4AN4X0PD\",\"thread\":\"01M709DBMR81TJCEEE4AN4X0PD\",\"from\":{\"address\":\"alp:pat@partner.example\",\"principal_id\":\"pat-91c0e4a7b3d2f816\",\"delegate\":\"alp:pat@partner.example/agent-c\",\"attestation\":\"self\",\"class\":\"consumer\"},\"to\":{\"address\":\"alp:lee@example.org\"},\"aud\":\"https://broker.example.org\",\"scope\":\"alp.status/1\",\"type\":\"request\",\"body\":{\"subject\":\"Launch-day dashboards\"},\"grant\":\"01M6V4Y6R0ZP55BRGVHFME05BR\",\"labels\":[\"internal\"],\"created_at\":\"2026-11-09T13:59:00Z\",\"expires_at\":\"2026-11-10T14:00:00Z\",\"origin_broker\":\"https://broker.partner.example\",\"decision\":{\"outcome\":\"allowed\",\"redacted\":[],\"policy_ids\":[\"partner.example#3\"]},\"broker_sig\":\"eyJhbGciOiJFZDI1NTE5Iiwia2lkIjoiR1kySmx4ZldzdTBvZno4MVJnMkgzSmJUNmRCZS15NzJzNTVKdjZFS3JIcyIsInR5cCI6ImFscC1lbnZlbG9wZStqd3MifQ..EDsln4uRPdWJBOQFjuIdxPd60pp-9aRER5qsy8dMrzDvXAQGLFIFkubQ2AnLK8zL8qSbxm7sarYdYWtmiF-pCA\"}",
+      "expected": {
+        "result": "refused",
+        "code": "broker_not_authorized",
+        "step": 1
+      }
+    }
+  ]
+}

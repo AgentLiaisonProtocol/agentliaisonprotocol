@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/ledger-export.schema.json",
+  "title": "ALP ledger export header (first line of a JSON Lines export; JWS typ alp-ledger+jws)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "alp",
+    "kind",
+    "principal",
+    "principal_id",
+    "from_seq",
+    "to_seq",
+    "head_hash",
+    "entries",
+    "payloads",
+    "exported_at",
+    "origin_broker",
+    "broker_sig"
+  ],
+  "properties": {
+    "alp": {
+      "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/version"
+    },
+    "kind": {
+      "const": "ledger_export"
+    },
+    "principal": {
+      "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/address"
+    },
+    "principal_id": {
+      "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/principal_id"
+    },
+    "from_seq": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "to_seq": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "head_hash": {
+      "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/sha256"
+    },
+    "entries": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "payloads": {
+      "enum": [
+        "none",
+        "free_text",
+        "all"
+      ]
+    },
+    "exported_at": {
+      "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/timestamp"
+    },
+    "origin_broker": {
+      "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/broker_id"
+    },
+    "broker_sig": {
+      "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/detached_jws"
+    }
+  }
+}

@@ -1,0 +1,821 @@
+{
+  "description": "Structural and semantic validity of envelopes (before any signature or policy check). Signatures in this file are real but irrelevant to the result except where stated. expected.code is the federation code a receiving broker returns.",
+  "cases": [
+    {
+      "name": "valid request envelope",
+      "schema": "envelope",
+      "object": {
+        "alp": "0.1",
+        "id": "01M70984N0RQHQSNW1PSQ3GAZJ",
+        "thread": "01M70984N0RQHQSNW1PSQ3GAZJ",
+        "from": {
+          "address": "alp:ana@example.org",
+          "principal_id": "ana-7f3a9c41d2e8b605",
+          "delegate": "alp:ana@example.org/agent-a",
+          "attestation": "vendor",
+          "class": "business"
+        },
+        "to": {
+          "address": "alp:lee@example.org",
+          "principal_id": "lee-2b8e61f0a9c4d735"
+        },
+        "aud": "https://broker.example.org",
+        "scope": "alp.briefing/1",
+        "type": "request",
+        "body": {
+          "topic": "Q4 launch staffing plan",
+          "depth": "headline"
+        },
+        "grant": "default:analysts-leaders",
+        "labels": [
+          "internal"
+        ],
+        "created_at": "2026-11-09T13:59:00Z",
+        "expires_at": "2026-11-10T14:00:00Z",
+        "origin_broker": "https://broker.example.org",
+        "decision": {
+          "outcome": "allowed",
+          "redacted": [],
+          "policy_ids": [
+            "example.org#12"
+          ]
+        },
+        "broker_sig": "eyJhbGciOiJFZDI1NTE5Iiwia2lkIjoiUWxidm1jOERXeVRRX3BFMnlzTEFwbjRUMDNqdy1jNlZxNjVMT0RPekdGayIsInR5cCI6ImFscC1lbnZlbG9wZStqd3MifQ..odfZ5Pi_LuCoPM4Z4nfO645BGqLNxLoT-Qj2TNecdftw5bFXJ8DiAUSL1sDXNJBE9RR4127W6ZpliaZ0dx9sAA"
+      },
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "name": "valid control envelope",
+      "schema": "control",
+      "object": {
+        "alp": "0.1",
+        "id": "01M7097M1R7AYB4GEPX5J86Z4G",
+        "thread": "01M7097M1R7AYB4GEPX5J86Z4G",
+        "from": {
+          "address": "alp:mallory@outside.example",
+          "principal_id": "mal-5d7e2c9a1f0b4e63",
+          "delegate": "alp:mallory@outside.example/agent-d",
+          "attestation": "vendor",
+          "class": "consumer"
+        },
+        "to": {
+          "address": "alp:lee@example.org"
+        },
+        "aud": "https://broker.example.org",
+        "type": "connection_request",
+        "body": {
+          "scopes": [
+            "alp.briefing/1"
+          ],
+          "purpose": "briefing",
+          "display_name": "Mallory M."
+        },
+        "note": "Met at the conference; may I ask for briefings?",
+        "created_at": "2026-11-09T13:59:00Z",
+        "expires_at": "2026-11-16T13:59:00Z",
+        "origin_broker": "https://broker.outside.example",
+        "broker_sig": "eyJhbGciOiJFZDI1NTE5Iiwia2lkIjoiRmp4RF95N0tTdy1STTFWU1NnQVpMcVcwbG5rNEJMUGxBRVdYZXB1ZmoxayIsInR5cCI6ImFscC1jb250cm9sK2p3cyJ9..fgDSyOqnf-P0q0Xv2z_BbR42U83zTU1UWHBB40wd6mBmwE-h6I52cW3fGHtc2ffTal5nlEFLD-_VHjw_lEY5Bw"
+      },
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "name": "missing aud",
+      "schema": "envelope",
+      "object": {
+        "alp": "0.1",
+        "id": "01M70984N0RQHQSNW1PSQ3GAZJ",
+        "thread": "01M70984N0RQHQSNW1PSQ3GAZJ",
+        "from": {
+          "address": "alp:ana@example.org",
+          "principal_id": "ana-7f3a9c41d2e8b605",
+          "delegate": "alp:ana@example.org/agent-a",
+          "attestation": "vendor",
+          "class": "business"
+        },
+        "to": {
+          "address": "alp:lee@example.org",
+          "principal_id": "lee-2b8e61f0a9c4d735"
+        },
+        "scope": "alp.briefing/1",
+        "type": "request",
+        "body": {
+          "topic": "Q4 launch staffing plan",
+          "depth": "headline"
+        },
+        "grant": "default:analysts-leaders",
+        "labels": [
+          "internal"
+        ],
+        "created_at": "2026-11-09T13:59:00Z",
+        "expires_at": "2026-11-10T14:00:00Z",
+        "origin_broker": "https://broker.example.org",
+        "decision": {
+          "outcome": "allowed",
+          "redacted": [],
+          "policy_ids": [
+            "example.org#12"
+          ]
+        },
+        "broker_sig": "eyJhbGciOiJFZDI1NTE5Iiwia2lkIjoiUWxidm1jOERXeVRRX3BFMnlzTEFwbjRUMDNqdy1jNlZxNjVMT0RPekdGayIsInR5cCI6ImFscC1lbnZlbG9wZStqd3MifQ..odfZ5Pi_LuCoPM4Z4nfO645BGqLNxLoT-Qj2TNecdftw5bFXJ8DiAUSL1sDXNJBE9RR4127W6ZpliaZ0dx9sAA"
+      },
+      "expected": {
+        "valid": false,
+        "code": "bad_envelope"
+      }
+    },
+    {
+      "name": "upper-case address",
+      "schema": "envelope",
+      "object": {
+        "alp": "0.1",
+        "id": "01M70984N0RQHQSNW1PSQ3GAZJ",
+        "thread": "01M70984N0RQHQSNW1PSQ3GAZJ",
+        "from": {
+          "address": "alp:Ana@example.org",
+          "principal_id": "ana-7f3a9c41d2e8b605",
+          "delegate": "alp:ana@example.org/agent-a",
+          "attestation": "vendor",
+          "class": "business"
+        },
+        "to": {
+          "address": "alp:lee@example.org",
+          "principal_id": "lee-2b8e61f0a9c4d735"
+        },
+        "aud": "https://broker.example.org",
+        "scope": "alp.briefing/1",
+        "type": "request",
+        "body": {
+          "topic": "Q4 launch staffing plan",
+          "depth": "headline"
+        },
+        "grant": "default:analysts-leaders",
+        "labels": [
+          "internal"
+        ],
+        "created_at": "2026-11-09T13:59:00Z",
+        "expires_at": "2026-11-10T14:00:00Z",
+        "origin_broker": "https://broker.example.org",
+        "decision": {
+          "outcome": "allowed",
+          "redacted": [],
+          "policy_ids": [
+            "example.org#12"
+          ]
+        },
+        "broker_sig": "eyJhbGciOiJFZDI1NTE5Iiwia2lkIjoiUWxidm1jOERXeVRRX3BFMnlzTEFwbjRUMDNqdy1jNlZxNjVMT0RPekdGayIsInR5cCI6ImFscC1lbnZlbG9wZStqd3MifQ..odfZ5Pi_LuCoPM4Z4nfO645BGqLNxLoT-Qj2TNecdftw5bFXJ8DiAUSL1sDXNJBE9RR4127W6ZpliaZ0dx9sAA"
+      },
+      "expected": {
+        "valid": false,
+        "code": "bad_envelope"
+      }
+    },
+    {
+      "name": "sub-address with plus",
+      "schema": "envelope",
+      "object": {
+        "alp": "0.1",
+        "id": "01M70984N0RQHQSNW1PSQ3GAZJ",
+        "thread": "01M70984N0RQHQSNW1PSQ3GAZJ",
+        "from": {
+          "address": "alp:ana@example.org",
+          "principal_id": "ana-7f3a9c41d2e8b605",
+          "delegate": "alp:ana@example.org/agent-a",
+          "attestation": "vendor",
+          "class": "business"
+        },
+        "to": {
+          "address": "alp:lee+x@example.org",
+          "principal_id": "lee-2b8e61f0a9c4d735"
+        },
+        "aud": "https://broker.example.org",
+        "scope": "alp.briefing/1",
+        "type": "request",
+        "body": {
+          "topic": "Q4 launch staffing plan",
+          "depth": "headline"
+        },
+        "grant": "default:analysts-leaders",
+        "labels": [
+          "internal"
+        ],
+        "created_at": "2026-11-09T13:59:00Z",
+        "expires_at": "2026-11-10T14:00:00Z",
+        "origin_broker": "https://broker.example.org",
+        "decision": {
+          "outcome": "allowed",
+          "redacted": [],
+          "policy_ids": [
+            "example.org#12"
+          ]
+        },
+        "broker_sig": "eyJhbGciOiJFZDI1NTE5Iiwia2lkIjoiUWxidm1jOERXeVRRX3BFMnlzTEFwbjRUMDNqdy1jNlZxNjVMT0RPekdGayIsInR5cCI6ImFscC1lbnZlbG9wZStqd3MifQ..odfZ5Pi_LuCoPM4Z4nfO645BGqLNxLoT-Qj2TNecdftw5bFXJ8DiAUSL1sDXNJBE9RR4127W6ZpliaZ0dx9sAA"
+      },
+      "expected": {
+        "valid": false,
+        "code": "bad_envelope"
+      }
+    },
+    {
+      "name": "lifetime over 7 days",
+      "schema": "envelope",
+      "object": {
+        "alp": "0.1",
+        "id": "01M70984N0RQHQSNW1PSQ3GAZJ",
+        "thread": "01M70984N0RQHQSNW1PSQ3GAZJ",
+        "from": {
+          "address": "alp:ana@example.org",
+          "principal_id": "ana-7f3a9c41d2e8b605",
+          "delegate": "alp:ana@example.org/agent-a",
+          "attestation": "vendor",
+          "class": "business"
+        },
+        "to": {
+          "address": "alp:lee@example.org",
+          "principal_id": "lee-2b8e61f0a9c4d735"
+        },
+        "aud": "https://broker.example.org",
+        "scope": "alp.briefing/1",
+        "type": "request",
+        "body": {
+          "topic": "Q4 launch staffing plan",
+          "depth": "headline"
+        },
+        "grant": "default:analysts-leaders",
+        "labels": [
+          "internal"
+        ],
+        "created_at": "2026-11-09T13:59:00Z",
+        "expires_at": "2026-11-17T14:00:00Z",
+        "origin_broker": "https://broker.example.org",
+        "decision": {
+          "outcome": "allowed",
+          "redacted": [],
+          "policy_ids": [
+            "example.org#12"
+          ]
+        },
+        "broker_sig": "eyJhbGciOiJFZDI1NTE5Iiwia2lkIjoiUWxidm1jOERXeVRRX3BFMnlzTEFwbjRUMDNqdy1jNlZxNjVMT0RPekdGayIsInR5cCI6ImFscC1lbnZlbG9wZStqd3MifQ..odfZ5Pi_LuCoPM4Z4nfO645BGqLNxLoT-Qj2TNecdftw5bFXJ8DiAUSL1sDXNJBE9RR4127W6ZpliaZ0dx9sAA"
+      },
+      "expected": {
+        "valid": false,
+        "code": "bad_envelope",
+        "semantic": "expires_at - created_at > 604800 s"
+      }
+    },
+    {
+      "name": "expires before created",
+      "schema": "envelope",
+      "object": {
+        "alp": "0.1",
+        "id": "01M70984N0RQHQSNW1PSQ3GAZJ",
+        "thread": "01M70984N0RQHQSNW1PSQ3GAZJ",
+        "from": {
+          "address": "alp:ana@example.org",
+          "principal_id": "ana-7f3a9c41d2e8b605",
+          "delegate": "alp:ana@example.org/agent-a",
+          "attestation": "vendor",
+          "class": "business"
+        },
+        "to": {
+          "address": "alp:lee@example.org",
+          "principal_id": "lee-2b8e61f0a9c4d735"
+        },
+        "aud": "https://broker.example.org",
+        "scope": "alp.briefing/1",
+        "type": "request",
+        "body": {
+          "topic": "Q4 launch staffing plan",
+          "depth": "headline"
+        },
+        "grant": "default:analysts-leaders",
+        "labels": [
+          "internal"
+        ],
+        "created_at": "2026-11-09T13:59:00Z",
+        "expires_at": "2026-11-09T13:00:00Z",
+        "origin_broker": "https://broker.example.org",
+        "decision": {
+          "outcome": "allowed",
+          "redacted": [],
+          "policy_ids": [
+            "example.org#12"
+          ]
+        },
+        "broker_sig": "eyJhbGciOiJFZDI1NTE5Iiwia2lkIjoiUWxidm1jOERXeVRRX3BFMnlzTEFwbjRUMDNqdy1jNlZxNjVMT0RPekdGayIsInR5cCI6ImFscC1lbnZlbG9wZStqd3MifQ..odfZ5Pi_LuCoPM4Z4nfO645BGqLNxLoT-Qj2TNecdftw5bFXJ8DiAUSL1sDXNJBE9RR4127W6ZpliaZ0dx9sAA"
+      },
+      "expected": {
+        "valid": false,
+        "code": "bad_envelope",
+        "semantic": "expires_at <= created_at"
+      }
+    },
+    {
+      "name": "note of 281 characters",
+      "schema": "envelope",
+      "object": {
+        "alp": "0.1",
+        "id": "01M70984N0RQHQSNW1PSQ3GAZJ",
+        "thread": "01M70984N0RQHQSNW1PSQ3GAZJ",
+        "from": {
+          "address": "alp:ana@example.org",
+          "principal_id": "ana-7f3a9c41d2e8b605",
+          "delegate": "alp:ana@example.org/agent-a",
+          "attestation": "vendor",
+          "class": "business"
+        },
+        "to": {
+          "address": "alp:lee@example.org",
+          "principal_id": "lee-2b8e61f0a9c4d735"
+        },
+        "aud": "https://broker.example.org",
+        "scope": "alp.briefing/1",
+        "type": "request",
+        "body": {
+          "topic": "Q4 launch staffing plan",
+          "depth": "headline"
+        },
+        "grant": "default:analysts-leaders",
+        "labels": [
+          "internal"
+        ],
+        "created_at": "2026-11-09T13:59:00Z",
+        "expires_at": "2026-11-10T14:00:00Z",
+        "origin_broker": "https://broker.example.org",
+        "decision": {
+          "outcome": "allowed",
+          "redacted": [],
+          "policy_ids": [
+            "example.org#12"
+          ]
+        },
+        "broker_sig": "eyJhbGciOiJFZDI1NTE5Iiwia2lkIjoiUWxidm1jOERXeVRRX3BFMnlzTEFwbjRUMDNqdy1jNlZxNjVMT0RPekdGayIsInR5cCI6ImFscC1lbnZlbG9wZStqd3MifQ..odfZ5Pi_LuCoPM4Z4nfO645BGqLNxLoT-Qj2TNecdftw5bFXJ8DiAUSL1sDXNJBE9RR4127W6ZpliaZ0dx9sAA",
+        "note": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+      },
+      "expected": {
+        "valid": false,
+        "code": "bad_envelope"
+      }
+    },
+    {
+      "name": "unknown member",
+      "schema": "envelope",
+      "object": {
+        "alp": "0.1",
+        "id": "01M70984N0RQHQSNW1PSQ3GAZJ",
+        "thread": "01M70984N0RQHQSNW1PSQ3GAZJ",
+        "from": {
+          "address": "alp:ana@example.org",
+          "principal_id": "ana-7f3a9c41d2e8b605",
+          "delegate": "alp:ana@example.org/agent-a",
+          "attestation": "vendor",
+          "class": "business"
+        },
+        "to": {
+          "address": "alp:lee@example.org",
+          "principal_id": "lee-2b8e61f0a9c4d735"
+        },
+        "aud": "https://broker.example.org",
+        "scope": "alp.briefing/1",
+        "type": "request",
+        "body": {
+          "topic": "Q4 launch staffing plan",
+          "depth": "headline"
+        },
+        "grant": "default:analysts-leaders",
+        "labels": [
+          "internal"
+        ],
+        "created_at": "2026-11-09T13:59:00Z",
+        "expires_at": "2026-11-10T14:00:00Z",
+        "origin_broker": "https://broker.example.org",
+        "decision": {
+          "outcome": "allowed",
+          "redacted": [],
+          "policy_ids": [
+            "example.org#12"
+          ]
+        },
+        "broker_sig": "eyJhbGciOiJFZDI1NTE5Iiwia2lkIjoiUWxidm1jOERXeVRRX3BFMnlzTEFwbjRUMDNqdy1jNlZxNjVMT0RPekdGayIsInR5cCI6ImFscC1lbnZlbG9wZStqd3MifQ..odfZ5Pi_LuCoPM4Z4nfO645BGqLNxLoT-Qj2TNecdftw5bFXJ8DiAUSL1sDXNJBE9RR4127W6ZpliaZ0dx9sAA",
+        "extra": true
+      },
+      "expected": {
+        "valid": false,
+        "code": "bad_envelope"
+      }
+    },
+    {
+      "name": "in_reply_to without in_reply_to_hash",
+      "schema": "envelope",
+      "object": {
+        "alp": "0.1",
+        "id": "01M70984N0RQHQSNW1PSQ3GAZJ",
+        "thread": "01M70984N0RQHQSNW1PSQ3GAZJ",
+        "from": {
+          "address": "alp:ana@example.org",
+          "principal_id": "ana-7f3a9c41d2e8b605",
+          "delegate": "alp:ana@example.org/agent-a",
+          "attestation": "vendor",
+          "class": "business"
+        },
+        "to": {
+          "address": "alp:lee@example.org",
+          "principal_id": "lee-2b8e61f0a9c4d735"
+        },
+        "aud": "https://broker.example.org",
+        "scope": "alp.briefing/1",
+        "type": "request",
+        "body": {
+          "topic": "Q4 launch staffing plan",
+          "depth": "headline"
+        },
+        "grant": "default:analysts-leaders",
+        "labels": [
+          "internal"
+        ],
+        "created_at": "2026-11-09T13:59:00Z",
+        "expires_at": "2026-11-10T14:00:00Z",
+        "origin_broker": "https://broker.example.org",
+        "decision": {
+          "outcome": "allowed",
+          "redacted": [],
+          "policy_ids": [
+            "example.org#12"
+          ]
+        },
+        "broker_sig": "eyJhbGciOiJFZDI1NTE5Iiwia2lkIjoiUWxidm1jOERXeVRRX3BFMnlzTEFwbjRUMDNqdy1jNlZxNjVMT0RPekdGayIsInR5cCI6ImFscC1lbnZlbG9wZStqd3MifQ..odfZ5Pi_LuCoPM4Z4nfO645BGqLNxLoT-Qj2TNecdftw5bFXJ8DiAUSL1sDXNJBE9RR4127W6ZpliaZ0dx9sAA",
+        "in_reply_to": "01M70984N0RQHQSNW1PSQ3GAZJ"
+      },
+      "expected": {
+        "valid": false,
+        "code": "bad_envelope"
+      }
+    },
+    {
+      "name": "accept without terms_hash",
+      "schema": "envelope",
+      "object": {
+        "alp": "0.1",
+        "id": "01M70984N0RQHQSNW1PSQ3GAZJ",
+        "thread": "01M70984N0RQHQSNW1PSQ3GAZJ",
+        "from": {
+          "address": "alp:ana@example.org",
+          "principal_id": "ana-7f3a9c41d2e8b605",
+          "delegate": "alp:ana@example.org/agent-a",
+          "attestation": "vendor",
+          "class": "business"
+        },
+        "to": {
+          "address": "alp:lee@example.org",
+          "principal_id": "lee-2b8e61f0a9c4d735"
+        },
+        "aud": "https://broker.example.org",
+        "scope": "alp.meeting/1",
+        "type": "accept",
+        "body": {
+          "topic": "Q4 launch staffing plan",
+          "depth": "headline"
+        },
+        "grant": "default:analysts-leaders",
+        "labels": [
+          "internal"
+        ],
+        "created_at": "2026-11-09T13:59:00Z",
+        "expires_at": "2026-11-10T14:00:00Z",
+        "origin_broker": "https://broker.example.org",
+        "decision": {
+          "outcome": "allowed",
+          "redacted": [],
+          "policy_ids": [
+            "example.org#12"
+          ]
+        },
+        "broker_sig": "eyJhbGciOiJFZDI1NTE5Iiwia2lkIjoiUWxidm1jOERXeVRRX3BFMnlzTEFwbjRUMDNqdy1jNlZxNjVMT0RPekdGayIsInR5cCI6ImFscC1lbnZlbG9wZStqd3MifQ..odfZ5Pi_LuCoPM4Z4nfO645BGqLNxLoT-Qj2TNecdftw5bFXJ8DiAUSL1sDXNJBE9RR4127W6ZpliaZ0dx9sAA",
+        "in_reply_to": "01M70984N0RQHQSNW1PSQ3GAZJ",
+        "in_reply_to_hash": "sha256:LXEWQrcmsEQBYnyp-6wy9chTD7GQPMTbAiWHF5IaSIE"
+      },
+      "expected": {
+        "valid": false,
+        "code": "bad_envelope"
+      }
+    },
+    {
+      "name": "unsupported protocol version",
+      "schema": "envelope",
+      "object": {
+        "alp": "0.2",
+        "id": "01M70984N0RQHQSNW1PSQ3GAZJ",
+        "thread": "01M70984N0RQHQSNW1PSQ3GAZJ",
+        "from": {
+          "address": "alp:ana@example.org",
+          "principal_id": "ana-7f3a9c41d2e8b605",
+          "delegate": "alp:ana@example.org/agent-a",
+          "attestation": "vendor",
+          "class": "business"
+        },
+        "to": {
+          "address": "alp:lee@example.org",
+          "principal_id": "lee-2b8e61f0a9c4d735"
+        },
+        "aud": "https://broker.example.org",
+        "scope": "alp.briefing/1",
+        "type": "request",
+        "body": {
+          "topic": "Q4 launch staffing plan",
+          "depth": "headline"
+        },
+        "grant": "default:analysts-leaders",
+        "labels": [
+          "internal"
+        ],
+        "created_at": "2026-11-09T13:59:00Z",
+        "expires_at": "2026-11-10T14:00:00Z",
+        "origin_broker": "https://broker.example.org",
+        "decision": {
+          "outcome": "allowed",
+          "redacted": [],
+          "policy_ids": [
+            "example.org#12"
+          ]
+        },
+        "broker_sig": "eyJhbGciOiJFZDI1NTE5Iiwia2lkIjoiUWxidm1jOERXeVRRX3BFMnlzTEFwbjRUMDNqdy1jNlZxNjVMT0RPekdGayIsInR5cCI6ImFscC1lbnZlbG9wZStqd3MifQ..odfZ5Pi_LuCoPM4Z4nfO645BGqLNxLoT-Qj2TNecdftw5bFXJ8DiAUSL1sDXNJBE9RR4127W6ZpliaZ0dx9sAA"
+      },
+      "expected": {
+        "valid": false,
+        "code": "unsupported_version"
+      }
+    },
+    {
+      "name": "redacted outcome with nothing redacted",
+      "schema": "envelope",
+      "object": {
+        "alp": "0.1",
+        "id": "01M70984N0RQHQSNW1PSQ3GAZJ",
+        "thread": "01M70984N0RQHQSNW1PSQ3GAZJ",
+        "from": {
+          "address": "alp:ana@example.org",
+          "principal_id": "ana-7f3a9c41d2e8b605",
+          "delegate": "alp:ana@example.org/agent-a",
+          "attestation": "vendor",
+          "class": "business"
+        },
+        "to": {
+          "address": "alp:lee@example.org",
+          "principal_id": "lee-2b8e61f0a9c4d735"
+        },
+        "aud": "https://broker.example.org",
+        "scope": "alp.briefing/1",
+        "type": "request",
+        "body": {
+          "topic": "Q4 launch staffing plan",
+          "depth": "headline"
+        },
+        "grant": "default:analysts-leaders",
+        "labels": [
+          "internal"
+        ],
+        "created_at": "2026-11-09T13:59:00Z",
+        "expires_at": "2026-11-10T14:00:00Z",
+        "origin_broker": "https://broker.example.org",
+        "decision": {
+          "outcome": "redacted",
+          "redacted": [],
+          "policy_ids": []
+        },
+        "broker_sig": "eyJhbGciOiJFZDI1NTE5Iiwia2lkIjoiUWxidm1jOERXeVRRX3BFMnlzTEFwbjRUMDNqdy1jNlZxNjVMT0RPekdGayIsInR5cCI6ImFscC1lbnZlbG9wZStqd3MifQ..odfZ5Pi_LuCoPM4Z4nfO645BGqLNxLoT-Qj2TNecdftw5bFXJ8DiAUSL1sDXNJBE9RR4127W6ZpliaZ0dx9sAA"
+      },
+      "expected": {
+        "valid": false,
+        "code": "bad_envelope"
+      }
+    },
+    {
+      "name": "terms_hash on a request",
+      "schema": "envelope",
+      "object": {
+        "alp": "0.1",
+        "id": "01M70984N0RQHQSNW1PSQ3GAZJ",
+        "thread": "01M70984N0RQHQSNW1PSQ3GAZJ",
+        "from": {
+          "address": "alp:ana@example.org",
+          "principal_id": "ana-7f3a9c41d2e8b605",
+          "delegate": "alp:ana@example.org/agent-a",
+          "attestation": "vendor",
+          "class": "business"
+        },
+        "to": {
+          "address": "alp:lee@example.org",
+          "principal_id": "lee-2b8e61f0a9c4d735"
+        },
+        "aud": "https://broker.example.org",
+        "scope": "alp.briefing/1",
+        "type": "request",
+        "body": {
+          "topic": "Q4 launch staffing plan",
+          "depth": "headline"
+        },
+        "grant": "default:analysts-leaders",
+        "labels": [
+          "internal"
+        ],
+        "created_at": "2026-11-09T13:59:00Z",
+        "expires_at": "2026-11-10T14:00:00Z",
+        "origin_broker": "https://broker.example.org",
+        "decision": {
+          "outcome": "allowed",
+          "redacted": [],
+          "policy_ids": [
+            "example.org#12"
+          ]
+        },
+        "broker_sig": "eyJhbGciOiJFZDI1NTE5Iiwia2lkIjoiUWxidm1jOERXeVRRX3BFMnlzTEFwbjRUMDNqdy1jNlZxNjVMT0RPekdGayIsInR5cCI6ImFscC1lbnZlbG9wZStqd3MifQ..odfZ5Pi_LuCoPM4Z4nfO645BGqLNxLoT-Qj2TNecdftw5bFXJ8DiAUSL1sDXNJBE9RR4127W6ZpliaZ0dx9sAA",
+        "terms_hash": "sha256:LXEWQrcmsEQBYnyp-6wy9chTD7GQPMTbAiWHF5IaSIE"
+      },
+      "expected": {
+        "valid": false,
+        "code": "bad_envelope"
+      }
+    },
+    {
+      "name": "delegate without attestation",
+      "schema": "envelope",
+      "object": {
+        "alp": "0.1",
+        "id": "01M70984N0RQHQSNW1PSQ3GAZJ",
+        "thread": "01M70984N0RQHQSNW1PSQ3GAZJ",
+        "from": {
+          "address": "alp:ana@example.org",
+          "principal_id": "ana-7f3a9c41d2e8b605",
+          "delegate": "alp:ana@example.org/agent-a",
+          "class": "business"
+        },
+        "to": {
+          "address": "alp:lee@example.org",
+          "principal_id": "lee-2b8e61f0a9c4d735"
+        },
+        "aud": "https://broker.example.org",
+        "scope": "alp.briefing/1",
+        "type": "request",
+        "body": {
+          "topic": "Q4 launch staffing plan",
+          "depth": "headline"
+        },
+        "grant": "default:analysts-leaders",
+        "labels": [
+          "internal"
+        ],
+        "created_at": "2026-11-09T13:59:00Z",
+        "expires_at": "2026-11-10T14:00:00Z",
+        "origin_broker": "https://broker.example.org",
+        "decision": {
+          "outcome": "allowed",
+          "redacted": [],
+          "policy_ids": [
+            "example.org#12"
+          ]
+        },
+        "broker_sig": "eyJhbGciOiJFZDI1NTE5Iiwia2lkIjoiUWxidm1jOERXeVRRX3BFMnlzTEFwbjRUMDNqdy1jNlZxNjVMT0RPekdGayIsInR5cCI6ImFscC1lbnZlbG9wZStqd3MifQ..odfZ5Pi_LuCoPM4Z4nfO645BGqLNxLoT-Qj2TNecdftw5bFXJ8DiAUSL1sDXNJBE9RR4127W6ZpliaZ0dx9sAA"
+      },
+      "expected": {
+        "valid": false,
+        "code": "bad_envelope"
+      }
+    },
+    {
+      "name": "connection_request with in_reply_to",
+      "schema": "control",
+      "object": {
+        "alp": "0.1",
+        "id": "01M7097M1R7AYB4GEPX5J86Z4G",
+        "thread": "01M7097M1R7AYB4GEPX5J86Z4G",
+        "from": {
+          "address": "alp:mallory@outside.example",
+          "principal_id": "mal-5d7e2c9a1f0b4e63",
+          "delegate": "alp:mallory@outside.example/agent-d",
+          "attestation": "vendor",
+          "class": "consumer"
+        },
+        "to": {
+          "address": "alp:lee@example.org"
+        },
+        "aud": "https://broker.example.org",
+        "type": "connection_request",
+        "body": {
+          "scopes": [
+            "alp.briefing/1"
+          ],
+          "purpose": "briefing",
+          "display_name": "Mallory M."
+        },
+        "note": "Met at the conference; may I ask for briefings?",
+        "created_at": "2026-11-09T13:59:00Z",
+        "expires_at": "2026-11-16T13:59:00Z",
+        "origin_broker": "https://broker.outside.example",
+        "broker_sig": "eyJhbGciOiJFZDI1NTE5Iiwia2lkIjoiRmp4RF95N0tTdy1STTFWU1NnQVpMcVcwbG5rNEJMUGxBRVdYZXB1ZmoxayIsInR5cCI6ImFscC1jb250cm9sK2p3cyJ9..fgDSyOqnf-P0q0Xv2z_BbR42U83zTU1UWHBB40wd6mBmwE-h6I52cW3fGHtc2ffTal5nlEFLD-_VHjw_lEY5Bw",
+        "in_reply_to": "01M7097M1R7AYB4GEPX5J86Z4G",
+        "in_reply_to_hash": "sha256:LXEWQrcmsEQBYnyp-6wy9chTD7GQPMTbAiWHF5IaSIE"
+      },
+      "expected": {
+        "valid": false,
+        "code": "bad_envelope"
+      }
+    },
+    {
+      "name": "connection_request note over 140",
+      "schema": "control",
+      "object": {
+        "alp": "0.1",
+        "id": "01M7097M1R7AYB4GEPX5J86Z4G",
+        "thread": "01M7097M1R7AYB4GEPX5J86Z4G",
+        "from": {
+          "address": "alp:mallory@outside.example",
+          "principal_id": "mal-5d7e2c9a1f0b4e63",
+          "delegate": "alp:mallory@outside.example/agent-d",
+          "attestation": "vendor",
+          "class": "consumer"
+        },
+        "to": {
+          "address": "alp:lee@example.org"
+        },
+        "aud": "https://broker.example.org",
+        "type": "connection_request",
+        "body": {
+          "scopes": [
+            "alp.briefing/1"
+          ],
+          "purpose": "briefing",
+          "display_name": "Mallory M."
+        },
+        "note": "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+        "created_at": "2026-11-09T13:59:00Z",
+        "expires_at": "2026-11-16T13:59:00Z",
+        "origin_broker": "https://broker.outside.example",
+        "broker_sig": "eyJhbGciOiJFZDI1NTE5Iiwia2lkIjoiRmp4RF95N0tTdy1STTFWU1NnQVpMcVcwbG5rNEJMUGxBRVdYZXB1ZmoxayIsInR5cCI6ImFscC1jb250cm9sK2p3cyJ9..fgDSyOqnf-P0q0Xv2z_BbR42U83zTU1UWHBB40wd6mBmwE-h6I52cW3fGHtc2ffTal5nlEFLD-_VHjw_lEY5Bw"
+      },
+      "expected": {
+        "valid": false,
+        "code": "bad_envelope"
+      }
+    },
+    {
+      "name": "ack ratified without a record",
+      "schema": "envelope",
+      "object": {
+        "alp": "0.1",
+        "id": "01M70984N0RQHQSNW1PSQ3GAZJ",
+        "thread": "01M70984N0RQHQSNW1PSQ3GAZJ",
+        "from": {
+          "address": "alp:ana@example.org",
+          "principal_id": "ana-7f3a9c41d2e8b605",
+          "delegate": "alp:ana@example.org/agent-a",
+          "attestation": "vendor",
+          "class": "business"
+        },
+        "to": {
+          "address": "alp:lee@example.org",
+          "principal_id": "lee-2b8e61f0a9c4d735"
+        },
+        "aud": "https://broker.example.org",
+        "scope": "alp.meeting/1",
+        "type": "ack",
+        "body": {
+          "of": "01M70984N0RQHQSNW1PSQ3GAZJ",
+          "status": "ratified"
+        },
+        "grant": "default:analysts-leaders",
+        "labels": [
+          "internal"
+        ],
+        "created_at": "2026-11-09T13:59:00Z",
+        "expires_at": "2026-11-10T14:00:00Z",
+        "origin_broker": "https://broker.example.org",
+        "decision": {
+          "outcome": "allowed",
+          "redacted": [],
+          "policy_ids": [
+            "example.org#12"
+          ]
+        },
+        "broker_sig": "eyJhbGciOiJFZDI1NTE5Iiwia2lkIjoiUWxidm1jOERXeVRRX3BFMnlzTEFwbjRUMDNqdy1jNlZxNjVMT0RPekdGayIsInR5cCI6ImFscC1lbnZlbG9wZStqd3MifQ..odfZ5Pi_LuCoPM4Z4nfO645BGqLNxLoT-Qj2TNecdftw5bFXJ8DiAUSL1sDXNJBE9RR4127W6ZpliaZ0dx9sAA",
+        "in_reply_to": "01M70984N0RQHQSNW1PSQ3GAZJ",
+        "in_reply_to_hash": "sha256:LXEWQrcmsEQBYnyp-6wy9chTD7GQPMTbAiWHF5IaSIE"
+      },
+      "expected": {
+        "valid": false,
+        "code": "bad_envelope"
+      }
+    },
+    {
+      "name": "duplicate member name (raw text)",
+      "schema": "envelope",
+      "raw_text": "{\"alp\":\"0.1\",\"alp\":\"0.1\",\"id\":\"01M70984N0RQHQSNW1PSQ3GAZJ\",\"thread\":\"01M70984N0RQHQSNW1PSQ3GAZJ\",\"from\":{\"address\":\"alp:ana@example.org\",\"principal_id\":\"ana-7f3a9c41d2e8b605\",\"delegate\":\"alp:ana@example.org/agent-a\",\"attestation\":\"vendor\",\"class\":\"business\"},\"to\":{\"address\":\"alp:lee@example.org\",\"principal_id\":\"lee-2b8e61f0a9c4d735\"},\"aud\":\"https://broker.example.org\",\"scope\":\"alp.briefing/1\",\"type\":\"request\",\"body\":{\"topic\":\"Q4 launch staffing plan\",\"depth\":\"headline\"},\"grant\":\"default:analysts-leaders\",\"labels\":[\"internal\"],\"created_at\":\"2026-11-09T13:59:00Z\",\"expires_at\":\"2026-11-10T14:00:00Z\",\"origin_broker\":\"https://broker.example.org\",\"decision\":{\"outcome\":\"allowed\",\"redacted\":[],\"policy_ids\":[\"example.org#12\"]},\"broker_sig\":\"eyJhbGciOiJFZDI1NTE5Iiwia2lkIjoiUWxidm1jOERXeVRRX3BFMnlzTEFwbjRUMDNqdy1jNlZxNjVMT0RPekdGayIsInR5cCI6ImFscC1lbnZlbG9wZStqd3MifQ..odfZ5Pi_LuCoPM4Z4nfO645BGqLNxLoT-Qj2TNecdftw5bFXJ8DiAUSL1sDXNJBE9RR4127W6ZpliaZ0dx9sAA\"}",
+      "expected": {
+        "valid": false,
+        "code": "bad_envelope"
+      }
+    }
+  ]
+}

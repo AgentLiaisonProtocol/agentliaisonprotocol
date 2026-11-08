@@ -1,0 +1,243 @@
+{
+  "description": "A alp.meeting/1 thread in one organization (Local profile): propose, accept with terms_hash, both ratification records (Lee's travels in an ack with status ratified), and the commit that references both. Checks: in_reply_to_hash chains, terms_hash = SHA-256 of JCS(body.terms), the accept's terms equal one proposed slot with the proposal's title, duration, timezone and location, ratification records bind the same thread and terms_hash, and commit.ratifications holds both record hashes.",
+  "now": "2026-11-09T14:00:00Z",
+  "objects": {
+    "propose": {
+      "alp": "0.1",
+      "id": "01M709BK08ZYV4WYZEWQBM59VN",
+      "thread": "01M709BK08ZYV4WYZEWQBM59VN",
+      "from": {
+        "address": "alp:ana@example.org",
+        "principal_id": "ana-7f3a9c41d2e8b605",
+        "delegate": "alp:ana@example.org/agent-a",
+        "attestation": "vendor",
+        "class": "business"
+      },
+      "to": {
+        "address": "alp:lee@example.org",
+        "principal_id": "lee-2b8e61f0a9c4d735"
+      },
+      "aud": "https://broker.example.org",
+      "scope": "alp.meeting/1",
+      "type": "propose",
+      "body": {
+        "title": "Staffing check-in",
+        "duration_minutes": 30,
+        "timezone": "America/New_York",
+        "slots": [
+          {
+            "start": "2026-11-10T15:00:00Z",
+            "end": "2026-11-10T15:30:00Z"
+          },
+          {
+            "start": "2026-11-10T19:00:00Z",
+            "end": "2026-11-10T19:30:00Z"
+          }
+        ],
+        "location": {
+          "kind": "video"
+        }
+      },
+      "grant": "g-ana-lee-meeting",
+      "labels": [
+        "internal",
+        "personal.schedule"
+      ],
+      "created_at": "2026-11-09T13:59:00Z",
+      "expires_at": "2026-11-10T14:00:00Z",
+      "origin_broker": "https://broker.example.org",
+      "decision": {
+        "outcome": "allowed",
+        "redacted": [],
+        "policy_ids": [
+          "example.org#12"
+        ]
+      },
+      "broker_sig": "eyJhbGciOiJFZDI1NTE5Iiwia2lkIjoiUWxidm1jOERXeVRRX3BFMnlzTEFwbjRUMDNqdy1jNlZxNjVMT0RPekdGayIsInR5cCI6ImFscC1lbnZlbG9wZStqd3MifQ..j9Twz2vv_HuB-JLdGKzRXnXvHuyouiyyEMqatebTuhfBnOxpmVhtkMUFJf7AMCVunPTVNzKfxF3URtyFmXLPBA"
+    },
+    "accept": {
+      "alp": "0.1",
+      "id": "01M709BPX861RZDB29WPYE5ZAW",
+      "thread": "01M709BK08ZYV4WYZEWQBM59VN",
+      "in_reply_to": "01M709BK08ZYV4WYZEWQBM59VN",
+      "in_reply_to_hash": "sha256:rE5Ef8SEYzsxq4azJbloaMqm-MCgC-zwkLxDIW-WwvE",
+      "from": {
+        "address": "alp:lee@example.org",
+        "principal_id": "lee-2b8e61f0a9c4d735",
+        "delegate": "alp:lee@example.org/agent-b",
+        "attestation": "vendor",
+        "class": "business"
+      },
+      "to": {
+        "address": "alp:ana@example.org",
+        "principal_id": "ana-7f3a9c41d2e8b605"
+      },
+      "aud": "https://broker.example.org",
+      "scope": "alp.meeting/1",
+      "type": "accept",
+      "body": {
+        "terms": {
+          "title": "Staffing check-in",
+          "duration_minutes": 30,
+          "timezone": "America/New_York",
+          "start": "2026-11-10T19:00:00Z",
+          "end": "2026-11-10T19:30:00Z",
+          "location": {
+            "kind": "video"
+          }
+        }
+      },
+      "terms_hash": "sha256:nT5eA2rA3_62AxKPBT0PI25EwjHmu5B_l4_C_ipMRIs",
+      "grant": "g-lee-ana-meeting",
+      "labels": [
+        "personal.schedule"
+      ],
+      "created_at": "2026-11-09T13:59:00Z",
+      "expires_at": "2026-11-10T14:00:00Z",
+      "origin_broker": "https://broker.example.org",
+      "decision": {
+        "outcome": "allowed",
+        "redacted": [],
+        "policy_ids": [
+          "example.org#12"
+        ]
+      },
+      "broker_sig": "eyJhbGciOiJFZDI1NTE5Iiwia2lkIjoiUWxidm1jOERXeVRRX3BFMnlzTEFwbjRUMDNqdy1jNlZxNjVMT0RPekdGayIsInR5cCI6ImFscC1lbnZlbG9wZStqd3MifQ..F3vaZtEVpxwTBqk_EvJuVvNO4iWXW7O7ziIuUzkI6k8gzj0LC9Cz7rtLNfggShTCaqv3MmUIdhd1CVTOtjsOBQ"
+    },
+    "ratification_ana": {
+      "alp": "0.1",
+      "id": "01M7095FP824SET5SWQ27ZN9G7",
+      "thread": "01M709BK08ZYV4WYZEWQBM59VN",
+      "scope": "alp.meeting/1",
+      "terms_hash": "sha256:nT5eA2rA3_62AxKPBT0PI25EwjHmu5B_l4_C_ipMRIs",
+      "principal_id": "ana-7f3a9c41d2e8b605",
+      "address": "alp:ana@example.org",
+      "method": "webauthn-uv",
+      "iat": 1794232770,
+      "nonce": "QzP6AV1dpRkfhaMn0d7ODH",
+      "created_at": "2026-11-09T13:59:30Z",
+      "expires_at": "2026-11-16T13:59:30Z",
+      "origin_broker": "https://broker.example.org",
+      "aud": "https://broker.example.org",
+      "broker_sig": "eyJhbGciOiJFZDI1NTE5Iiwia2lkIjoiUWxidm1jOERXeVRRX3BFMnlzTEFwbjRUMDNqdy1jNlZxNjVMT0RPekdGayIsInR5cCI6ImFscC1yYXRpZmljYXRpb24randzIn0..tVKogjjlszsnDoqxHq7QjymM-nB4_X5jUWWiK-7aNi-9wvHRXpOJF9jRndEatytjcPznE5PNWCBB9e__JWAABw"
+    },
+    "ack_ratified_lee": {
+      "alp": "0.1",
+      "id": "01M7098X28H6RQWN1SY845XD0D",
+      "thread": "01M709BK08ZYV4WYZEWQBM59VN",
+      "in_reply_to": "01M709BPX861RZDB29WPYE5ZAW",
+      "in_reply_to_hash": "sha256:62YbDHPmJv2E29I8_fQFYJsSbU04Gk-1GurhO2wS4Gw",
+      "from": {
+        "address": "alp:lee@example.org",
+        "principal_id": "lee-2b8e61f0a9c4d735"
+      },
+      "to": {
+        "address": "alp:ana@example.org",
+        "principal_id": "ana-7f3a9c41d2e8b605"
+      },
+      "aud": "https://broker.example.org",
+      "scope": "alp.meeting/1",
+      "type": "ack",
+      "body": {
+        "of": "01M709BPX861RZDB29WPYE5ZAW",
+        "status": "ratified",
+        "ratification": {
+          "alp": "0.1",
+          "id": "01M7097QYRMTZZNZZRX1TZFHSP",
+          "thread": "01M709BK08ZYV4WYZEWQBM59VN",
+          "scope": "alp.meeting/1",
+          "terms_hash": "sha256:nT5eA2rA3_62AxKPBT0PI25EwjHmu5B_l4_C_ipMRIs",
+          "principal_id": "lee-2b8e61f0a9c4d735",
+          "address": "alp:lee@example.org",
+          "method": "sso-stepup",
+          "iat": 1794232770,
+          "nonce": "VU2x_Q_Y1NO9I8-ryq_8CI",
+          "created_at": "2026-11-09T13:59:30Z",
+          "expires_at": "2026-11-16T13:59:30Z",
+          "origin_broker": "https://broker.example.org",
+          "aud": "https://broker.example.org",
+          "broker_sig": "eyJhbGciOiJFZDI1NTE5Iiwia2lkIjoiUWxidm1jOERXeVRRX3BFMnlzTEFwbjRUMDNqdy1jNlZxNjVMT0RPekdGayIsInR5cCI6ImFscC1yYXRpZmljYXRpb24randzIn0..HskZj_cdUCW8S2mmt1MizyAevK-AoEmBlljfuxjf0dC0OqVxUvBe-SCleGWd8u45eN_wj0sjJgYsu8FUoy97AA"
+        }
+      },
+      "grant": "g-lee-ana-meeting",
+      "labels": [],
+      "created_at": "2026-11-09T13:59:00Z",
+      "expires_at": "2026-11-10T14:00:00Z",
+      "origin_broker": "https://broker.example.org",
+      "decision": {
+        "outcome": "allowed",
+        "redacted": [],
+        "policy_ids": [
+          "example.org#12"
+        ]
+      },
+      "broker_sig": "eyJhbGciOiJFZDI1NTE5Iiwia2lkIjoiUWxidm1jOERXeVRRX3BFMnlzTEFwbjRUMDNqdy1jNlZxNjVMT0RPekdGayIsInR5cCI6ImFscC1lbnZlbG9wZStqd3MifQ..bBfFimS-KMkPW07pcGbf7q0qzLKWxBGBsnNb6FxSeUtgkTofR9dhc43Yc4bOu54RslRjzaNNnL9xkkRB7otECw"
+    },
+    "commit": {
+      "alp": "0.1",
+      "id": "01M7099FM03T12GH270R7Q243T",
+      "thread": "01M709BK08ZYV4WYZEWQBM59VN",
+      "in_reply_to": "01M7098X28H6RQWN1SY845XD0D",
+      "in_reply_to_hash": "sha256:eHxReum83c1A0l1sBaWDmY_U6XEkSqKlRTn549O6duw",
+      "from": {
+        "address": "alp:ana@example.org",
+        "principal_id": "ana-7f3a9c41d2e8b605",
+        "delegate": "alp:ana@example.org/agent-a",
+        "attestation": "vendor",
+        "class": "business"
+      },
+      "to": {
+        "address": "alp:lee@example.org",
+        "principal_id": "lee-2b8e61f0a9c4d735"
+      },
+      "aud": "https://broker.example.org",
+      "scope": "alp.meeting/1",
+      "type": "commit",
+      "body": {
+        "terms": {
+          "title": "Staffing check-in",
+          "duration_minutes": 30,
+          "timezone": "America/New_York",
+          "start": "2026-11-10T19:00:00Z",
+          "end": "2026-11-10T19:30:00Z",
+          "location": {
+            "kind": "video"
+          }
+        }
+      },
+      "terms_hash": "sha256:nT5eA2rA3_62AxKPBT0PI25EwjHmu5B_l4_C_ipMRIs",
+      "ratifications": [
+        "sha256:MCRHeCce0c40-XIPHgZwnTJtshCaBAzTKclBw8V8a00",
+        "sha256:_xZLZ4NQKwyNBb2HvgbiyBnnohozr_1EdGcDk1x0V-Y"
+      ],
+      "grant": "g-ana-lee-meeting",
+      "labels": [
+        "personal.schedule"
+      ],
+      "created_at": "2026-11-09T13:59:00Z",
+      "expires_at": "2026-11-10T14:00:00Z",
+      "origin_broker": "https://broker.example.org",
+      "decision": {
+        "outcome": "allowed",
+        "redacted": [],
+        "policy_ids": [
+          "example.org#12"
+        ]
+      },
+      "broker_sig": "eyJhbGciOiJFZDI1NTE5Iiwia2lkIjoiUWxidm1jOERXeVRRX3BFMnlzTEFwbjRUMDNqdy1jNlZxNjVMT0RPekdGayIsInR5cCI6ImFscC1lbnZlbG9wZStqd3MifQ..Xqf8W2fWAE2dceqRQ2iKWle1kh0aIqASXOnYxUMN5jXIo4bC039Ft_0IoIF5ZyR-nAY7TeFmSDOZwFz7QX4sAA"
+    }
+  },
+  "expected": {
+    "terms_hash": "sha256:nT5eA2rA3_62AxKPBT0PI25EwjHmu5B_l4_C_ipMRIs",
+    "states": [
+      "negotiating",
+      "agreed",
+      "agreed",
+      "committed"
+    ],
+    "ratifications": [
+      "sha256:MCRHeCce0c40-XIPHgZwnTJtshCaBAzTKclBw8V8a00",
+      "sha256:_xZLZ4NQKwyNBb2HvgbiyBnnohozr_1EdGcDk1x0V-Y"
+    ]
+  }
+}

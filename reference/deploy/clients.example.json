@@ -1,0 +1,35 @@
+[
+  {
+    "client_id": "eval-script",
+    "client_name": "Evaluation script",
+    "application_type": "native",
+    "redirect_uris": [
+      "http://127.0.0.1:47199/callback"
+    ],
+    "grant_types": [
+      "authorization_code",
+      "refresh_token"
+    ],
+    "response_types": [
+      "code"
+    ],
+    "token_endpoint_auth_method": "none"
+  },
+  {
+    "client_id": "org-workspace-agent",
+    "client_name": "Company workspace agent",
+    "client_secret": "REPLACE-with-at-least-32-random-characters",
+    "application_type": "web",
+    "redirect_uris": [
+      "https://agent.example.org/oauth/callback"
+    ],
+    "grant_types": [
+      "authorization_code",
+      "refresh_token"
+    ],
+    "response_types": [
+      "code"
+    ],
+    "token_endpoint_auth_method": "client_secret_post"
+  }
+]

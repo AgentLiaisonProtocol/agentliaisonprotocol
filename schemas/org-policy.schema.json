@@ -1,0 +1,669 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/org-policy.schema.json",
+  "title": "ALP organization policy (private local configuration)",
+  "description": "Loaded by the organization's own brokers. Never published.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "alp",
+    "id",
+    "serial",
+    "domains",
+    "updated_at"
+  ],
+  "properties": {
+    "alp": {
+      "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/version"
+    },
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64
+    },
+    "serial": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "domains": {
+      "type": "array",
+      "items": {
+        "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/domain"
+      },
+      "minItems": 1,
+      "maxItems": 50,
+      "uniqueItems": true
+    },
+    "updated_at": {
+      "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/timestamp"
+    },
+    "groups": {
+      "type": "object",
+      "maxProperties": 500,
+      "propertyNames": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9_-]{0,63}$"
+      },
+      "additionalProperties": {
+        "oneOf": [
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "members"
+            ],
+            "properties": {
+              "members": {
+                "type": "array",
+                "items": {
+                  "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/principal_ref"
+                },
+                "minItems": 0,
+                "maxItems": 10000,
+                "uniqueItems": true
+              }
+            }
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "claim"
+            ],
+            "properties": {
+              "claim": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "issuer",
+                  "name",
+                  "value"
+                ],
+                "properties": {
+                  "issuer": {
+                    "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/https_url"
+                  },
+                  "name": {
+                    "type": "string",
+                    "maxLength": 64,
+                    "minLength": 1
+                  },
+                  "value": {
+                    "type": "string",
+                    "maxLength": 256,
+                    "minLength": 1
+                  }
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    "classification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [],
+      "properties": {
+        "overrides": {
+          "type": "object",
+          "propertyNames": {
+            "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/scope_id"
+          },
+          "additionalProperties": {
+            "type": "object",
+            "propertyNames": {
+              "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/pointer"
+            },
+            "additionalProperties": {
+              "type": "array",
+              "items": {
+                "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/label"
+              },
+              "minItems": 1,
+              "maxItems": 8,
+              "uniqueItems": true
+            }
+          }
+        },
+        "rules": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "labels",
+              "direction",
+              "allow",
+              "action",
+              "mode"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 64
+              },
+              "labels": {
+                "type": "array",
+                "items": {
+                  "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/label_pattern"
+                },
+                "minItems": 1,
+                "maxItems": 16,
+                "uniqueItems": true
+              },
+              "direction": {
+                "enum": [
+                  "outbound",
+                  "inbound",
+                  "both"
+                ]
+              },
+              "allow": {
+                "type": "array",
+                "items": {
+                  "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/principal_ref"
+                },
+                "minItems": 0,
+                "maxItems": 100,
+                "uniqueItems": true
+              },
+              "action": {
+                "enum": [
+                  "reject",
+                  "redact"
+                ]
+              },
+              "mode": {
+                "enum": [
+                  "enforce",
+                  "report"
+                ]
+              },
+              "description": {
+                "type": "string",
+                "maxLength": 500
+              }
+            }
+          },
+          "minItems": 0,
+          "maxItems": 200
+        }
+      }
+    },
+    "default_relationships": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "from",
+          "to",
+          "scopes"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          },
+          "from": {
+            "type": "array",
+            "items": {
+              "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/principal_ref"
+            },
+            "minItems": 1,
+            "maxItems": 100,
+            "uniqueItems": true
+          },
+          "to": {
+            "type": "array",
+            "items": {
+              "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/principal_ref"
+            },
+            "minItems": 1,
+            "maxItems": 100,
+            "uniqueItems": true
+          },
+          "scopes": {
+            "type": "object",
+            "propertyNames": {
+              "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/scope_id"
+            },
+            "minProperties": 1,
+            "additionalProperties": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "forward"
+              ],
+              "properties": {
+                "forward": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "may",
+                    "fields"
+                  ],
+                  "properties": {
+                    "may": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/message_type"
+                      },
+                      "minItems": 1,
+                      "maxItems": 10,
+                      "uniqueItems": true
+                    },
+                    "fields": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/pointer"
+                      },
+                      "minItems": 0,
+                      "maxItems": 64,
+                      "uniqueItems": true
+                    }
+                  }
+                },
+                "reverse": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "may",
+                    "fields"
+                  ],
+                  "properties": {
+                    "may": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/message_type"
+                      },
+                      "minItems": 1,
+                      "maxItems": 10,
+                      "uniqueItems": true
+                    },
+                    "fields": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/pointer"
+                      },
+                      "minItems": 0,
+                      "maxItems": 64,
+                      "uniqueItems": true
+                    }
+                  }
+                },
+                "commit": {
+                  "enum": [
+                    "ask_me",
+                    "within_limits"
+                  ]
+                },
+                "limits": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "rate_limit": {
+            "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/rate_limit"
+          }
+        }
+      },
+      "minItems": 0,
+      "maxItems": 200
+    },
+    "ratification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "required_scopes"
+      ],
+      "properties": {
+        "required_scopes": {
+          "type": "array",
+          "items": {
+            "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/scope_id"
+          },
+          "minItems": 0,
+          "maxItems": 100,
+          "uniqueItems": true
+        }
+      }
+    },
+    "hold_for_review": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "scopes"
+      ],
+      "properties": {
+        "scopes": {
+          "type": "array",
+          "items": {
+            "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/scope_id"
+          },
+          "minItems": 0,
+          "maxItems": 100,
+          "uniqueItems": true
+        }
+      }
+    },
+    "dlp": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "categories",
+        "inbound"
+      ],
+      "properties": {
+        "hook": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "categories": {
+          "type": "array",
+          "items": {
+            "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/dlp_category"
+          },
+          "minItems": 0,
+          "maxItems": 16,
+          "uniqueItems": true
+        },
+        "inbound": {
+          "type": "boolean"
+        },
+        "timeout_ms": {
+          "type": "integer",
+          "minimum": 100,
+          "maximum": 10000
+        },
+        "on_error": {
+          "enum": [
+            "block",
+            "allow"
+          ]
+        }
+      }
+    },
+    "retention": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [],
+      "properties": {
+        "ledger_days": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 36500
+        },
+        "store_values": {
+          "enum": [
+            "never",
+            "free_text",
+            "all"
+          ]
+        },
+        "journal_scopes": {
+          "type": "array",
+          "items": {
+            "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/scope_id"
+          },
+          "minItems": 0,
+          "maxItems": 100,
+          "uniqueItems": true
+        },
+        "never_store_values_groups": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_-]{0,63}$"
+          },
+          "minItems": 0,
+          "maxItems": 100,
+          "uniqueItems": true
+        }
+      }
+    },
+    "federation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mode",
+        "domains"
+      ],
+      "properties": {
+        "mode": {
+          "enum": [
+            "allow",
+            "deny"
+          ]
+        },
+        "domains": {
+          "type": "array",
+          "items": {
+            "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/domain_pattern"
+          },
+          "minItems": 0,
+          "maxItems": 1000,
+          "uniqueItems": true
+        }
+      }
+    },
+    "connection_requests": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "inbound"
+      ],
+      "properties": {
+        "inbound": {
+          "enum": [
+            "allow",
+            "allow_listed",
+            "deny"
+          ]
+        },
+        "allow_domains": {
+          "type": "array",
+          "items": {
+            "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/domain_pattern"
+          },
+          "minItems": 0,
+          "maxItems": 1000,
+          "uniqueItems": true
+        }
+      }
+    },
+    "clients": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mode",
+        "allowed"
+      ],
+      "properties": {
+        "mode": {
+          "enum": [
+            "enforce",
+            "report"
+          ]
+        },
+        "allowed": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "client_id",
+              "scopes",
+              "attestation",
+              "class",
+              "no_training"
+            ],
+            "properties": {
+              "client_id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 2048
+              },
+              "label": {
+                "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/delegate_label"
+              },
+              "scopes": {
+                "type": "array",
+                "items": {
+                  "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/scope_id"
+                },
+                "minItems": 0,
+                "maxItems": 100,
+                "uniqueItems": true
+              },
+              "attestation": {
+                "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/attestation"
+              },
+              "class": {
+                "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/class"
+              },
+              "no_training": {
+                "type": "boolean"
+              },
+              "retention_days": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 36500
+              }
+            }
+          },
+          "minItems": 0,
+          "maxItems": 500
+        }
+      }
+    },
+    "delivery_minimums": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "labels"
+        ],
+        "properties": {
+          "labels": {
+            "type": "array",
+            "items": {
+              "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/label_pattern"
+            },
+            "minItems": 1,
+            "maxItems": 16,
+            "uniqueItems": true
+          },
+          "min_attestation": {
+            "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/attestation"
+          },
+          "min_class": {
+            "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/class"
+          },
+          "no_training": {
+            "const": true
+          },
+          "retention_max": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 3650
+          },
+          "otherwise": {
+            "enum": [
+              "hold",
+              "block"
+            ],
+            "description": "Between one person's own agents (Section 6.14): fields with these labels that the receiving agent doesn't meet the minimum for are held for the person (hold, the default) or refuse the message (block)."
+          }
+        }
+      },
+      "minItems": 0,
+      "maxItems": 100
+    },
+    "blocked": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [],
+      "properties": {
+        "principals": {
+          "type": "array",
+          "items": {
+            "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/address"
+          },
+          "minItems": 0,
+          "maxItems": 10000,
+          "uniqueItems": true
+        },
+        "delegates": {
+          "type": "array",
+          "items": {
+            "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/delegate_id"
+          },
+          "minItems": 0,
+          "maxItems": 10000,
+          "uniqueItems": true
+        },
+        "client_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2048
+          },
+          "minItems": 0,
+          "maxItems": 1000,
+          "uniqueItems": true
+        },
+        "scopes": {
+          "type": "array",
+          "items": {
+            "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/scope_id"
+          },
+          "minItems": 0,
+          "maxItems": 1000,
+          "uniqueItems": true
+        },
+        "domains": {
+          "type": "array",
+          "items": {
+            "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/domain_pattern"
+          },
+          "minItems": 0,
+          "maxItems": 10000,
+          "uniqueItems": true
+        },
+        "brokers": {
+          "type": "array",
+          "items": {
+            "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/broker_id"
+          },
+          "minItems": 0,
+          "maxItems": 1000,
+          "uniqueItems": true
+        }
+      }
+    },
+    "human_fallback": {
+      "enum": [
+        "notify_only",
+        "off"
+      ]
+    },
+    "sms": {
+      "type": "boolean"
+    },
+    "inbound_default": {
+      "enum": [
+        "response_only",
+        "open"
+      ]
+    }
+  }
+}

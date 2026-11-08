@@ -1,0 +1,184 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/security-event.schema.json",
+  "title": "ALP broker security event (one JSON Lines record, OCSF-mapped)",
+  "description": "Separate from the ledger. Never carries message values, notes or free text.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "time",
+    "class_uid",
+    "category_uid",
+    "activity_id",
+    "type_uid",
+    "severity_id",
+    "metadata",
+    "detail"
+  ],
+  "properties": {
+    "time": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Milliseconds since the Unix epoch (OCSF time)."
+    },
+    "class_uid": {
+      "enum": [
+        3002,
+        6003
+      ],
+      "description": "OCSF Authentication (3002) or API Activity (6003)."
+    },
+    "category_uid": {
+      "enum": [
+        3,
+        6
+      ]
+    },
+    "activity_id": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 99
+    },
+    "type_uid": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "severity_id": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 6
+    },
+    "status_id": {
+      "enum": [
+        0,
+        1,
+        2,
+        99
+      ]
+    },
+    "message": {
+      "type": "string",
+      "maxLength": 500
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "uid",
+        "version",
+        "product"
+      ],
+      "properties": {
+        "uid": {
+          "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/ulid"
+        },
+        "version": {
+          "type": "string",
+          "maxLength": 16,
+          "minLength": 1,
+          "description": "OCSF schema version the producer maps to."
+        },
+        "product": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "name"
+          ],
+          "properties": {
+            "name": {
+              "type": "string",
+              "maxLength": 128,
+              "minLength": 1
+            },
+            "vendor_name": {
+              "type": "string",
+              "maxLength": 128
+            },
+            "version": {
+              "type": "string",
+              "maxLength": 64
+            }
+          }
+        },
+        "profiles": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "minItems": 0,
+          "maxItems": 8
+        }
+      }
+    },
+    "detail": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "event",
+        "broker"
+      ],
+      "properties": {
+        "event": {
+          "enum": [
+            "envelope_refused",
+            "signature_failure",
+            "replay_refused",
+            "broker_not_authorized",
+            "token_issued",
+            "token_refused",
+            "token_revoked",
+            "refresh_reuse",
+            "client_refused",
+            "rate_limited",
+            "dlp_blocked",
+            "dlp_error",
+            "policy_changed",
+            "admin_action",
+            "kill_switch",
+            "key_rotated",
+            "key_revoked",
+            "discovery_failure",
+            "connection_request_dropped",
+            "ratification_paused",
+            "principal_reassigned"
+          ]
+        },
+        "broker": {
+          "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/broker_id"
+        },
+        "origin_broker": {
+          "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/broker_id"
+        },
+        "code": {
+          "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/error_code"
+        },
+        "principal_id": {
+          "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/principal_id"
+        },
+        "delegate": {
+          "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/delegate_id"
+        },
+        "client_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2048
+        },
+        "scope": {
+          "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/scope_id"
+        },
+        "domain": {
+          "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/domain"
+        },
+        "kid": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "count": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    }
+  }
+}

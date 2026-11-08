@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/push-event.schema.json",
+  "title": "ALP push event (pointer only)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "alp",
+    "event_id",
+    "type",
+    "ref",
+    "occurred_at"
+  ],
+  "properties": {
+    "alp": {
+      "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/version"
+    },
+    "event_id": {
+      "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/ulid"
+    },
+    "type": {
+      "const": "inbox.updated"
+    },
+    "ref": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{16,64}$"
+    },
+    "occurred_at": {
+      "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/timestamp"
+    }
+  }
+}

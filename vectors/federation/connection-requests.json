@@ -1,0 +1,98 @@
+{
+  "description": "Answers to connection requests that pass acceptance steps 0-6 (spec 6.2.2): the same accepted receipt, with no ledger_hash, whether the address exists or not, so the answer can't be used to harvest a directory. A request naming no scope the broker knows is refused the same way for every address. The receiving broker serves example.org with the world's principals.",
+  "now": "2026-11-09T14:00:00Z",
+  "cases": [
+    {
+      "name": "an address that exists",
+      "context": {
+        "receiving_broker": "https://broker.example.org",
+        "served_domains": {
+          "example.org": "https://broker.example.org"
+        },
+        "domain_documents": {
+          "partner.example": "partner.example@7",
+          "example.org": "example.org@42"
+        },
+        "last_seen_serial": {
+          "example.org": 42,
+          "partner.example": 7
+        },
+        "seen": []
+      },
+      "request_body": "{\"alp\":\"0.1\",\"id\":\"01M709900083NB8X1D7SMJA8FY\",\"thread\":\"01M709900083NB8X1D7SMJA8FY\",\"from\":{\"address\":\"alp:pat@partner.example\",\"principal_id\":\"pat-91c0e4a7b3d2f816\",\"delegate\":\"alp:pat@partner.example/agent-c\",\"attestation\":\"self\",\"class\":\"consumer\"},\"to\":{\"address\":\"alp:lee@example.org\"},\"aud\":\"https://broker.example.org\",\"type\":\"connection_request\",\"body\":{\"scopes\":[\"alp.status/1\"],\"purpose\":\"status_updates\",\"display_name\":\"Pat P.\"},\"created_at\":\"2026-11-09T13:59:00Z\",\"expires_at\":\"2026-11-16T13:59:00Z\",\"origin_broker\":\"https://broker.partner.example\",\"broker_sig\":\"eyJhbGciOiJFZDI1NTE5Iiwia2lkIjoiR1kySmx4ZldzdTBvZno4MVJnMkgzSmJUNmRCZS15NzJzNTVKdjZFS3JIcyIsInR5cCI6ImFscC1jb250cm9sK2p3cyJ9..onK19aaxjdjJvwHJf-rOVXLpsn2djfNAY-pif4Dn0ePBN2j64rotRZKFdyAWlSdurLFzpKKoOTTpM3ufA1Y4Dw\"}",
+      "expected": {
+        "status": "accepted",
+        "ledger_hash": false
+      }
+    },
+    {
+      "name": "an address nobody holds",
+      "context": {
+        "receiving_broker": "https://broker.example.org",
+        "served_domains": {
+          "example.org": "https://broker.example.org"
+        },
+        "domain_documents": {
+          "partner.example": "partner.example@7",
+          "example.org": "example.org@42"
+        },
+        "last_seen_serial": {
+          "example.org": 42,
+          "partner.example": 7
+        },
+        "seen": []
+      },
+      "request_body": "{\"alp\":\"0.1\",\"id\":\"01M709D8Q0DN99RY9S7120H04N\",\"thread\":\"01M709D8Q0DN99RY9S7120H04N\",\"from\":{\"address\":\"alp:pat@partner.example\",\"principal_id\":\"pat-91c0e4a7b3d2f816\",\"delegate\":\"alp:pat@partner.example/agent-c\",\"attestation\":\"self\",\"class\":\"consumer\"},\"to\":{\"address\":\"alp:nobody-here@example.org\"},\"aud\":\"https://broker.example.org\",\"type\":\"connection_request\",\"body\":{\"scopes\":[\"alp.status/1\"],\"purpose\":\"status_updates\",\"display_name\":\"Pat P.\"},\"created_at\":\"2026-11-09T13:59:00Z\",\"expires_at\":\"2026-11-16T13:59:00Z\",\"origin_broker\":\"https://broker.partner.example\",\"broker_sig\":\"eyJhbGciOiJFZDI1NTE5Iiwia2lkIjoiR1kySmx4ZldzdTBvZno4MVJnMkgzSmJUNmRCZS15NzJzNTVKdjZFS3JIcyIsInR5cCI6ImFscC1jb250cm9sK2p3cyJ9..ASzMPtn30AqD99wEq5As5OvYJeDAONChtrOecxUZZzZPwV_A7nLVUoaqwgL3OJBer4D5wHlVQyn3rtwdxhG_Dw\"}",
+      "expected": {
+        "status": "accepted",
+        "ledger_hash": false
+      }
+    },
+    {
+      "name": "no known scope, to an address that exists",
+      "context": {
+        "receiving_broker": "https://broker.example.org",
+        "served_domains": {
+          "example.org": "https://broker.example.org"
+        },
+        "domain_documents": {
+          "partner.example": "partner.example@7",
+          "example.org": "example.org@42"
+        },
+        "last_seen_serial": {
+          "example.org": 42,
+          "partner.example": 7
+        },
+        "seen": []
+      },
+      "request_body": "{\"alp\":\"0.1\",\"id\":\"01M709DV8RJDD6VY18525A0HRG\",\"thread\":\"01M709DV8RJDD6VY18525A0HRG\",\"from\":{\"address\":\"alp:pat@partner.example\",\"principal_id\":\"pat-91c0e4a7b3d2f816\",\"delegate\":\"alp:pat@partner.example/agent-c\",\"attestation\":\"self\",\"class\":\"consumer\"},\"to\":{\"address\":\"alp:lee@example.org\"},\"aud\":\"https://broker.example.org\",\"type\":\"connection_request\",\"body\":{\"scopes\":[\"org.example.org.expenses/1\"],\"purpose\":\"status_updates\",\"display_name\":\"Pat P.\"},\"created_at\":\"2026-11-09T13:59:00Z\",\"expires_at\":\"2026-11-16T13:59:00Z\",\"origin_broker\":\"https://broker.partner.example\",\"broker_sig\":\"eyJhbGciOiJFZDI1NTE5Iiwia2lkIjoiR1kySmx4ZldzdTBvZno4MVJnMkgzSmJUNmRCZS15NzJzNTVKdjZFS3JIcyIsInR5cCI6ImFscC1jb250cm9sK2p3cyJ9..us0vWYTKxrW-mgETs-kuW5qCay4ARy6-T0uC_M3ogXhLKVhEcRtLw6ke2n7Tb7H41tpsYnCIEKd15fckxmKTCg\"}",
+      "expected": {
+        "status": "refused",
+        "code": "unknown_scope"
+      }
+    },
+    {
+      "name": "no known scope, to an address nobody holds",
+      "context": {
+        "receiving_broker": "https://broker.example.org",
+        "served_domains": {
+          "example.org": "https://broker.example.org"
+        },
+        "domain_documents": {
+          "partner.example": "partner.example@7",
+          "example.org": "example.org@42"
+        },
+        "last_seen_serial": {
+          "example.org": 42,
+          "partner.example": 7
+        },
+        "seen": []
+      },
+      "request_body": "{\"alp\":\"0.1\",\"id\":\"01M709D7QR7XXJARN48C0J7ZAT\",\"thread\":\"01M709D7QR7XXJARN48C0J7ZAT\",\"from\":{\"address\":\"alp:pat@partner.example\",\"principal_id\":\"pat-91c0e4a7b3d2f816\",\"delegate\":\"alp:pat@partner.example/agent-c\",\"attestation\":\"self\",\"class\":\"consumer\"},\"to\":{\"address\":\"alp:nobody-here@example.org\"},\"aud\":\"https://broker.example.org\",\"type\":\"connection_request\",\"body\":{\"scopes\":[\"org.example.org.expenses/1\"],\"purpose\":\"status_updates\",\"display_name\":\"Pat P.\"},\"created_at\":\"2026-11-09T13:59:00Z\",\"expires_at\":\"2026-11-16T13:59:00Z\",\"origin_broker\":\"https://broker.partner.example\",\"broker_sig\":\"eyJhbGciOiJFZDI1NTE5Iiwia2lkIjoiR1kySmx4ZldzdTBvZno4MVJnMkgzSmJUNmRCZS15NzJzNTVKdjZFS3JIcyIsInR5cCI6ImFscC1jb250cm9sK2p3cyJ9.._1f7aucziLfoOGSVrUWzA7eSpVTvyzPSZ918EfCoqteZZqNKhfx2NFJ6HBg30JVhdegGpxFh1kVhGoyLWqefBA\"}",
+      "expected": {
+        "status": "refused",
+        "code": "unknown_scope"
+      }
+    }
+  ]
+}

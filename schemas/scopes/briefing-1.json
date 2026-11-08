@@ -1,0 +1,200 @@
+{
+  "id": "alp.briefing/1",
+  "title": "Briefing",
+  "maturity": "core",
+  "description": "Ask for a short briefing on a topic and answer with a few points. Every free-text field is capped, DLP-checked and opt-in per pointer.",
+  "starts": [
+    "request"
+  ],
+  "common_types": [
+    "ack",
+    "decline",
+    "error",
+    "ask_human"
+  ],
+  "negotiable": false,
+  "types": {
+    "request": {
+      "description": "What the requester wants to know.",
+      "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "topic",
+          "depth"
+        ],
+        "properties": {
+          "topic": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "x-alp-text": "untrusted"
+          },
+          "questions": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 280,
+              "x-alp-text": "untrusted"
+            },
+            "minItems": 1,
+            "maxItems": 5
+          },
+          "depth": {
+            "enum": [
+              "headline",
+              "summary",
+              "detailed"
+            ]
+          },
+          "due_by": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "context": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [],
+            "properties": {
+              "project": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 120,
+                "x-alp-text": "untrusted"
+              },
+              "amount": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "value",
+                  "currency"
+                ],
+                "properties": {
+                  "value": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 1000000000000
+                  },
+                  "currency": {
+                    "type": "string",
+                    "minLength": 3,
+                    "maxLength": 3
+                  }
+                }
+              }
+            },
+            "minProperties": 1
+          }
+        }
+      }
+    },
+    "inform": {
+      "description": "The briefing.",
+      "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "points",
+          "as_of"
+        ],
+        "properties": {
+          "points": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 280,
+              "x-alp-text": "untrusted"
+            },
+            "minItems": 1,
+            "maxItems": 10
+          },
+          "as_of": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "confidence": {
+            "enum": [
+              "low",
+              "medium",
+              "high"
+            ]
+          },
+          "follow_up": {
+            "enum": [
+              "none",
+              "meeting_suggested",
+              "document_available"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "replies": {
+    "request": [
+      "inform",
+      "request",
+      "decline",
+      "ack",
+      "ask_human",
+      "error"
+    ],
+    "inform": [
+      "inform",
+      "request",
+      "ack",
+      "ask_human",
+      "error"
+    ]
+  },
+  "classification": {
+    "/body/topic": [
+      "internal"
+    ],
+    "/body/questions": [
+      "internal"
+    ],
+    "/body/depth": [
+      "internal"
+    ],
+    "/body/due_by": [
+      "internal"
+    ],
+    "/body/context/project": [
+      "confidential"
+    ],
+    "/body/context/amount": [
+      "confidential.financial"
+    ],
+    "/body/points": [
+      "internal"
+    ],
+    "/body/as_of": [
+      "internal"
+    ],
+    "/body/confidence": [
+      "internal"
+    ],
+    "/body/follow_up": [
+      "internal"
+    ]
+  },
+  "suggested": {
+    "request": [
+      "/body/topic",
+      "/body/questions/*",
+      "/body/depth",
+      "/body/due_by"
+    ],
+    "inform": [
+      "/body/points/*",
+      "/body/as_of",
+      "/body/confidence",
+      "/body/follow_up"
+    ]
+  }
+}

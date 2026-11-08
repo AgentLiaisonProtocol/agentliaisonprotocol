@@ -1,0 +1,172 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/scope-definition.schema.json",
+  "title": "ALP scope definition",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "title",
+    "description",
+    "maturity",
+    "starts",
+    "common_types",
+    "negotiable",
+    "types",
+    "replies",
+    "classification"
+  ],
+  "properties": {
+    "id": {
+      "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/scope_id"
+    },
+    "title": {
+      "type": "string",
+      "maxLength": 64,
+      "minLength": 1
+    },
+    "description": {
+      "type": "string",
+      "maxLength": 2000,
+      "minLength": 1
+    },
+    "maturity": {
+      "enum": [
+        "core",
+        "experimental"
+      ]
+    },
+    "starts": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "request",
+          "propose",
+          "inform"
+        ]
+      },
+      "minItems": 1,
+      "maxItems": 3,
+      "uniqueItems": true
+    },
+    "common_types": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "ack",
+          "decline",
+          "error",
+          "ask_human"
+        ]
+      },
+      "minItems": 0,
+      "maxItems": 4,
+      "uniqueItems": true
+    },
+    "negotiable": {
+      "type": "boolean"
+    },
+    "committer": {
+      "enum": [
+        "proposer",
+        "either"
+      ]
+    },
+    "types": {
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": {
+        "enum": [
+          "request",
+          "propose",
+          "counter",
+          "accept",
+          "inform",
+          "commit"
+        ]
+      },
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "description",
+          "schema"
+        ],
+        "properties": {
+          "description": {
+            "type": "string",
+            "maxLength": 1000,
+            "minLength": 1
+          },
+          "schema": {
+            "type": "object"
+          }
+        }
+      }
+    },
+    "replies": {
+      "type": "object",
+      "propertyNames": {
+        "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/message_type"
+      },
+      "additionalProperties": {
+        "type": "array",
+        "items": {
+          "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/message_type"
+        },
+        "minItems": 1,
+        "maxItems": 10,
+        "uniqueItems": true
+      }
+    },
+    "limits_schema": {
+      "type": "object"
+    },
+    "classification": {
+      "type": "object",
+      "propertyNames": {
+        "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/pointer"
+      },
+      "additionalProperties": {
+        "type": "array",
+        "items": {
+          "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/label"
+        },
+        "minItems": 1,
+        "maxItems": 8,
+        "uniqueItems": true
+      }
+    },
+    "suggested": {
+      "type": "object",
+      "propertyNames": {
+        "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/message_type"
+      },
+      "additionalProperties": {
+        "type": "array",
+        "items": {
+          "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/pointer"
+        },
+        "minItems": 0,
+        "maxItems": 64,
+        "uniqueItems": true
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "negotiable": {
+            "const": true
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "committer"
+        ]
+      }
+    }
+  ]
+}

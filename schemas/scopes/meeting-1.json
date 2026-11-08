@@ -1,0 +1,572 @@
+{
+  "id": "alp.meeting/1",
+  "title": "Meeting",
+  "maturity": "core",
+  "description": "Agree a meeting time and book it. Proposals carry candidate slots; accept fixes the terms; both people ratify; commit books it.",
+  "starts": [
+    "request",
+    "propose"
+  ],
+  "common_types": [
+    "ack",
+    "decline",
+    "error",
+    "ask_human"
+  ],
+  "negotiable": true,
+  "committer": "either",
+  "types": {
+    "request": {
+      "description": "Ask the counterparty to propose times.",
+      "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "title",
+          "window",
+          "duration_minutes"
+        ],
+        "properties": {
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120,
+            "x-alp-text": "untrusted"
+          },
+          "window": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "start",
+              "end"
+            ],
+            "properties": {
+              "start": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "end": {
+                "type": "string",
+                "format": "date-time"
+              }
+            }
+          },
+          "duration_minutes": {
+            "type": "integer",
+            "minimum": 5,
+            "maximum": 480
+          },
+          "timezone": {
+            "type": "string",
+            "maxLength": 64,
+            "minLength": 1,
+            "description": "IANA time zone name."
+          }
+        }
+      }
+    },
+    "propose": {
+      "description": "Candidate slots for one meeting.",
+      "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "title",
+          "duration_minutes",
+          "slots",
+          "location"
+        ],
+        "properties": {
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120,
+            "x-alp-text": "untrusted"
+          },
+          "duration_minutes": {
+            "type": "integer",
+            "minimum": 5,
+            "maximum": 480
+          },
+          "timezone": {
+            "type": "string",
+            "maxLength": 64,
+            "minLength": 1,
+            "description": "IANA time zone name."
+          },
+          "slots": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "start",
+                "end"
+              ],
+              "properties": {
+                "start": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "end": {
+                  "type": "string",
+                  "format": "date-time"
+                }
+              }
+            },
+            "minItems": 1,
+            "maxItems": 10
+          },
+          "location": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "kind"
+            ],
+            "properties": {
+              "kind": {
+                "enum": [
+                  "video",
+                  "phone",
+                  "in_person",
+                  "tbd"
+                ]
+              },
+              "detail": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200,
+                "x-alp-text": "untrusted"
+              }
+            }
+          }
+        }
+      }
+    },
+    "counter": {
+      "description": "Replacement candidate slots; same shape as propose.",
+      "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "title",
+          "duration_minutes",
+          "slots",
+          "location"
+        ],
+        "properties": {
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120,
+            "x-alp-text": "untrusted"
+          },
+          "duration_minutes": {
+            "type": "integer",
+            "minimum": 5,
+            "maximum": 480
+          },
+          "timezone": {
+            "type": "string",
+            "maxLength": 64,
+            "minLength": 1,
+            "description": "IANA time zone name."
+          },
+          "slots": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "start",
+                "end"
+              ],
+              "properties": {
+                "start": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "end": {
+                  "type": "string",
+                  "format": "date-time"
+                }
+              }
+            },
+            "minItems": 1,
+            "maxItems": 10
+          },
+          "location": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "kind"
+            ],
+            "properties": {
+              "kind": {
+                "enum": [
+                  "video",
+                  "phone",
+                  "in_person",
+                  "tbd"
+                ]
+              },
+              "detail": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200,
+                "x-alp-text": "untrusted"
+              }
+            }
+          }
+        }
+      }
+    },
+    "accept": {
+      "description": "Fix the terms: one slot of the referenced proposal, with its title, duration and location.",
+      "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "terms"
+        ],
+        "properties": {
+          "terms": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "title",
+              "duration_minutes",
+              "start",
+              "end",
+              "location"
+            ],
+            "properties": {
+              "title": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 120,
+                "x-alp-text": "untrusted"
+              },
+              "duration_minutes": {
+                "type": "integer",
+                "minimum": 5,
+                "maximum": 480
+              },
+              "timezone": {
+                "type": "string",
+                "maxLength": 64,
+                "minLength": 1,
+                "description": "IANA time zone name."
+              },
+              "start": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "end": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "location": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind"
+                ],
+                "properties": {
+                  "kind": {
+                    "enum": [
+                      "video",
+                      "phone",
+                      "in_person",
+                      "tbd"
+                    ]
+                  },
+                  "detail": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 200,
+                    "x-alp-text": "untrusted"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "commit": {
+      "description": "Book the meeting on the agreed terms after both ratifications.",
+      "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "terms"
+        ],
+        "properties": {
+          "terms": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "title",
+              "duration_minutes",
+              "start",
+              "end",
+              "location"
+            ],
+            "properties": {
+              "title": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 120,
+                "x-alp-text": "untrusted"
+              },
+              "duration_minutes": {
+                "type": "integer",
+                "minimum": 5,
+                "maximum": 480
+              },
+              "timezone": {
+                "type": "string",
+                "maxLength": 64,
+                "minLength": 1,
+                "description": "IANA time zone name."
+              },
+              "start": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "end": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "location": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind"
+                ],
+                "properties": {
+                  "kind": {
+                    "enum": [
+                      "video",
+                      "phone",
+                      "in_person",
+                      "tbd"
+                    ]
+                  },
+                  "detail": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 200,
+                    "x-alp-text": "untrusted"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "inform": {
+      "description": "What happened after the commit.",
+      "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "event",
+          "as_of"
+        ],
+        "properties": {
+          "event": {
+            "enum": [
+              "booked",
+              "changed",
+              "cancelled"
+            ]
+          },
+          "as_of": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      }
+    }
+  },
+  "replies": {
+    "request": [
+      "propose",
+      "request",
+      "decline",
+      "ack",
+      "ask_human",
+      "error"
+    ],
+    "propose": [
+      "counter",
+      "accept",
+      "decline",
+      "ask_human",
+      "error",
+      "ack"
+    ],
+    "counter": [
+      "counter",
+      "accept",
+      "decline",
+      "ask_human",
+      "error",
+      "ack"
+    ],
+    "accept": [
+      "commit",
+      "decline",
+      "ack",
+      "ask_human",
+      "error"
+    ],
+    "commit": [
+      "inform",
+      "ack",
+      "error"
+    ],
+    "inform": [
+      "inform",
+      "ack",
+      "ask_human",
+      "error"
+    ]
+  },
+  "limits_schema": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "max_duration_minutes",
+      "timezone"
+    ],
+    "properties": {
+      "max_duration_minutes": {
+        "type": "integer",
+        "minimum": 5,
+        "maximum": 480
+      },
+      "earliest_minute": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 1439
+      },
+      "latest_minute": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 1440
+      },
+      "weekdays": {
+        "type": "array",
+        "items": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 7
+        },
+        "minItems": 1,
+        "maxItems": 7,
+        "uniqueItems": true
+      },
+      "timezone": {
+        "type": "string",
+        "maxLength": 64,
+        "minLength": 1,
+        "description": "IANA time zone name."
+      },
+      "location_kinds": {
+        "type": "array",
+        "items": {
+          "enum": [
+            "video",
+            "phone",
+            "in_person",
+            "tbd"
+          ]
+        },
+        "minItems": 1,
+        "maxItems": 4,
+        "uniqueItems": true
+      }
+    }
+  },
+  "classification": {
+    "/body/title": [
+      "internal"
+    ],
+    "/body/window": [
+      "internal"
+    ],
+    "/body/duration_minutes": [
+      "internal"
+    ],
+    "/body/timezone": [
+      "internal"
+    ],
+    "/body/slots": [
+      "personal.schedule"
+    ],
+    "/body/location": [
+      "internal"
+    ],
+    "/body/terms": [
+      "personal.schedule"
+    ],
+    "/body/event": [
+      "internal"
+    ],
+    "/body/as_of": [
+      "internal"
+    ]
+  },
+  "suggested": {
+    "request": [
+      "/body/title",
+      "/body/window",
+      "/body/duration_minutes",
+      "/body/timezone"
+    ],
+    "propose": [
+      "/body/title",
+      "/body/duration_minutes",
+      "/body/timezone",
+      "/body/slots",
+      "/body/location/kind"
+    ],
+    "counter": [
+      "/body/title",
+      "/body/duration_minutes",
+      "/body/timezone",
+      "/body/slots",
+      "/body/location/kind"
+    ],
+    "accept": [
+      "/body/terms/title",
+      "/body/terms/duration_minutes",
+      "/body/terms/timezone",
+      "/body/terms/start",
+      "/body/terms/end",
+      "/body/terms/location/kind"
+    ],
+    "commit": [
+      "/body/terms/title",
+      "/body/terms/duration_minutes",
+      "/body/terms/timezone",
+      "/body/terms/start",
+      "/body/terms/end",
+      "/body/terms/location/kind"
+    ],
+    "inform": [
+      "/body/event",
+      "/body/as_of"
+    ]
+  }
+}

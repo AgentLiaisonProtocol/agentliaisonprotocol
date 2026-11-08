@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/messages/connection_response.schema.json",
+  "title": "connection_response body",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "of",
+    "decision"
+  ],
+  "properties": {
+    "of": {
+      "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/ulid"
+    },
+    "decision": {
+      "enum": [
+        "accepted",
+        "declined"
+      ]
+    },
+    "scopes": {
+      "type": "array",
+      "items": {
+        "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/scope_id"
+      },
+      "minItems": 1,
+      "maxItems": 10,
+      "uniqueItems": true
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "decision": {
+            "const": "accepted"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "scopes"
+        ]
+      },
+      "else": {
+        "properties": {
+          "scopes": false
+        }
+      }
+    }
+  ]
+}

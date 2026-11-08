@@ -1,0 +1,166 @@
+{
+  "id": "alp.availability/1",
+  "title": "Availability",
+  "maturity": "core",
+  "description": "Ask when a person is free inside a window, and answer with free intervals only. Busy details never cross.",
+  "starts": [
+    "request"
+  ],
+  "common_types": [
+    "ack",
+    "decline",
+    "error",
+    "ask_human"
+  ],
+  "negotiable": false,
+  "types": {
+    "request": {
+      "description": "Ask for free intervals of at least duration_minutes inside window.",
+      "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "window",
+          "duration_minutes"
+        ],
+        "properties": {
+          "window": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "start",
+              "end"
+            ],
+            "properties": {
+              "start": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "end": {
+                "type": "string",
+                "format": "date-time"
+              }
+            }
+          },
+          "duration_minutes": {
+            "type": "integer",
+            "minimum": 5,
+            "maximum": 480
+          },
+          "timezone": {
+            "type": "string",
+            "maxLength": 64,
+            "minLength": 1,
+            "description": "IANA time zone name."
+          },
+          "purpose": {
+            "enum": [
+              "meeting",
+              "call",
+              "deadline",
+              "other"
+            ]
+          }
+        }
+      }
+    },
+    "inform": {
+      "description": "Free intervals inside the window its recipient asked about in the thread.",
+      "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "free",
+          "as_of"
+        ],
+        "properties": {
+          "free": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "start",
+                "end"
+              ],
+              "properties": {
+                "start": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "end": {
+                  "type": "string",
+                  "format": "date-time"
+                }
+              }
+            },
+            "minItems": 0,
+            "maxItems": 50
+          },
+          "timezone": {
+            "type": "string",
+            "maxLength": 64,
+            "minLength": 1,
+            "description": "IANA time zone name."
+          },
+          "as_of": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      }
+    }
+  },
+  "replies": {
+    "request": [
+      "inform",
+      "request",
+      "decline",
+      "ack",
+      "ask_human",
+      "error"
+    ],
+    "inform": [
+      "inform",
+      "request",
+      "ack",
+      "ask_human",
+      "error"
+    ]
+  },
+  "classification": {
+    "/body/window": [
+      "internal"
+    ],
+    "/body/duration_minutes": [
+      "internal"
+    ],
+    "/body/timezone": [
+      "internal"
+    ],
+    "/body/purpose": [
+      "internal"
+    ],
+    "/body/free": [
+      "personal.schedule"
+    ],
+    "/body/as_of": [
+      "internal"
+    ]
+  },
+  "suggested": {
+    "request": [
+      "/body/window",
+      "/body/duration_minutes",
+      "/body/timezone",
+      "/body/purpose"
+    ],
+    "inform": [
+      "/body/free",
+      "/body/timezone",
+      "/body/as_of"
+    ]
+  }
+}

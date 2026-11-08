@@ -1,0 +1,188 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/ledger-entry.schema.json",
+  "title": "ALP ledger entry",
+  "description": "Append-only, per principal, chained over entry digests. Values, notes and free text live in a separately stored, separately encrypted payload whose digest is payload_hash.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "alp",
+    "principal",
+    "principal_id",
+    "seq",
+    "at",
+    "kind",
+    "outcome",
+    "salt",
+    "prev_hash",
+    "hash"
+  ],
+  "properties": {
+    "alp": {
+      "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/version"
+    },
+    "principal": {
+      "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/address"
+    },
+    "principal_id": {
+      "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/principal_id"
+    },
+    "seq": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "at": {
+      "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/timestamp"
+    },
+    "kind": {
+      "enum": [
+        "sent",
+        "refused_outbound",
+        "held",
+        "released",
+        "delivery_failed",
+        "receipt",
+        "received",
+        "refused_inbound",
+        "delivered",
+        "connection_requested",
+        "connection_received",
+        "connection_decided",
+        "grant_set",
+        "grant_revoked",
+        "counterparty_revoked",
+        "ratification",
+        "commit",
+        "flagged",
+        "legal_hold",
+        "erased"
+      ]
+    },
+    "delegate": {
+      "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/delegate_id"
+    },
+    "client_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2048
+    },
+    "counterparty": {
+      "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/address"
+    },
+    "counterparty_broker": {
+      "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/broker_id"
+    },
+    "envelope_id": {
+      "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/ulid"
+    },
+    "thread": {
+      "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/ulid"
+    },
+    "scope": {
+      "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/scope_id"
+    },
+    "type": {
+      "enum": [
+        "request",
+        "propose",
+        "counter",
+        "accept",
+        "decline",
+        "inform",
+        "ask_human",
+        "commit",
+        "ack",
+        "error",
+        "connection_request",
+        "connection_response",
+        "revoke"
+      ]
+    },
+    "disclosed": {
+      "type": "array",
+      "items": {
+        "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/pointer"
+      },
+      "minItems": 0,
+      "maxItems": 128,
+      "uniqueItems": true
+    },
+    "redacted": {
+      "type": "array",
+      "items": {
+        "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/pointer"
+      },
+      "minItems": 0,
+      "maxItems": 128,
+      "uniqueItems": true
+    },
+    "labels": {
+      "type": "array",
+      "items": {
+        "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/label"
+      },
+      "minItems": 0,
+      "maxItems": 32,
+      "uniqueItems": true
+    },
+    "outcome": {
+      "enum": [
+        "allowed",
+        "redacted",
+        "rejected",
+        "refused",
+        "accepted",
+        "held",
+        "delivered",
+        "info"
+      ]
+    },
+    "code": {
+      "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/error_code"
+    },
+    "policy_ids": {
+      "type": "array",
+      "items": {
+        "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/policy_id"
+      },
+      "minItems": 0,
+      "maxItems": 32,
+      "uniqueItems": true
+    },
+    "envelope_hash": {
+      "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/sha256"
+    },
+    "receipt_hash": {
+      "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/sha256"
+    },
+    "counterparty_ledger_hash": {
+      "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/sha256"
+    },
+    "ref": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "payload_hash": {
+      "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/sha256"
+    },
+    "salt": {
+      "description": "16 to 64 random bytes (at least 128 bits), new for each entry, as unpadded base64url, so that the entry's hash confirms no guess of what it records (spec 11.4).",
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{22,86}$"
+    },
+    "prev_hash": {
+      "oneOf": [
+        {
+          "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/sha256"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "hash": {
+      "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/sha256"
+    }
+  }
+}

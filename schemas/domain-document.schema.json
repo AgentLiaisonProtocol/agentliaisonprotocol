@@ -1,0 +1,150 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/domain-document.schema.json",
+  "title": "ALP domain document (/.well-known/alp.json)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "alp",
+    "domain",
+    "serial",
+    "max_age",
+    "mode",
+    "brokers",
+    "security_contact"
+  ],
+  "properties": {
+    "alp": {
+      "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/version"
+    },
+    "domain": {
+      "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/domain"
+    },
+    "serial": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "max_age": {
+      "type": "integer",
+      "minimum": 60,
+      "maximum": 86400
+    },
+    "mode": {
+      "enum": [
+        "testing",
+        "enforce"
+      ]
+    },
+    "brokers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "inbox",
+          "jwks_uri",
+          "jkt",
+          "principals"
+        ],
+        "properties": {
+          "id": {
+            "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/broker_id"
+          },
+          "inbox": {
+            "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/https_url"
+          },
+          "jwks_uri": {
+            "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/https_url"
+          },
+          "mcp": {
+            "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/https_url"
+          },
+          "rest": {
+            "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/https_url"
+          },
+          "jkt": {
+            "type": "array",
+            "items": {
+              "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/jkt"
+            },
+            "minItems": 1,
+            "maxItems": 4,
+            "uniqueItems": true
+          },
+          "principals": {
+            "oneOf": [
+              {
+                "const": "*"
+              },
+              {
+                "type": "array",
+                "items": {
+                  "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/address"
+                },
+                "minItems": 1,
+                "maxItems": 10000,
+                "uniqueItems": true
+              }
+            ]
+          },
+          "operator_statement": {
+            "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/https_url"
+          }
+        }
+      },
+      "minItems": 1,
+      "maxItems": 16,
+      "contains": {
+        "type": "object",
+        "properties": {
+          "principals": {
+            "const": "*"
+          }
+        },
+        "required": [
+          "principals"
+        ]
+      },
+      "minContains": 0,
+      "maxContains": 1
+    },
+    "revoked_jkt": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "jkt",
+          "compromised_since"
+        ],
+        "properties": {
+          "jkt": {
+            "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/jkt"
+          },
+          "compromised_since": {
+            "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/timestamp"
+          }
+        }
+      },
+      "minItems": 0,
+      "maxItems": 64
+    },
+    "security_contact": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "format": "uri",
+        "maxLength": 512,
+        "pattern": "^(?:mailto:|https://)"
+      },
+      "minItems": 1,
+      "maxItems": 4,
+      "uniqueItems": true
+    },
+    "updated_at": {
+      "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/timestamp"
+    }
+  }
+}

@@ -1,0 +1,558 @@
+{
+  "description": "Shared fixture for the vectors: brokers, domain documents, JWKS, principals and the private org policy of example.org. All names are fictional; all keys are TEST-ONLY.",
+  "now": "2026-11-09T14:00:00Z",
+  "clock_skew_seconds": 300,
+  "brokers": {
+    "org": "https://broker.example.org",
+    "partner": "https://broker.partner.example",
+    "rogue": "https://rogue.example",
+    "hosted": "https://hosted.example.net",
+    "old": "https://old-broker.example.org",
+    "outside": "https://broker.outside.example"
+  },
+  "principals": {
+    "ana": {
+      "address": "alp:ana@example.org",
+      "principal_id": "ana-7f3a9c41d2e8b605",
+      "delegate": "alp:ana@example.org/agent-a",
+      "attestation": "vendor",
+      "class": "business",
+      "client_id": "https://agent-a.example/oauth/client.json"
+    },
+    "lee": {
+      "address": "alp:lee@example.org",
+      "principal_id": "lee-2b8e61f0a9c4d735",
+      "delegate": "alp:lee@example.org/agent-b",
+      "attestation": "vendor",
+      "class": "business",
+      "client_id": "https://agent-b.example/oauth/client.json"
+    },
+    "fin": {
+      "address": "alp:fin@example.org",
+      "principal_id": "fin-4c2d9e0f1a7b3856"
+    },
+    "guest": {
+      "address": "alp:guest@example.org",
+      "principal_id": "gst-0a1b2c3d4e5f6071"
+    },
+    "pat": {
+      "address": "alp:pat@partner.example",
+      "principal_id": "pat-91c0e4a7b3d2f816",
+      "delegate": "alp:pat@partner.example/agent-c",
+      "attestation": "self",
+      "class": "consumer",
+      "client_id": "pat-script"
+    },
+    "mallory": {
+      "address": "alp:mallory@outside.example",
+      "principal_id": "mal-5d7e2c9a1f0b4e63",
+      "delegate": "alp:mallory@outside.example/agent-d",
+      "attestation": "vendor",
+      "class": "consumer"
+    }
+  },
+  "domain_documents": {
+    "example.org@42": {
+      "alp": "0.1",
+      "domain": "example.org",
+      "serial": 42,
+      "max_age": 3600,
+      "mode": "enforce",
+      "brokers": [
+        {
+          "id": "https://broker.example.org",
+          "inbox": "https://broker.example.org/federation/inbox",
+          "jwks_uri": "https://broker.example.org/.well-known/jwks.json",
+          "mcp": "https://broker.example.org/mcp",
+          "rest": "https://broker.example.org/rest",
+          "jkt": [
+            "Qlbvmc8DWyTQ_pE2ysLApn4T03jw-c6Vq65LODOzGFk"
+          ],
+          "principals": "*"
+        },
+        {
+          "id": "https://hosted.example.net",
+          "inbox": "https://hosted.example.net/federation/inbox",
+          "jwks_uri": "https://hosted.example.net/.well-known/jwks.json",
+          "mcp": "https://hosted.example.net/mcp",
+          "rest": "https://hosted.example.net/rest",
+          "jkt": [
+            "ZqZe_gv4v1WAxBpfLZrWBfWhvD8ZY0r63gw9kuLJAuU"
+          ],
+          "principals": [
+            "alp:guest@example.org"
+          ]
+        }
+      ],
+      "security_contact": [
+        "mailto:security@example.org"
+      ],
+      "updated_at": "2026-11-01T09:00:00Z"
+    },
+    "example.org@41": {
+      "alp": "0.1",
+      "domain": "example.org",
+      "serial": 41,
+      "max_age": 3600,
+      "mode": "enforce",
+      "brokers": [
+        {
+          "id": "https://old-broker.example.org",
+          "inbox": "https://old-broker.example.org/federation/inbox",
+          "jwks_uri": "https://old-broker.example.org/.well-known/jwks.json",
+          "mcp": "https://old-broker.example.org/mcp",
+          "rest": "https://old-broker.example.org/rest",
+          "jkt": [
+            "g_gmi09_5Z4G1KXRh2Y7wbqaZZMlVi5jmB7MHFGBzTU"
+          ],
+          "principals": "*"
+        }
+      ],
+      "security_contact": [
+        "mailto:security@example.org"
+      ],
+      "updated_at": "2026-10-01T09:00:00Z"
+    },
+    "partner.example@7": {
+      "alp": "0.1",
+      "domain": "partner.example",
+      "serial": 7,
+      "max_age": 3600,
+      "mode": "enforce",
+      "brokers": [
+        {
+          "id": "https://broker.partner.example",
+          "inbox": "https://broker.partner.example/federation/inbox",
+          "jwks_uri": "https://broker.partner.example/.well-known/jwks.json",
+          "mcp": "https://broker.partner.example/mcp",
+          "rest": "https://broker.partner.example/rest",
+          "jkt": [
+            "GY2JlxfWsu0ofz81Rg2H3JbT6dBe-y72s55Jv6EKrHs",
+            "91NSzo2nXkDLwfnUXSV2cuY2cJ1QIPngF8CWRhfX1B8"
+          ],
+          "principals": "*"
+        }
+      ],
+      "security_contact": [
+        "mailto:security@partner.example",
+        "https://partner.example/security"
+      ],
+      "updated_at": "2026-11-02T09:00:00Z"
+    },
+    "outside.example@3": {
+      "alp": "0.1",
+      "domain": "outside.example",
+      "serial": 3,
+      "max_age": 600,
+      "mode": "testing",
+      "brokers": [
+        {
+          "id": "https://broker.outside.example",
+          "inbox": "https://broker.outside.example/federation/inbox",
+          "jwks_uri": "https://broker.outside.example/.well-known/jwks.json",
+          "mcp": "https://broker.outside.example/mcp",
+          "rest": "https://broker.outside.example/rest",
+          "jkt": [
+            "FjxD_y7KSw-RM1VSSgAZLqW0lnk4BLPlAEWXepufj1k"
+          ],
+          "principals": "*"
+        }
+      ],
+      "security_contact": [
+        "mailto:abuse@outside.example"
+      ]
+    }
+  },
+  "jwks": {
+    "https://broker.example.org/.well-known/jwks.json": {
+      "keys": [
+        {
+          "kty": "OKP",
+          "crv": "Ed25519",
+          "x": "FB6gZo5XXqZcCaaQfcHZuMMct-_x7RHJamPcRdBSE0Y",
+          "kid": "Qlbvmc8DWyTQ_pE2ysLApn4T03jw-c6Vq65LODOzGFk",
+          "alg": "Ed25519",
+          "use": "sig",
+          "alp_use": "federation"
+        }
+      ]
+    },
+    "https://broker.partner.example/.well-known/jwks.json": {
+      "keys": [
+        {
+          "kty": "OKP",
+          "crv": "Ed25519",
+          "x": "6cu0sQ7rfFRfUNrf4fY4kQNl3SlZ-U5Kd4K_HY63KmM",
+          "kid": "GY2JlxfWsu0ofz81Rg2H3JbT6dBe-y72s55Jv6EKrHs",
+          "alg": "Ed25519",
+          "use": "sig",
+          "alp_use": "federation"
+        },
+        {
+          "kty": "EC",
+          "crv": "P-256",
+          "x": "ypMX5Xo-E6PBPF3ly2ErNLmuvY3QJo_W3NxAmqABf9g",
+          "y": "hIpEaMOX0nBNJqF8CFlR7uczqPxjuGbI7bxqvBHsuSM",
+          "kid": "91NSzo2nXkDLwfnUXSV2cuY2cJ1QIPngF8CWRhfX1B8",
+          "alg": "ES256",
+          "use": "sig",
+          "alp_use": "federation"
+        },
+        {
+          "kty": "OKP",
+          "crv": "Ed25519",
+          "x": "orVW6HfQw9Kepi5kr7K_BWdkg-t_ZFGORuEX8JHrK2A",
+          "kid": "jVNj2xEESYUDWvi6YP--QuOUbc3QZeVENyweMgzZMM4",
+          "alg": "Ed25519",
+          "use": "sig",
+          "alp_use": "federation"
+        }
+      ]
+    },
+    "https://rogue.example/.well-known/jwks.json": {
+      "keys": [
+        {
+          "kty": "OKP",
+          "crv": "Ed25519",
+          "x": "da3fSpb1u957y4CeJ37w0452ORy15lPUJTlsrni3yV4",
+          "kid": "KDVF__UM5K-jAY1YNtY6K6FlktVoq6u_ToNaTzK-Ons",
+          "alg": "Ed25519",
+          "use": "sig",
+          "alp_use": "federation"
+        }
+      ]
+    },
+    "https://hosted.example.net/.well-known/jwks.json": {
+      "keys": [
+        {
+          "kty": "OKP",
+          "crv": "Ed25519",
+          "x": "xheaOEurBjiKO4vifhh-yuZpO_jjsN_mp5NGLunmLX4",
+          "kid": "ZqZe_gv4v1WAxBpfLZrWBfWhvD8ZY0r63gw9kuLJAuU",
+          "alg": "Ed25519",
+          "use": "sig",
+          "alp_use": "federation"
+        }
+      ]
+    },
+    "https://old-broker.example.org/.well-known/jwks.json": {
+      "keys": [
+        {
+          "kty": "OKP",
+          "crv": "Ed25519",
+          "x": "PuOKP3R4mBUKm7ltOkYIl9ujNKgdW3Lg2tdeLzX0N1s",
+          "kid": "g_gmi09_5Z4G1KXRh2Y7wbqaZZMlVi5jmB7MHFGBzTU",
+          "alg": "Ed25519",
+          "use": "sig",
+          "alp_use": "federation"
+        }
+      ]
+    },
+    "https://broker.outside.example/.well-known/jwks.json": {
+      "keys": [
+        {
+          "kty": "OKP",
+          "crv": "Ed25519",
+          "x": "Z2Wpx-z3t13zmF4DLeHIt70ZL4l3R8cybezHaBWUoF8",
+          "kid": "FjxD_y7KSw-RM1VSSgAZLqW0lnk4BLPlAEWXepufj1k",
+          "alg": "Ed25519",
+          "use": "sig",
+          "alp_use": "federation"
+        }
+      ]
+    }
+  },
+  "org_policies": {
+    "example.org": {
+      "alp": "0.1",
+      "id": "example-org",
+      "serial": 12,
+      "domains": [
+        "example.org"
+      ],
+      "updated_at": "2026-11-05T12:00:00Z",
+      "groups": {
+        "finance": {
+          "members": [
+            "alp:fin@example.org"
+          ]
+        },
+        "analysts": {
+          "members": [
+            "alp:ana@example.org"
+          ]
+        },
+        "leaders": {
+          "members": [
+            "alp:lee@example.org"
+          ]
+        }
+      },
+      "classification": {
+        "rules": [
+          {
+            "id": "fin-1",
+            "labels": [
+              "confidential.financial"
+            ],
+            "direction": "both",
+            "allow": [
+              "group:finance"
+            ],
+            "action": "reject",
+            "mode": "enforce",
+            "description": "Financial figures go only to the finance group."
+          },
+          {
+            "id": "conf-1",
+            "labels": [
+              "confidential",
+              "confidential.*"
+            ],
+            "direction": "outbound",
+            "allow": [
+              "@org"
+            ],
+            "action": "reject",
+            "mode": "enforce",
+            "description": "Confidential fields never leave the organization."
+          },
+          {
+            "id": "restricted-1",
+            "labels": [
+              "restricted.*"
+            ],
+            "direction": "both",
+            "allow": [
+              "@org"
+            ],
+            "action": "reject",
+            "mode": "enforce"
+          }
+        ]
+      },
+      "default_relationships": [
+        {
+          "id": "analysts-leaders",
+          "from": [
+            "group:analysts"
+          ],
+          "to": [
+            "group:leaders"
+          ],
+          "scopes": {
+            "alp.briefing/1": {
+              "forward": {
+                "may": [
+                  "request",
+                  "ack",
+                  "ask_human"
+                ],
+                "fields": [
+                  "/body/topic",
+                  "/body/questions/*",
+                  "/body/depth",
+                  "/body/due_by",
+                  "/body/context/project",
+                  "/body/context/amount",
+                  "/note"
+                ]
+              },
+              "reverse": {
+                "may": [
+                  "inform",
+                  "decline",
+                  "ack",
+                  "ask_human",
+                  "error"
+                ],
+                "fields": [
+                  "/body/points/*",
+                  "/body/as_of",
+                  "/body/confidence",
+                  "/body/follow_up"
+                ]
+              }
+            },
+            "alp.availability/1": {
+              "forward": {
+                "may": [
+                  "request",
+                  "ack"
+                ],
+                "fields": [
+                  "/body/window",
+                  "/body/duration_minutes",
+                  "/body/timezone",
+                  "/body/purpose"
+                ]
+              },
+              "reverse": {
+                "may": [
+                  "inform",
+                  "decline",
+                  "ack"
+                ],
+                "fields": [
+                  "/body/free",
+                  "/body/timezone",
+                  "/body/as_of"
+                ]
+              }
+            }
+          },
+          "rate_limit": {
+            "count": 50,
+            "per_seconds": 86400
+          }
+        }
+      ],
+      "ratification": {
+        "required_scopes": [
+          "alp.document_request/1"
+        ]
+      },
+      "dlp": {
+        "categories": [
+          "payment_card",
+          "private_key",
+          "credential",
+          "government_id"
+        ],
+        "inbound": true,
+        "timeout_ms": 2000,
+        "on_error": "block"
+      },
+      "retention": {
+        "ledger_days": 2555,
+        "store_values": "free_text"
+      },
+      "federation": {
+        "mode": "deny",
+        "domains": [
+          "blocked.example"
+        ]
+      },
+      "connection_requests": {
+        "inbound": "allow"
+      },
+      "clients": {
+        "mode": "enforce",
+        "allowed": [
+          {
+            "client_id": "https://agent-a.example/oauth/client.json",
+            "label": "agent-a",
+            "scopes": [
+              "alp.briefing/1",
+              "alp.availability/1",
+              "alp.meeting/1",
+              "alp.status/1"
+            ],
+            "attestation": "vendor",
+            "class": "business",
+            "no_training": true,
+            "retention_days": 30
+          },
+          {
+            "client_id": "https://agent-b.example/oauth/client.json",
+            "label": "agent-b",
+            "scopes": [
+              "alp.briefing/1",
+              "alp.availability/1",
+              "alp.meeting/1",
+              "alp.status/1",
+              "alp.document_request/1"
+            ],
+            "attestation": "vendor",
+            "class": "business",
+            "no_training": true,
+            "retention_days": 30
+          },
+          {
+            "client_id": "https://agent-e.example/oauth/client.json",
+            "label": "agent-e",
+            "scopes": [
+              "alp.briefing/1",
+              "alp.status/1"
+            ],
+            "attestation": "vendor",
+            "class": "consumer",
+            "no_training": false
+          }
+        ]
+      },
+      "delivery_minimums": [
+        {
+          "labels": [
+            "confidential",
+            "confidential.*"
+          ],
+          "min_class": "business",
+          "no_training": true
+        }
+      ],
+      "blocked": {
+        "delegates": [
+          "alp:lee@example.org/agent-a"
+        ],
+        "domains": [
+          "spam.example"
+        ],
+        "brokers": [
+          "https://rogue.example"
+        ]
+      },
+      "human_fallback": "notify_only",
+      "sms": false,
+      "inbound_default": "response_only"
+    }
+  },
+  "delegates": {
+    "alp:ana@example.org/agent-a": {
+      "principal": "alp:ana@example.org",
+      "client_id": "https://agent-a.example/oauth/client.json",
+      "attestation": "vendor",
+      "class": "business",
+      "no_training": true,
+      "retention_days": 30
+    },
+    "alp:lee@example.org/agent-b": {
+      "principal": "alp:lee@example.org",
+      "client_id": "https://agent-b.example/oauth/client.json",
+      "attestation": "vendor",
+      "class": "business",
+      "no_training": true,
+      "retention_days": 30
+    },
+    "alp:lee@example.org/agent-e": {
+      "principal": "alp:lee@example.org",
+      "client_id": "https://agent-e.example/oauth/client.json",
+      "attestation": "vendor",
+      "class": "consumer",
+      "no_training": false
+    },
+    "alp:lee@example.org/agent-a": {
+      "principal": "alp:lee@example.org",
+      "client_id": "https://agent-a.example/oauth/client.json",
+      "attestation": "vendor",
+      "class": "business",
+      "no_training": true,
+      "retention_days": 30
+    },
+    "alp:lee@example.org/old-tool": {
+      "principal": "alp:lee@example.org",
+      "client_id": "https://old-tool.example/oauth/client.json",
+      "attestation": "vendor",
+      "class": "business",
+      "no_training": true,
+      "retention_days": 30
+    },
+    "alp:pat@partner.example/agent-c": {
+      "principal": "alp:pat@partner.example",
+      "client_id": "pat-script",
+      "attestation": "self",
+      "class": "consumer",
+      "no_training": false
+    }
+  }
+}

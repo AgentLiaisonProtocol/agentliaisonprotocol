@@ -1,0 +1,137 @@
+{
+  "description": "Pat's and Lee's ledgers for one delivered envelope. Each entry's hash is SHA-256 of the JCS form of the entry without hash; each entry carries a salt (here derived from a TEST-ONLY tag; a broker draws it at random), so the ledger_hash Pat's broker gets confirms no guess of Lee's entry; prev_hash chains entries; both ledgers carry the same envelope_hash; Pat's receipt entry carries the receipt hash and Lee's entry hash from the receipt.",
+  "envelope": {
+    "alp": "0.1",
+    "id": "01M709DBMR81TJCEEE4AN4X0PD",
+    "thread": "01M709DBMR81TJCEEE4AN4X0PD",
+    "from": {
+      "address": "alp:pat@partner.example",
+      "principal_id": "pat-91c0e4a7b3d2f816",
+      "delegate": "alp:pat@partner.example/agent-c",
+      "attestation": "self",
+      "class": "consumer"
+    },
+    "to": {
+      "address": "alp:lee@example.org"
+    },
+    "aud": "https://broker.example.org",
+    "scope": "alp.status/1",
+    "type": "request",
+    "body": {
+      "subject": "Launch-day dashboards"
+    },
+    "grant": "01M6V4Y6R0ZP55BRGVHFME05BR",
+    "labels": [
+      "internal"
+    ],
+    "created_at": "2026-11-09T13:59:00Z",
+    "expires_at": "2026-11-10T14:00:00Z",
+    "origin_broker": "https://broker.partner.example",
+    "decision": {
+      "outcome": "allowed",
+      "redacted": [],
+      "policy_ids": [
+        "partner.example#3"
+      ]
+    },
+    "broker_sig": "eyJhbGciOiJFZDI1NTE5Iiwia2lkIjoiR1kySmx4ZldzdTBvZno4MVJnMkgzSmJUNmRCZS15NzJzNTVKdjZFS3JIcyIsInR5cCI6ImFscC1lbnZlbG9wZStqd3MifQ..EDsln4uRPdWJBOQFjuIdxPd60pp-9aRER5qsy8dMrzDvXAQGLFIFkubQ2AnLK8zL8qSbxm7sarYdYWtmiF-pCA"
+  },
+  "receipt": {
+    "alp": "0.1",
+    "id": "01M7099TBR92GGPPFHZ0VVW9Y3",
+    "envelope_id": "01M709DBMR81TJCEEE4AN4X0PD",
+    "envelope_hash": "sha256:BHAaMs_rF764JPSjM5NHl4HNyxf4gtm6kSTDtPzKwgQ",
+    "status": "accepted",
+    "ledger_hash": "sha256:SeQCsZISUW5ZIs9O7ya_6YLOFxhUB4YTALdqMpkvIkM",
+    "created_at": "2026-11-09T13:59:10Z",
+    "expires_at": "2026-11-16T13:59:10Z",
+    "origin_broker": "https://broker.example.org",
+    "aud": "https://broker.partner.example",
+    "broker_sig": "eyJhbGciOiJFZDI1NTE5Iiwia2lkIjoiUWxidm1jOERXeVRRX3BFMnlzTEFwbjRUMDNqdy1jNlZxNjVMT0RPekdGayIsInR5cCI6ImFscC1yZWNlaXB0K2p3cyJ9..xufGq0hYUMpxIrrtJJPJI-BgMIGjrheftOO4qY6CukIkwVyWypkoiz1aaw0levjtnrBJJpi0X9cpEeIt1k9QAA"
+  },
+  "ledgers": {
+    "alp:pat@partner.example": [
+      {
+        "alp": "0.1",
+        "principal": "alp:pat@partner.example",
+        "principal_id": "pat-91c0e4a7b3d2f816",
+        "seq": 0,
+        "at": "2026-11-09T13:58:59Z",
+        "kind": "sent",
+        "delegate": "alp:pat@partner.example/agent-c",
+        "client_id": "pat-script",
+        "counterparty": "alp:lee@example.org",
+        "counterparty_broker": "https://broker.example.org",
+        "envelope_id": "01M709DBMR81TJCEEE4AN4X0PD",
+        "thread": "01M709DBMR81TJCEEE4AN4X0PD",
+        "scope": "alp.status/1",
+        "type": "request",
+        "disclosed": [
+          "/body/subject"
+        ],
+        "labels": [
+          "internal"
+        ],
+        "outcome": "allowed",
+        "policy_ids": [
+          "partner.example#3"
+        ],
+        "envelope_hash": "sha256:BHAaMs_rF764JPSjM5NHl4HNyxf4gtm6kSTDtPzKwgQ",
+        "payload_hash": "sha256:L7z6BFoT0GeoT28iSHVCs0QDwpzuvfMzNcY48apczAo",
+        "salt": "3g3Caztigo2zDrndBlGgpw",
+        "prev_hash": null,
+        "hash": "sha256:MU5Jg4mDoJ0Y9hM5coerv4TG4MLO6LrQpWYZP8pV4DM"
+      },
+      {
+        "alp": "0.1",
+        "principal": "alp:pat@partner.example",
+        "principal_id": "pat-91c0e4a7b3d2f816",
+        "seq": 1,
+        "at": "2026-11-09T13:59:11Z",
+        "kind": "receipt",
+        "counterparty": "alp:lee@example.org",
+        "counterparty_broker": "https://broker.example.org",
+        "envelope_id": "01M709DBMR81TJCEEE4AN4X0PD",
+        "thread": "01M709DBMR81TJCEEE4AN4X0PD",
+        "outcome": "accepted",
+        "envelope_hash": "sha256:BHAaMs_rF764JPSjM5NHl4HNyxf4gtm6kSTDtPzKwgQ",
+        "receipt_hash": "sha256:-Sf7z3Q4hD-FszPE4zPwZrGhz5ljXB39HuRvCB5Ump4",
+        "counterparty_ledger_hash": "sha256:SeQCsZISUW5ZIs9O7ya_6YLOFxhUB4YTALdqMpkvIkM",
+        "salt": "Zh40fKyHHE0qzKGalpdHSw",
+        "prev_hash": "sha256:MU5Jg4mDoJ0Y9hM5coerv4TG4MLO6LrQpWYZP8pV4DM",
+        "hash": "sha256:a9d7D0fv0KGTlogfrZM8KmMG2tUg8BaEMyKHALpwLcg"
+      }
+    ],
+    "alp:lee@example.org": [
+      {
+        "alp": "0.1",
+        "principal": "alp:lee@example.org",
+        "principal_id": "lee-2b8e61f0a9c4d735",
+        "seq": 0,
+        "at": "2026-11-09T13:59:10Z",
+        "kind": "received",
+        "counterparty": "alp:pat@partner.example",
+        "counterparty_broker": "https://broker.partner.example",
+        "envelope_id": "01M709DBMR81TJCEEE4AN4X0PD",
+        "thread": "01M709DBMR81TJCEEE4AN4X0PD",
+        "scope": "alp.status/1",
+        "type": "request",
+        "disclosed": [
+          "/body/subject"
+        ],
+        "labels": [
+          "internal"
+        ],
+        "outcome": "accepted",
+        "policy_ids": [
+          "example.org#12"
+        ],
+        "envelope_hash": "sha256:BHAaMs_rF764JPSjM5NHl4HNyxf4gtm6kSTDtPzKwgQ",
+        "payload_hash": "sha256:L7z6BFoT0GeoT28iSHVCs0QDwpzuvfMzNcY48apczAo",
+        "salt": "TsKpcDVn11N8vwOMw3J7uQ",
+        "prev_hash": null,
+        "hash": "sha256:SeQCsZISUW5ZIs9O7ya_6YLOFxhUB4YTALdqMpkvIkM"
+      }
+    ]
+  }
+}

@@ -1,0 +1,158 @@
+{
+  "id": "alp.status/1",
+  "title": "Status",
+  "maturity": "core",
+  "description": "Ask for, or send, the status of a piece of work both people know by name or reference.",
+  "starts": [
+    "request",
+    "inform"
+  ],
+  "common_types": [
+    "ack",
+    "decline",
+    "error",
+    "ask_human"
+  ],
+  "negotiable": false,
+  "types": {
+    "request": {
+      "description": "Which piece of work.",
+      "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "subject"
+        ],
+        "properties": {
+          "subject": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "x-alp-text": "untrusted"
+          },
+          "ref": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "x-alp-text": "untrusted"
+          }
+        }
+      }
+    },
+    "inform": {
+      "description": "Its status.",
+      "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "subject",
+          "state",
+          "updated_at"
+        ],
+        "properties": {
+          "subject": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "x-alp-text": "untrusted"
+          },
+          "ref": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "x-alp-text": "untrusted"
+          },
+          "state": {
+            "enum": [
+              "not_started",
+              "in_progress",
+              "blocked",
+              "done",
+              "cancelled"
+            ]
+          },
+          "percent_complete": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "eta": {
+            "type": "string",
+            "format": "date"
+          },
+          "blockers": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 280,
+              "x-alp-text": "untrusted"
+            },
+            "minItems": 1,
+            "maxItems": 5
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      }
+    }
+  },
+  "replies": {
+    "request": [
+      "inform",
+      "request",
+      "decline",
+      "ack",
+      "ask_human",
+      "error"
+    ],
+    "inform": [
+      "inform",
+      "request",
+      "ack",
+      "ask_human",
+      "error"
+    ]
+  },
+  "classification": {
+    "/body/subject": [
+      "internal"
+    ],
+    "/body/ref": [
+      "internal"
+    ],
+    "/body/state": [
+      "internal"
+    ],
+    "/body/percent_complete": [
+      "internal"
+    ],
+    "/body/eta": [
+      "internal"
+    ],
+    "/body/blockers": [
+      "internal"
+    ],
+    "/body/updated_at": [
+      "internal"
+    ]
+  },
+  "suggested": {
+    "request": [
+      "/body/subject",
+      "/body/ref"
+    ],
+    "inform": [
+      "/body/subject",
+      "/body/ref",
+      "/body/state",
+      "/body/percent_complete",
+      "/body/eta",
+      "/body/updated_at"
+    ]
+  }
+}

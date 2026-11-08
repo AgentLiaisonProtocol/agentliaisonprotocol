@@ -1,0 +1,3948 @@
+{
+  "description": "Threads as conversations (spec 9.2, 9.3). Each case is the copy of one thread that Ana's home broker keeps: turns by ana are sent by Ana's agent (direction out), turns by lee are received (direction in), all in the case's scope between alp:ana@example.org and alp:lee@example.org, applied in order at their `at`. A turn names the message it answers by the id of an earlier turn in `in_reply_to` (an id no accepted turn has means the broker doesn't hold it), or names none (a follow-up). `status` is an ack's status; `terms` stands for the terms_hash an accept or commit carries; `ratified` lists whose ratification records the broker holds when a commit is evaluated, and the commit references them; they are valid until `ratified_until` when it is given, otherwise until after the case. A thread takes at most 200 messages besides one that ends it. A refused turn changes nothing. expected.state is the thread's state after the turn as the broker reports it at that turn's `at` (null: no thread yet). Every turn is a full message besides: its policy checks are the policy vectors' business; here the thread rules decide, and, for a turn that carries a `body`, the scope's semantic rules (spec 7.8): in alp.availability/1, each free interval of an inform lies inside the window of the request it answers, when that request is its recipient's, or otherwise of the latest request its recipient sent (refused with schema_invalid).",
+  "now": "2026-11-09T14:00:00Z",
+  "principals": {
+    "ana": "alp:ana@example.org",
+    "lee": "alp:lee@example.org"
+  },
+  "max_thread_messages": 200,
+  "cases": [
+    {
+      "name": "alp.status/1: an update answered by an update, an added update, a follow-up question and its answer, a question back, closed by an ack",
+      "scope": "alp.status/1",
+      "turns": [
+        {
+          "id": "t1",
+          "by": "lee",
+          "type": "inform",
+          "at": "2026-11-09T14:00:00Z",
+          "expires_at": "2026-11-12T14:00:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t2",
+          "by": "ana",
+          "type": "inform",
+          "in_reply_to": "t1",
+          "at": "2026-11-09T14:00:00Z",
+          "expires_at": "2026-11-12T14:00:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t3",
+          "by": "ana",
+          "type": "inform",
+          "at": "2026-11-09T14:00:00Z",
+          "expires_at": "2026-11-12T14:00:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t4",
+          "by": "lee",
+          "type": "request",
+          "in_reply_to": "t2",
+          "at": "2026-11-09T14:00:00Z",
+          "expires_at": "2026-11-12T14:00:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t5",
+          "by": "ana",
+          "type": "inform",
+          "in_reply_to": "t4",
+          "at": "2026-11-09T14:00:00Z",
+          "expires_at": "2026-11-12T14:00:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t6",
+          "by": "ana",
+          "type": "request",
+          "in_reply_to": "t4",
+          "at": "2026-11-09T14:00:00Z",
+          "expires_at": "2026-11-12T14:00:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t7",
+          "by": "lee",
+          "type": "inform",
+          "in_reply_to": "t6",
+          "at": "2026-11-09T14:00:00Z",
+          "expires_at": "2026-11-12T14:00:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t8",
+          "by": "lee",
+          "type": "ack",
+          "in_reply_to": "t5",
+          "status": "completed",
+          "at": "2026-11-09T14:00:00Z",
+          "expires_at": "2026-11-12T14:00:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "done"
+          }
+        },
+        {
+          "id": "t9",
+          "by": "ana",
+          "type": "inform",
+          "at": "2026-11-09T14:00:00Z",
+          "expires_at": "2026-11-12T14:00:00Z",
+          "expected": {
+            "outcome": "refused",
+            "code": "thread_state",
+            "state": "done"
+          }
+        }
+      ]
+    },
+    {
+      "name": "alp.briefing/1: a clarifying question back and its answer, the briefing, an added point, a follow-up question declined without ending the conversation, closed by an ack",
+      "scope": "alp.briefing/1",
+      "turns": [
+        {
+          "id": "t1",
+          "by": "ana",
+          "type": "request",
+          "at": "2026-11-09T14:00:00Z",
+          "expires_at": "2026-11-12T14:00:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t2",
+          "by": "lee",
+          "type": "request",
+          "in_reply_to": "t1",
+          "at": "2026-11-09T14:00:00Z",
+          "expires_at": "2026-11-12T14:00:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t3",
+          "by": "ana",
+          "type": "inform",
+          "in_reply_to": "t2",
+          "at": "2026-11-09T14:00:00Z",
+          "expires_at": "2026-11-12T14:00:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t4",
+          "by": "lee",
+          "type": "inform",
+          "in_reply_to": "t1",
+          "at": "2026-11-09T14:00:00Z",
+          "expires_at": "2026-11-12T14:00:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t5",
+          "by": "lee",
+          "type": "inform",
+          "at": "2026-11-09T14:00:00Z",
+          "expires_at": "2026-11-12T14:00:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t6",
+          "by": "ana",
+          "type": "request",
+          "in_reply_to": "t4",
+          "at": "2026-11-09T14:00:00Z",
+          "expires_at": "2026-11-12T14:00:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t7",
+          "by": "lee",
+          "type": "decline",
+          "in_reply_to": "t6",
+          "at": "2026-11-09T14:00:00Z",
+          "expires_at": "2026-11-12T14:00:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t8",
+          "by": "lee",
+          "type": "inform",
+          "in_reply_to": "t6",
+          "at": "2026-11-09T14:00:00Z",
+          "expires_at": "2026-11-12T14:00:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t9",
+          "by": "ana",
+          "type": "ack",
+          "in_reply_to": "t8",
+          "status": "completed",
+          "at": "2026-11-09T14:00:00Z",
+          "expires_at": "2026-11-12T14:00:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "done"
+          }
+        },
+        {
+          "id": "t10",
+          "by": "lee",
+          "type": "inform",
+          "at": "2026-11-09T14:00:00Z",
+          "expires_at": "2026-11-12T14:00:00Z",
+          "expected": {
+            "outcome": "refused",
+            "code": "thread_state",
+            "state": "done"
+          }
+        }
+      ]
+    },
+    {
+      "name": "alp.briefing/1: a decline of the thread's first message closes it, whichever side declines",
+      "scope": "alp.briefing/1",
+      "turns": [
+        {
+          "id": "t1",
+          "by": "ana",
+          "type": "request",
+          "at": "2026-11-09T14:00:00Z",
+          "expires_at": "2026-11-12T14:00:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t2",
+          "by": "lee",
+          "type": "request",
+          "in_reply_to": "t1",
+          "at": "2026-11-09T14:00:00Z",
+          "expires_at": "2026-11-12T14:00:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t3",
+          "by": "ana",
+          "type": "decline",
+          "in_reply_to": "t2",
+          "at": "2026-11-09T14:00:00Z",
+          "expires_at": "2026-11-12T14:00:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t4",
+          "by": "ana",
+          "type": "decline",
+          "in_reply_to": "t1",
+          "at": "2026-11-09T14:00:00Z",
+          "expires_at": "2026-11-12T14:00:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "done"
+          }
+        },
+        {
+          "id": "t5",
+          "by": "lee",
+          "type": "inform",
+          "in_reply_to": "t1",
+          "at": "2026-11-09T14:00:00Z",
+          "expires_at": "2026-11-12T14:00:00Z",
+          "expected": {
+            "outcome": "refused",
+            "code": "thread_state",
+            "state": "done"
+          }
+        }
+      ]
+    },
+    {
+      "name": "alp.availability/1: follow-up questions and answers; the replies map decides what answers what; an ack that says received leaves the thread open",
+      "scope": "alp.availability/1",
+      "turns": [
+        {
+          "id": "t1",
+          "by": "ana",
+          "type": "request",
+          "at": "2026-11-09T14:00:00Z",
+          "expires_at": "2026-11-12T14:00:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t2",
+          "by": "lee",
+          "type": "inform",
+          "in_reply_to": "t1",
+          "at": "2026-11-09T14:00:00Z",
+          "expires_at": "2026-11-12T14:00:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t3",
+          "by": "ana",
+          "type": "decline",
+          "in_reply_to": "t2",
+          "at": "2026-11-09T14:00:00Z",
+          "expires_at": "2026-11-12T14:00:00Z",
+          "expected": {
+            "outcome": "refused",
+            "code": "thread_state",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t4",
+          "by": "ana",
+          "type": "request",
+          "in_reply_to": "t2",
+          "at": "2026-11-09T14:00:00Z",
+          "expires_at": "2026-11-12T14:00:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t5",
+          "by": "lee",
+          "type": "inform",
+          "in_reply_to": "t4",
+          "at": "2026-11-09T14:00:00Z",
+          "expires_at": "2026-11-12T14:00:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t6",
+          "by": "lee",
+          "type": "ack",
+          "at": "2026-11-09T14:00:00Z",
+          "expires_at": "2026-11-12T14:00:00Z",
+          "expected": {
+            "outcome": "refused",
+            "code": "thread_state",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t7",
+          "by": "ana",
+          "type": "ack",
+          "in_reply_to": "t5",
+          "status": "received",
+          "at": "2026-11-09T14:00:00Z",
+          "expires_at": "2026-11-12T14:00:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t8",
+          "by": "ana",
+          "type": "ack",
+          "in_reply_to": "t5",
+          "status": "completed",
+          "at": "2026-11-09T14:00:00Z",
+          "expires_at": "2026-11-12T14:00:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "done"
+          }
+        }
+      ]
+    },
+    {
+      "name": "alp.availability/1: every free interval lies inside the window its recipient asked about, whether the inform answers that request, updates an answer or follows up",
+      "scope": "alp.availability/1",
+      "turns": [
+        {
+          "id": "t1",
+          "by": "ana",
+          "type": "request",
+          "body": {
+            "window": {
+              "start": "2026-11-10T15:00:00Z",
+              "end": "2026-11-10T18:00:00Z"
+            },
+            "duration_minutes": 30
+          },
+          "at": "2026-11-09T14:00:00Z",
+          "expires_at": "2026-11-12T14:00:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t2",
+          "by": "lee",
+          "type": "inform",
+          "in_reply_to": "t1",
+          "body": {
+            "free": [
+              {
+                "start": "2026-11-10T15:00:00Z",
+                "end": "2026-11-10T15:30:00Z"
+              }
+            ],
+            "as_of": "2026-11-09T13:00:00Z"
+          },
+          "at": "2026-11-09T14:00:00Z",
+          "expires_at": "2026-11-12T14:00:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t3",
+          "by": "lee",
+          "type": "inform",
+          "in_reply_to": "t1",
+          "body": {
+            "free": [
+              {
+                "start": "2026-11-11T15:00:00Z",
+                "end": "2026-11-11T15:30:00Z"
+              }
+            ],
+            "as_of": "2026-11-09T13:00:00Z"
+          },
+          "at": "2026-11-09T14:00:00Z",
+          "expires_at": "2026-11-12T14:00:00Z",
+          "expected": {
+            "outcome": "refused",
+            "code": "schema_invalid",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t4",
+          "by": "lee",
+          "type": "inform",
+          "body": {
+            "free": [
+              {
+                "start": "2026-11-12T15:00:00Z",
+                "end": "2026-11-12T15:30:00Z"
+              }
+            ],
+            "as_of": "2026-11-09T13:00:00Z"
+          },
+          "at": "2026-11-09T14:00:00Z",
+          "expires_at": "2026-11-12T14:00:00Z",
+          "expected": {
+            "outcome": "refused",
+            "code": "schema_invalid",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t5",
+          "by": "lee",
+          "type": "inform",
+          "in_reply_to": "t2",
+          "body": {
+            "free": [
+              {
+                "start": "2026-11-13T15:00:00Z",
+                "end": "2026-11-13T15:30:00Z"
+              }
+            ],
+            "as_of": "2026-11-09T13:00:00Z"
+          },
+          "at": "2026-11-09T14:00:00Z",
+          "expires_at": "2026-11-12T14:00:00Z",
+          "expected": {
+            "outcome": "refused",
+            "code": "schema_invalid",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t6",
+          "by": "lee",
+          "type": "inform",
+          "body": {
+            "free": [
+              {
+                "start": "2026-11-10T16:00:00Z",
+                "end": "2026-11-10T16:30:00Z"
+              }
+            ],
+            "as_of": "2026-11-09T13:00:00Z"
+          },
+          "at": "2026-11-09T14:00:00Z",
+          "expires_at": "2026-11-12T14:00:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t7",
+          "by": "lee",
+          "type": "request",
+          "in_reply_to": "t1",
+          "body": {
+            "window": {
+              "start": "2026-11-10T08:00:00Z",
+              "end": "2026-11-10T20:00:00Z"
+            },
+            "duration_minutes": 30
+          },
+          "at": "2026-11-09T14:00:00Z",
+          "expires_at": "2026-11-12T14:00:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t8",
+          "by": "lee",
+          "type": "inform",
+          "in_reply_to": "t7",
+          "body": {
+            "free": [
+              {
+                "start": "2026-11-10T09:00:00Z",
+                "end": "2026-11-10T09:30:00Z"
+              }
+            ],
+            "as_of": "2026-11-09T13:00:00Z"
+          },
+          "at": "2026-11-09T14:00:00Z",
+          "expires_at": "2026-11-12T14:00:00Z",
+          "expected": {
+            "outcome": "refused",
+            "code": "schema_invalid",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t9",
+          "by": "ana",
+          "type": "inform",
+          "in_reply_to": "t7",
+          "body": {
+            "free": [
+              {
+                "start": "2026-11-10T09:00:00Z",
+                "end": "2026-11-10T09:30:00Z"
+              }
+            ],
+            "as_of": "2026-11-09T13:00:00Z"
+          },
+          "at": "2026-11-09T14:00:00Z",
+          "expires_at": "2026-11-12T14:00:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t10",
+          "by": "ana",
+          "type": "request",
+          "in_reply_to": "t6",
+          "body": {
+            "window": {
+              "start": "2026-11-11T15:00:00Z",
+              "end": "2026-11-11T18:00:00Z"
+            },
+            "duration_minutes": 30
+          },
+          "at": "2026-11-09T14:00:00Z",
+          "expires_at": "2026-11-12T14:00:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t11",
+          "by": "lee",
+          "type": "inform",
+          "in_reply_to": "t10",
+          "body": {
+            "free": [
+              {
+                "start": "2026-11-11T16:00:00Z",
+                "end": "2026-11-11T16:30:00Z"
+              }
+            ],
+            "as_of": "2026-11-09T13:00:00Z"
+          },
+          "at": "2026-11-09T14:00:00Z",
+          "expires_at": "2026-11-12T14:00:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t12",
+          "by": "lee",
+          "type": "inform",
+          "in_reply_to": "t1",
+          "body": {
+            "free": [
+              {
+                "start": "2026-11-10T17:00:00Z",
+                "end": "2026-11-10T17:30:00Z"
+              }
+            ],
+            "as_of": "2026-11-09T13:00:00Z"
+          },
+          "at": "2026-11-09T14:00:00Z",
+          "expires_at": "2026-11-12T14:00:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t13",
+          "by": "lee",
+          "type": "inform",
+          "body": {
+            "free": [
+              {
+                "start": "2026-11-10T17:30:00Z",
+                "end": "2026-11-10T17:59:00Z"
+              }
+            ],
+            "as_of": "2026-11-09T13:00:00Z"
+          },
+          "at": "2026-11-09T14:00:00Z",
+          "expires_at": "2026-11-12T14:00:00Z",
+          "expected": {
+            "outcome": "refused",
+            "code": "schema_invalid",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t14",
+          "by": "lee",
+          "type": "inform",
+          "in_reply_to": "t11",
+          "body": {
+            "free": [
+              {
+                "start": "2026-11-11T17:00:00Z",
+                "end": "2026-11-11T17:30:00Z"
+              }
+            ],
+            "as_of": "2026-11-09T13:00:00Z"
+          },
+          "at": "2026-11-09T14:00:00Z",
+          "expires_at": "2026-11-12T14:00:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        }
+      ]
+    },
+    {
+      "name": "alp.availability/1: free intervals answer a question; an inform when its recipient has asked nothing is refused",
+      "scope": "alp.availability/1",
+      "turns": [
+        {
+          "id": "t1",
+          "by": "ana",
+          "type": "request",
+          "body": {
+            "window": {
+              "start": "2026-11-10T15:00:00Z",
+              "end": "2026-11-10T18:00:00Z"
+            },
+            "duration_minutes": 30
+          },
+          "at": "2026-11-09T14:00:00Z",
+          "expires_at": "2026-11-12T14:00:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t2",
+          "by": "ana",
+          "type": "inform",
+          "body": {
+            "free": [
+              {
+                "start": "2026-11-10T15:00:00Z",
+                "end": "2026-11-10T15:30:00Z"
+              }
+            ],
+            "as_of": "2026-11-09T13:00:00Z"
+          },
+          "at": "2026-11-09T14:00:00Z",
+          "expires_at": "2026-11-12T14:00:00Z",
+          "expected": {
+            "outcome": "refused",
+            "code": "schema_invalid",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t3",
+          "by": "ana",
+          "type": "inform",
+          "in_reply_to": "t1",
+          "body": {
+            "free": [
+              {
+                "start": "2026-11-10T15:00:00Z",
+                "end": "2026-11-10T15:30:00Z"
+              }
+            ],
+            "as_of": "2026-11-09T13:00:00Z"
+          },
+          "at": "2026-11-09T14:00:00Z",
+          "expires_at": "2026-11-12T14:00:00Z",
+          "expected": {
+            "outcome": "refused",
+            "code": "schema_invalid",
+            "state": "open"
+          }
+        }
+      ]
+    },
+    {
+      "name": "alp.briefing/1: a thread starts only with a type in starts and replies to nothing; a reply names a message the broker holds; types that must reply can't follow up",
+      "scope": "alp.briefing/1",
+      "turns": [
+        {
+          "id": "t1",
+          "by": "lee",
+          "type": "inform",
+          "at": "2026-11-09T14:00:00Z",
+          "expires_at": "2026-11-12T14:00:00Z",
+          "expected": {
+            "outcome": "refused",
+            "code": "thread_state",
+            "state": null
+          }
+        },
+        {
+          "id": "t2",
+          "by": "ana",
+          "type": "request",
+          "in_reply_to": "t1",
+          "at": "2026-11-09T14:00:00Z",
+          "expires_at": "2026-11-12T14:00:00Z",
+          "expected": {
+            "outcome": "refused",
+            "code": "thread_state",
+            "state": null
+          }
+        },
+        {
+          "id": "t3",
+          "by": "ana",
+          "type": "request",
+          "at": "2026-11-09T14:00:00Z",
+          "expires_at": "2026-11-12T14:00:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t4",
+          "by": "lee",
+          "type": "inform",
+          "in_reply_to": "t2",
+          "at": "2026-11-09T14:00:00Z",
+          "expires_at": "2026-11-12T14:00:00Z",
+          "expected": {
+            "outcome": "refused",
+            "code": "thread_state",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t5",
+          "by": "lee",
+          "type": "decline",
+          "at": "2026-11-09T14:00:00Z",
+          "expires_at": "2026-11-12T14:00:00Z",
+          "expected": {
+            "outcome": "refused",
+            "code": "thread_state",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t6",
+          "by": "lee",
+          "type": "counter",
+          "in_reply_to": "t3",
+          "at": "2026-11-09T14:00:00Z",
+          "expires_at": "2026-11-12T14:00:00Z",
+          "expected": {
+            "outcome": "refused",
+            "code": "thread_state",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t7",
+          "by": "lee",
+          "type": "inform",
+          "in_reply_to": "t3",
+          "at": "2026-11-09T14:00:00Z",
+          "expires_at": "2026-11-12T14:00:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        }
+      ]
+    },
+    {
+      "name": "alp.status/1: every message keeps the thread open for its own lifetime; once the latest has expired the thread is expired",
+      "scope": "alp.status/1",
+      "turns": [
+        {
+          "id": "t1",
+          "by": "ana",
+          "type": "request",
+          "at": "2026-11-09T14:00:00Z",
+          "expires_at": "2026-11-09T15:00:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t2",
+          "by": "lee",
+          "type": "inform",
+          "in_reply_to": "t1",
+          "at": "2026-11-09T14:30:00Z",
+          "expires_at": "2026-11-09T16:00:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t3",
+          "by": "ana",
+          "type": "request",
+          "in_reply_to": "t2",
+          "at": "2026-11-09T15:30:00Z",
+          "expires_at": "2026-11-09T15:45:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t4",
+          "by": "lee",
+          "type": "inform",
+          "in_reply_to": "t3",
+          "at": "2026-11-09T16:00:00Z",
+          "expires_at": "2026-11-12T16:00:00Z",
+          "expected": {
+            "outcome": "refused",
+            "code": "thread_state",
+            "state": "expired"
+          }
+        }
+      ]
+    },
+    {
+      "name": "alp.status/1: a thread takes at most 200 messages; then only a message that ends it",
+      "scope": "alp.status/1",
+      "turns": [
+        {
+          "id": "t1",
+          "by": "lee",
+          "type": "inform",
+          "at": "2026-11-09T14:00:00Z",
+          "expires_at": "2026-11-12T14:00:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t2",
+          "by": "ana",
+          "type": "inform",
+          "at": "2026-11-09T14:01:00Z",
+          "expires_at": "2026-11-12T14:01:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t3",
+          "by": "lee",
+          "type": "inform",
+          "at": "2026-11-09T14:02:00Z",
+          "expires_at": "2026-11-12T14:02:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t4",
+          "by": "ana",
+          "type": "inform",
+          "at": "2026-11-09T14:03:00Z",
+          "expires_at": "2026-11-12T14:03:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t5",
+          "by": "lee",
+          "type": "inform",
+          "at": "2026-11-09T14:04:00Z",
+          "expires_at": "2026-11-12T14:04:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t6",
+          "by": "ana",
+          "type": "inform",
+          "at": "2026-11-09T14:05:00Z",
+          "expires_at": "2026-11-12T14:05:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t7",
+          "by": "lee",
+          "type": "inform",
+          "at": "2026-11-09T14:06:00Z",
+          "expires_at": "2026-11-12T14:06:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t8",
+          "by": "ana",
+          "type": "inform",
+          "at": "2026-11-09T14:07:00Z",
+          "expires_at": "2026-11-12T14:07:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t9",
+          "by": "lee",
+          "type": "inform",
+          "at": "2026-11-09T14:08:00Z",
+          "expires_at": "2026-11-12T14:08:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t10",
+          "by": "ana",
+          "type": "inform",
+          "at": "2026-11-09T14:09:00Z",
+          "expires_at": "2026-11-12T14:09:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t11",
+          "by": "lee",
+          "type": "inform",
+          "at": "2026-11-09T14:10:00Z",
+          "expires_at": "2026-11-12T14:10:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t12",
+          "by": "ana",
+          "type": "inform",
+          "at": "2026-11-09T14:11:00Z",
+          "expires_at": "2026-11-12T14:11:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t13",
+          "by": "lee",
+          "type": "inform",
+          "at": "2026-11-09T14:12:00Z",
+          "expires_at": "2026-11-12T14:12:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t14",
+          "by": "ana",
+          "type": "inform",
+          "at": "2026-11-09T14:13:00Z",
+          "expires_at": "2026-11-12T14:13:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t15",
+          "by": "lee",
+          "type": "inform",
+          "at": "2026-11-09T14:14:00Z",
+          "expires_at": "2026-11-12T14:14:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t16",
+          "by": "ana",
+          "type": "inform",
+          "at": "2026-11-09T14:15:00Z",
+          "expires_at": "2026-11-12T14:15:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t17",
+          "by": "lee",
+          "type": "inform",
+          "at": "2026-11-09T14:16:00Z",
+          "expires_at": "2026-11-12T14:16:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t18",
+          "by": "ana",
+          "type": "inform",
+          "at": "2026-11-09T14:17:00Z",
+          "expires_at": "2026-11-12T14:17:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t19",
+          "by": "lee",
+          "type": "inform",
+          "at": "2026-11-09T14:18:00Z",
+          "expires_at": "2026-11-12T14:18:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t20",
+          "by": "ana",
+          "type": "inform",
+          "at": "2026-11-09T14:19:00Z",
+          "expires_at": "2026-11-12T14:19:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t21",
+          "by": "lee",
+          "type": "inform",
+          "at": "2026-11-09T14:20:00Z",
+          "expires_at": "2026-11-12T14:20:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t22",
+          "by": "ana",
+          "type": "inform",
+          "at": "2026-11-09T14:21:00Z",
+          "expires_at": "2026-11-12T14:21:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t23",
+          "by": "lee",
+          "type": "inform",
+          "at": "2026-11-09T14:22:00Z",
+          "expires_at": "2026-11-12T14:22:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t24",
+          "by": "ana",
+          "type": "inform",
+          "at": "2026-11-09T14:23:00Z",
+          "expires_at": "2026-11-12T14:23:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t25",
+          "by": "lee",
+          "type": "inform",
+          "at": "2026-11-09T14:24:00Z",
+          "expires_at": "2026-11-12T14:24:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t26",
+          "by": "ana",
+          "type": "inform",
+          "at": "2026-11-09T14:25:00Z",
+          "expires_at": "2026-11-12T14:25:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t27",
+          "by": "lee",
+          "type": "inform",
+          "at": "2026-11-09T14:26:00Z",
+          "expires_at": "2026-11-12T14:26:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t28",
+          "by": "ana",
+          "type": "inform",
+          "at": "2026-11-09T14:27:00Z",
+          "expires_at": "2026-11-12T14:27:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t29",
+          "by": "lee",
+          "type": "inform",
+          "at": "2026-11-09T14:28:00Z",
+          "expires_at": "2026-11-12T14:28:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t30",
+          "by": "ana",
+          "type": "inform",
+          "at": "2026-11-09T14:29:00Z",
+          "expires_at": "2026-11-12T14:29:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t31",
+          "by": "lee",
+          "type": "inform",
+          "at": "2026-11-09T14:30:00Z",
+          "expires_at": "2026-11-12T14:30:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t32",
+          "by": "ana",
+          "type": "inform",
+          "at": "2026-11-09T14:31:00Z",
+          "expires_at": "2026-11-12T14:31:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t33",
+          "by": "lee",
+          "type": "inform",
+          "at": "2026-11-09T14:32:00Z",
+          "expires_at": "2026-11-12T14:32:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t34",
+          "by": "ana",
+          "type": "inform",
+          "at": "2026-11-09T14:33:00Z",
+          "expires_at": "2026-11-12T14:33:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t35",
+          "by": "lee",
+          "type": "inform",
+          "at": "2026-11-09T14:34:00Z",
+          "expires_at": "2026-11-12T14:34:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t36",
+          "by": "ana",
+          "type": "inform",
+          "at": "2026-11-09T14:35:00Z",
+          "expires_at": "2026-11-12T14:35:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t37",
+          "by": "lee",
+          "type": "inform",
+          "at": "2026-11-09T14:36:00Z",
+          "expires_at": "2026-11-12T14:36:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t38",
+          "by": "ana",
+          "type": "inform",
+          "at": "2026-11-09T14:37:00Z",
+          "expires_at": "2026-11-12T14:37:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t39",
+          "by": "lee",
+          "type": "inform",
+          "at": "2026-11-09T14:38:00Z",
+          "expires_at": "2026-11-12T14:38:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t40",
+          "by": "ana",
+          "type": "inform",
+          "at": "2026-11-09T14:39:00Z",
+          "expires_at": "2026-11-12T14:39:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t41",
+          "by": "lee",
+          "type": "inform",
+          "at": "2026-11-09T14:40:00Z",
+          "expires_at": "2026-11-12T14:40:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t42",
+          "by": "ana",
+          "type": "inform",
+          "at": "2026-11-09T14:41:00Z",
+          "expires_at": "2026-11-12T14:41:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t43",
+          "by": "lee",
+          "type": "inform",
+          "at": "2026-11-09T14:42:00Z",
+          "expires_at": "2026-11-12T14:42:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t44",
+          "by": "ana",
+          "type": "inform",
+          "at": "2026-11-09T14:43:00Z",
+          "expires_at": "2026-11-12T14:43:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t45",
+          "by": "lee",
+          "type": "inform",
+          "at": "2026-11-09T14:44:00Z",
+          "expires_at": "2026-11-12T14:44:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t46",
+          "by": "ana",
+          "type": "inform",
+          "at": "2026-11-09T14:45:00Z",
+          "expires_at": "2026-11-12T14:45:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t47",
+          "by": "lee",
+          "type": "inform",
+          "at": "2026-11-09T14:46:00Z",
+          "expires_at": "2026-11-12T14:46:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t48",
+          "by": "ana",
+          "type": "inform",
+          "at": "2026-11-09T14:47:00Z",
+          "expires_at": "2026-11-12T14:47:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t49",
+          "by": "lee",
+          "type": "inform",
+          "at": "2026-11-09T14:48:00Z",
+          "expires_at": "2026-11-12T14:48:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t50",
+          "by": "ana",
+          "type": "inform",
+          "at": "2026-11-09T14:49:00Z",
+          "expires_at": "2026-11-12T14:49:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t51",
+          "by": "lee",
+          "type": "inform",
+          "at": "2026-11-09T14:50:00Z",
+          "expires_at": "2026-11-12T14:50:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t52",
+          "by": "ana",
+          "type": "inform",
+          "at": "2026-11-09T14:51:00Z",
+          "expires_at": "2026-11-12T14:51:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t53",
+          "by": "lee",
+          "type": "inform",
+          "at": "2026-11-09T14:52:00Z",
+          "expires_at": "2026-11-12T14:52:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t54",
+          "by": "ana",
+          "type": "inform",
+          "at": "2026-11-09T14:53:00Z",
+          "expires_at": "2026-11-12T14:53:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t55",
+          "by": "lee",
+          "type": "inform",
+          "at": "2026-11-09T14:54:00Z",
+          "expires_at": "2026-11-12T14:54:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t56",
+          "by": "ana",
+          "type": "inform",
+          "at": "2026-11-09T14:55:00Z",
+          "expires_at": "2026-11-12T14:55:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t57",
+          "by": "lee",
+          "type": "inform",
+          "at": "2026-11-09T14:56:00Z",
+          "expires_at": "2026-11-12T14:56:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t58",
+          "by": "ana",
+          "type": "inform",
+          "at": "2026-11-09T14:57:00Z",
+          "expires_at": "2026-11-12T14:57:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t59",
+          "by": "lee",
+          "type": "inform",
+          "at": "2026-11-09T14:58:00Z",
+          "expires_at": "2026-11-12T14:58:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t60",
+          "by": "ana",
+          "type": "inform",
+          "at": "2026-11-09T14:59:00Z",
+          "expires_at": "2026-11-12T14:59:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t61",
+          "by": "lee",
+          "type": "inform",
+          "at": "2026-11-09T15:00:00Z",
+          "expires_at": "2026-11-12T15:00:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t62",
+          "by": "ana",
+          "type": "inform",
+          "at": "2026-11-09T15:01:00Z",
+          "expires_at": "2026-11-12T15:01:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t63",
+          "by": "lee",
+          "type": "inform",
+          "at": "2026-11-09T15:02:00Z",
+          "expires_at": "2026-11-12T15:02:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t64",
+          "by": "ana",
+          "type": "inform",
+          "at": "2026-11-09T15:03:00Z",
+          "expires_at": "2026-11-12T15:03:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t65",
+          "by": "lee",
+          "type": "inform",
+          "at": "2026-11-09T15:04:00Z",
+          "expires_at": "2026-11-12T15:04:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t66",
+          "by": "ana",
+          "type": "inform",
+          "at": "2026-11-09T15:05:00Z",
+          "expires_at": "2026-11-12T15:05:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t67",
+          "by": "lee",
+          "type": "inform",
+          "at": "2026-11-09T15:06:00Z",
+          "expires_at": "2026-11-12T15:06:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t68",
+          "by": "ana",
+          "type": "inform",
+          "at": "2026-11-09T15:07:00Z",
+          "expires_at": "2026-11-12T15:07:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t69",
+          "by": "lee",
+          "type": "inform",
+          "at": "2026-11-09T15:08:00Z",
+          "expires_at": "2026-11-12T15:08:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t70",
+          "by": "ana",
+          "type": "inform",
+          "at": "2026-11-09T15:09:00Z",
+          "expires_at": "2026-11-12T15:09:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t71",
+          "by": "lee",
+          "type": "inform",
+          "at": "2026-11-09T15:10:00Z",
+          "expires_at": "2026-11-12T15:10:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t72",
+          "by": "ana",
+          "type": "inform",
+          "at": "2026-11-09T15:11:00Z",
+          "expires_at": "2026-11-12T15:11:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t73",
+          "by": "lee",
+          "type": "inform",
+          "at": "2026-11-09T15:12:00Z",
+          "expires_at": "2026-11-12T15:12:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t74",
+          "by": "ana",
+          "type": "inform",
+          "at": "2026-11-09T15:13:00Z",
+          "expires_at": "2026-11-12T15:13:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t75",
+          "by": "lee",
+          "type": "inform",
+          "at": "2026-11-09T15:14:00Z",
+          "expires_at": "2026-11-12T15:14:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t76",
+          "by": "ana",
+          "type": "inform",
+          "at": "2026-11-09T15:15:00Z",
+          "expires_at": "2026-11-12T15:15:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t77",
+          "by": "lee",
+          "type": "inform",
+          "at": "2026-11-09T15:16:00Z",
+          "expires_at": "2026-11-12T15:16:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t78",
+          "by": "ana",
+          "type": "inform",
+          "at": "2026-11-09T15:17:00Z",
+          "expires_at": "2026-11-12T15:17:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t79",
+          "by": "lee",
+          "type": "inform",
+          "at": "2026-11-09T15:18:00Z",
+          "expires_at": "2026-11-12T15:18:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t80",
+          "by": "ana",
+          "type": "inform",
+          "at": "2026-11-09T15:19:00Z",
+          "expires_at": "2026-11-12T15:19:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t81",
+          "by": "lee",
+          "type": "inform",
+          "at": "2026-11-09T15:20:00Z",
+          "expires_at": "2026-11-12T15:20:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t82",
+          "by": "ana",
+          "type": "inform",
+          "at": "2026-11-09T15:21:00Z",
+          "expires_at": "2026-11-12T15:21:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t83",
+          "by": "lee",
+          "type": "inform",
+          "at": "2026-11-09T15:22:00Z",
+          "expires_at": "2026-11-12T15:22:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t84",
+          "by": "ana",
+          "type": "inform",
+          "at": "2026-11-09T15:23:00Z",
+          "expires_at": "2026-11-12T15:23:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t85",
+          "by": "lee",
+          "type": "inform",
+          "at": "2026-11-09T15:24:00Z",
+          "expires_at": "2026-11-12T15:24:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t86",
+          "by": "ana",
+          "type": "inform",
+          "at": "2026-11-09T15:25:00Z",
+          "expires_at": "2026-11-12T15:25:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t87",
+          "by": "lee",
+          "type": "inform",
+          "at": "2026-11-09T15:26:00Z",
+          "expires_at": "2026-11-12T15:26:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t88",
+          "by": "ana",
+          "type": "inform",
+          "at": "2026-11-09T15:27:00Z",
+          "expires_at": "2026-11-12T15:27:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t89",
+          "by": "lee",
+          "type": "inform",
+          "at": "2026-11-09T15:28:00Z",
+          "expires_at": "2026-11-12T15:28:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t90",
+          "by": "ana",
+          "type": "inform",
+          "at": "2026-11-09T15:29:00Z",
+          "expires_at": "2026-11-12T15:29:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t91",
+          "by": "lee",
+          "type": "inform",
+          "at": "2026-11-09T15:30:00Z",
+          "expires_at": "2026-11-12T15:30:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t92",
+          "by": "ana",
+          "type": "inform",
+          "at": "2026-11-09T15:31:00Z",
+          "expires_at": "2026-11-12T15:31:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t93",
+          "by": "lee",
+          "type": "inform",
+          "at": "2026-11-09T15:32:00Z",
+          "expires_at": "2026-11-12T15:32:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t94",
+          "by": "ana",
+          "type": "inform",
+          "at": "2026-11-09T15:33:00Z",
+          "expires_at": "2026-11-12T15:33:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t95",
+          "by": "lee",
+          "type": "inform",
+          "at": "2026-11-09T15:34:00Z",
+          "expires_at": "2026-11-12T15:34:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t96",
+          "by": "ana",
+          "type": "inform",
+          "at": "2026-11-09T15:35:00Z",
+          "expires_at": "2026-11-12T15:35:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t97",
+          "by": "lee",
+          "type": "inform",
+          "at": "2026-11-09T15:36:00Z",
+          "expires_at": "2026-11-12T15:36:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t98",
+          "by": "ana",
+          "type": "inform",
+          "at": "2026-11-09T15:37:00Z",
+          "expires_at": "2026-11-12T15:37:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t99",
+          "by": "lee",
+          "type": "inform",
+          "at": "2026-11-09T15:38:00Z",
+          "expires_at": "2026-11-12T15:38:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t100",
+          "by": "ana",
+          "type": "inform",
+          "at": "2026-11-09T15:39:00Z",
+          "expires_at": "2026-11-12T15:39:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t101",
+          "by": "lee",
+          "type": "inform",
+          "at": "2026-11-09T15:40:00Z",
+          "expires_at": "2026-11-12T15:40:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t102",
+          "by": "ana",
+          "type": "inform",
+          "at": "2026-11-09T15:41:00Z",
+          "expires_at": "2026-11-12T15:41:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t103",
+          "by": "lee",
+          "type": "inform",
+          "at": "2026-11-09T15:42:00Z",
+          "expires_at": "2026-11-12T15:42:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t104",
+          "by": "ana",
+          "type": "inform",
+          "at": "2026-11-09T15:43:00Z",
+          "expires_at": "2026-11-12T15:43:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t105",
+          "by": "lee",
+          "type": "inform",
+          "at": "2026-11-09T15:44:00Z",
+          "expires_at": "2026-11-12T15:44:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t106",
+          "by": "ana",
+          "type": "inform",
+          "at": "2026-11-09T15:45:00Z",
+          "expires_at": "2026-11-12T15:45:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t107",
+          "by": "lee",
+          "type": "inform",
+          "at": "2026-11-09T15:46:00Z",
+          "expires_at": "2026-11-12T15:46:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t108",
+          "by": "ana",
+          "type": "inform",
+          "at": "2026-11-09T15:47:00Z",
+          "expires_at": "2026-11-12T15:47:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t109",
+          "by": "lee",
+          "type": "inform",
+          "at": "2026-11-09T15:48:00Z",
+          "expires_at": "2026-11-12T15:48:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t110",
+          "by": "ana",
+          "type": "inform",
+          "at": "2026-11-09T15:49:00Z",
+          "expires_at": "2026-11-12T15:49:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t111",
+          "by": "lee",
+          "type": "inform",
+          "at": "2026-11-09T15:50:00Z",
+          "expires_at": "2026-11-12T15:50:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t112",
+          "by": "ana",
+          "type": "inform",
+          "at": "2026-11-09T15:51:00Z",
+          "expires_at": "2026-11-12T15:51:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t113",
+          "by": "lee",
+          "type": "inform",
+          "at": "2026-11-09T15:52:00Z",
+          "expires_at": "2026-11-12T15:52:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t114",
+          "by": "ana",
+          "type": "inform",
+          "at": "2026-11-09T15:53:00Z",
+          "expires_at": "2026-11-12T15:53:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t115",
+          "by": "lee",
+          "type": "inform",
+          "at": "2026-11-09T15:54:00Z",
+          "expires_at": "2026-11-12T15:54:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t116",
+          "by": "ana",
+          "type": "inform",
+          "at": "2026-11-09T15:55:00Z",
+          "expires_at": "2026-11-12T15:55:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t117",
+          "by": "lee",
+          "type": "inform",
+          "at": "2026-11-09T15:56:00Z",
+          "expires_at": "2026-11-12T15:56:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t118",
+          "by": "ana",
+          "type": "inform",
+          "at": "2026-11-09T15:57:00Z",
+          "expires_at": "2026-11-12T15:57:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t119",
+          "by": "lee",
+          "type": "inform",
+          "at": "2026-11-09T15:58:00Z",
+          "expires_at": "2026-11-12T15:58:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t120",
+          "by": "ana",
+          "type": "inform",
+          "at": "2026-11-09T15:59:00Z",
+          "expires_at": "2026-11-12T15:59:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t121",
+          "by": "lee",
+          "type": "inform",
+          "at": "2026-11-09T16:00:00Z",
+          "expires_at": "2026-11-12T16:00:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t122",
+          "by": "ana",
+          "type": "inform",
+          "at": "2026-11-09T16:01:00Z",
+          "expires_at": "2026-11-12T16:01:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t123",
+          "by": "lee",
+          "type": "inform",
+          "at": "2026-11-09T16:02:00Z",
+          "expires_at": "2026-11-12T16:02:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t124",
+          "by": "ana",
+          "type": "inform",
+          "at": "2026-11-09T16:03:00Z",
+          "expires_at": "2026-11-12T16:03:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t125",
+          "by": "lee",
+          "type": "inform",
+          "at": "2026-11-09T16:04:00Z",
+          "expires_at": "2026-11-12T16:04:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t126",
+          "by": "ana",
+          "type": "inform",
+          "at": "2026-11-09T16:05:00Z",
+          "expires_at": "2026-11-12T16:05:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t127",
+          "by": "lee",
+          "type": "inform",
+          "at": "2026-11-09T16:06:00Z",
+          "expires_at": "2026-11-12T16:06:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t128",
+          "by": "ana",
+          "type": "inform",
+          "at": "2026-11-09T16:07:00Z",
+          "expires_at": "2026-11-12T16:07:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t129",
+          "by": "lee",
+          "type": "inform",
+          "at": "2026-11-09T16:08:00Z",
+          "expires_at": "2026-11-12T16:08:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t130",
+          "by": "ana",
+          "type": "inform",
+          "at": "2026-11-09T16:09:00Z",
+          "expires_at": "2026-11-12T16:09:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t131",
+          "by": "lee",
+          "type": "inform",
+          "at": "2026-11-09T16:10:00Z",
+          "expires_at": "2026-11-12T16:10:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t132",
+          "by": "ana",
+          "type": "inform",
+          "at": "2026-11-09T16:11:00Z",
+          "expires_at": "2026-11-12T16:11:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t133",
+          "by": "lee",
+          "type": "inform",
+          "at": "2026-11-09T16:12:00Z",
+          "expires_at": "2026-11-12T16:12:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t134",
+          "by": "ana",
+          "type": "inform",
+          "at": "2026-11-09T16:13:00Z",
+          "expires_at": "2026-11-12T16:13:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t135",
+          "by": "lee",
+          "type": "inform",
+          "at": "2026-11-09T16:14:00Z",
+          "expires_at": "2026-11-12T16:14:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t136",
+          "by": "ana",
+          "type": "inform",
+          "at": "2026-11-09T16:15:00Z",
+          "expires_at": "2026-11-12T16:15:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t137",
+          "by": "lee",
+          "type": "inform",
+          "at": "2026-11-09T16:16:00Z",
+          "expires_at": "2026-11-12T16:16:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t138",
+          "by": "ana",
+          "type": "inform",
+          "at": "2026-11-09T16:17:00Z",
+          "expires_at": "2026-11-12T16:17:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t139",
+          "by": "lee",
+          "type": "inform",
+          "at": "2026-11-09T16:18:00Z",
+          "expires_at": "2026-11-12T16:18:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t140",
+          "by": "ana",
+          "type": "inform",
+          "at": "2026-11-09T16:19:00Z",
+          "expires_at": "2026-11-12T16:19:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t141",
+          "by": "lee",
+          "type": "inform",
+          "at": "2026-11-09T16:20:00Z",
+          "expires_at": "2026-11-12T16:20:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t142",
+          "by": "ana",
+          "type": "inform",
+          "at": "2026-11-09T16:21:00Z",
+          "expires_at": "2026-11-12T16:21:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t143",
+          "by": "lee",
+          "type": "inform",
+          "at": "2026-11-09T16:22:00Z",
+          "expires_at": "2026-11-12T16:22:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t144",
+          "by": "ana",
+          "type": "inform",
+          "at": "2026-11-09T16:23:00Z",
+          "expires_at": "2026-11-12T16:23:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t145",
+          "by": "lee",
+          "type": "inform",
+          "at": "2026-11-09T16:24:00Z",
+          "expires_at": "2026-11-12T16:24:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t146",
+          "by": "ana",
+          "type": "inform",
+          "at": "2026-11-09T16:25:00Z",
+          "expires_at": "2026-11-12T16:25:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t147",
+          "by": "lee",
+          "type": "inform",
+          "at": "2026-11-09T16:26:00Z",
+          "expires_at": "2026-11-12T16:26:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t148",
+          "by": "ana",
+          "type": "inform",
+          "at": "2026-11-09T16:27:00Z",
+          "expires_at": "2026-11-12T16:27:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t149",
+          "by": "lee",
+          "type": "inform",
+          "at": "2026-11-09T16:28:00Z",
+          "expires_at": "2026-11-12T16:28:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t150",
+          "by": "ana",
+          "type": "inform",
+          "at": "2026-11-09T16:29:00Z",
+          "expires_at": "2026-11-12T16:29:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t151",
+          "by": "lee",
+          "type": "inform",
+          "at": "2026-11-09T16:30:00Z",
+          "expires_at": "2026-11-12T16:30:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t152",
+          "by": "ana",
+          "type": "inform",
+          "at": "2026-11-09T16:31:00Z",
+          "expires_at": "2026-11-12T16:31:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t153",
+          "by": "lee",
+          "type": "inform",
+          "at": "2026-11-09T16:32:00Z",
+          "expires_at": "2026-11-12T16:32:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t154",
+          "by": "ana",
+          "type": "inform",
+          "at": "2026-11-09T16:33:00Z",
+          "expires_at": "2026-11-12T16:33:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t155",
+          "by": "lee",
+          "type": "inform",
+          "at": "2026-11-09T16:34:00Z",
+          "expires_at": "2026-11-12T16:34:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t156",
+          "by": "ana",
+          "type": "inform",
+          "at": "2026-11-09T16:35:00Z",
+          "expires_at": "2026-11-12T16:35:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t157",
+          "by": "lee",
+          "type": "inform",
+          "at": "2026-11-09T16:36:00Z",
+          "expires_at": "2026-11-12T16:36:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t158",
+          "by": "ana",
+          "type": "inform",
+          "at": "2026-11-09T16:37:00Z",
+          "expires_at": "2026-11-12T16:37:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t159",
+          "by": "lee",
+          "type": "inform",
+          "at": "2026-11-09T16:38:00Z",
+          "expires_at": "2026-11-12T16:38:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t160",
+          "by": "ana",
+          "type": "inform",
+          "at": "2026-11-09T16:39:00Z",
+          "expires_at": "2026-11-12T16:39:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t161",
+          "by": "lee",
+          "type": "inform",
+          "at": "2026-11-09T16:40:00Z",
+          "expires_at": "2026-11-12T16:40:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t162",
+          "by": "ana",
+          "type": "inform",
+          "at": "2026-11-09T16:41:00Z",
+          "expires_at": "2026-11-12T16:41:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t163",
+          "by": "lee",
+          "type": "inform",
+          "at": "2026-11-09T16:42:00Z",
+          "expires_at": "2026-11-12T16:42:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t164",
+          "by": "ana",
+          "type": "inform",
+          "at": "2026-11-09T16:43:00Z",
+          "expires_at": "2026-11-12T16:43:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t165",
+          "by": "lee",
+          "type": "inform",
+          "at": "2026-11-09T16:44:00Z",
+          "expires_at": "2026-11-12T16:44:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t166",
+          "by": "ana",
+          "type": "inform",
+          "at": "2026-11-09T16:45:00Z",
+          "expires_at": "2026-11-12T16:45:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t167",
+          "by": "lee",
+          "type": "inform",
+          "at": "2026-11-09T16:46:00Z",
+          "expires_at": "2026-11-12T16:46:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t168",
+          "by": "ana",
+          "type": "inform",
+          "at": "2026-11-09T16:47:00Z",
+          "expires_at": "2026-11-12T16:47:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t169",
+          "by": "lee",
+          "type": "inform",
+          "at": "2026-11-09T16:48:00Z",
+          "expires_at": "2026-11-12T16:48:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t170",
+          "by": "ana",
+          "type": "inform",
+          "at": "2026-11-09T16:49:00Z",
+          "expires_at": "2026-11-12T16:49:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t171",
+          "by": "lee",
+          "type": "inform",
+          "at": "2026-11-09T16:50:00Z",
+          "expires_at": "2026-11-12T16:50:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t172",
+          "by": "ana",
+          "type": "inform",
+          "at": "2026-11-09T16:51:00Z",
+          "expires_at": "2026-11-12T16:51:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t173",
+          "by": "lee",
+          "type": "inform",
+          "at": "2026-11-09T16:52:00Z",
+          "expires_at": "2026-11-12T16:52:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t174",
+          "by": "ana",
+          "type": "inform",
+          "at": "2026-11-09T16:53:00Z",
+          "expires_at": "2026-11-12T16:53:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t175",
+          "by": "lee",
+          "type": "inform",
+          "at": "2026-11-09T16:54:00Z",
+          "expires_at": "2026-11-12T16:54:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t176",
+          "by": "ana",
+          "type": "inform",
+          "at": "2026-11-09T16:55:00Z",
+          "expires_at": "2026-11-12T16:55:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t177",
+          "by": "lee",
+          "type": "inform",
+          "at": "2026-11-09T16:56:00Z",
+          "expires_at": "2026-11-12T16:56:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t178",
+          "by": "ana",
+          "type": "inform",
+          "at": "2026-11-09T16:57:00Z",
+          "expires_at": "2026-11-12T16:57:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t179",
+          "by": "lee",
+          "type": "inform",
+          "at": "2026-11-09T16:58:00Z",
+          "expires_at": "2026-11-12T16:58:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t180",
+          "by": "ana",
+          "type": "inform",
+          "at": "2026-11-09T16:59:00Z",
+          "expires_at": "2026-11-12T16:59:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t181",
+          "by": "lee",
+          "type": "inform",
+          "at": "2026-11-09T17:00:00Z",
+          "expires_at": "2026-11-12T17:00:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t182",
+          "by": "ana",
+          "type": "inform",
+          "at": "2026-11-09T17:01:00Z",
+          "expires_at": "2026-11-12T17:01:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t183",
+          "by": "lee",
+          "type": "inform",
+          "at": "2026-11-09T17:02:00Z",
+          "expires_at": "2026-11-12T17:02:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t184",
+          "by": "ana",
+          "type": "inform",
+          "at": "2026-11-09T17:03:00Z",
+          "expires_at": "2026-11-12T17:03:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t185",
+          "by": "lee",
+          "type": "inform",
+          "at": "2026-11-09T17:04:00Z",
+          "expires_at": "2026-11-12T17:04:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t186",
+          "by": "ana",
+          "type": "inform",
+          "at": "2026-11-09T17:05:00Z",
+          "expires_at": "2026-11-12T17:05:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t187",
+          "by": "lee",
+          "type": "inform",
+          "at": "2026-11-09T17:06:00Z",
+          "expires_at": "2026-11-12T17:06:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t188",
+          "by": "ana",
+          "type": "inform",
+          "at": "2026-11-09T17:07:00Z",
+          "expires_at": "2026-11-12T17:07:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t189",
+          "by": "lee",
+          "type": "inform",
+          "at": "2026-11-09T17:08:00Z",
+          "expires_at": "2026-11-12T17:08:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t190",
+          "by": "ana",
+          "type": "inform",
+          "at": "2026-11-09T17:09:00Z",
+          "expires_at": "2026-11-12T17:09:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t191",
+          "by": "lee",
+          "type": "inform",
+          "at": "2026-11-09T17:10:00Z",
+          "expires_at": "2026-11-12T17:10:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t192",
+          "by": "ana",
+          "type": "inform",
+          "at": "2026-11-09T17:11:00Z",
+          "expires_at": "2026-11-12T17:11:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t193",
+          "by": "lee",
+          "type": "inform",
+          "at": "2026-11-09T17:12:00Z",
+          "expires_at": "2026-11-12T17:12:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t194",
+          "by": "ana",
+          "type": "inform",
+          "at": "2026-11-09T17:13:00Z",
+          "expires_at": "2026-11-12T17:13:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t195",
+          "by": "lee",
+          "type": "inform",
+          "at": "2026-11-09T17:14:00Z",
+          "expires_at": "2026-11-12T17:14:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t196",
+          "by": "ana",
+          "type": "inform",
+          "at": "2026-11-09T17:15:00Z",
+          "expires_at": "2026-11-12T17:15:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t197",
+          "by": "lee",
+          "type": "inform",
+          "at": "2026-11-09T17:16:00Z",
+          "expires_at": "2026-11-12T17:16:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t198",
+          "by": "ana",
+          "type": "inform",
+          "at": "2026-11-09T17:17:00Z",
+          "expires_at": "2026-11-12T17:17:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t199",
+          "by": "lee",
+          "type": "inform",
+          "at": "2026-11-09T17:18:00Z",
+          "expires_at": "2026-11-12T17:18:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t200",
+          "by": "ana",
+          "type": "inform",
+          "at": "2026-11-09T17:19:00Z",
+          "expires_at": "2026-11-12T17:19:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t201",
+          "by": "lee",
+          "type": "request",
+          "at": "2026-11-09T17:20:00Z",
+          "expires_at": "2026-11-12T17:20:00Z",
+          "expected": {
+            "outcome": "refused",
+            "code": "thread_state",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t202",
+          "by": "ana",
+          "type": "ack",
+          "in_reply_to": "t199",
+          "status": "received",
+          "at": "2026-11-09T17:20:00Z",
+          "expires_at": "2026-11-12T17:20:00Z",
+          "expected": {
+            "outcome": "refused",
+            "code": "thread_state",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t203",
+          "by": "ana",
+          "type": "ack",
+          "in_reply_to": "t199",
+          "status": "completed",
+          "at": "2026-11-09T17:20:00Z",
+          "expires_at": "2026-11-12T17:20:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "done"
+          }
+        }
+      ]
+    },
+    {
+      "name": "alp.meeting/1: a request answered by a request before any proposal; nothing conversational while terms are open or agreed; the ratified commit; informs both ways after it",
+      "scope": "alp.meeting/1",
+      "turns": [
+        {
+          "id": "t1",
+          "by": "ana",
+          "type": "request",
+          "at": "2026-11-09T14:00:00Z",
+          "expires_at": "2026-11-12T14:00:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t2",
+          "by": "lee",
+          "type": "request",
+          "in_reply_to": "t1",
+          "at": "2026-11-09T14:00:00Z",
+          "expires_at": "2026-11-12T14:00:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t3",
+          "by": "lee",
+          "type": "inform",
+          "at": "2026-11-09T14:00:00Z",
+          "expires_at": "2026-11-12T14:00:00Z",
+          "expected": {
+            "outcome": "refused",
+            "code": "thread_state",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t4",
+          "by": "ana",
+          "type": "propose",
+          "in_reply_to": "t2",
+          "at": "2026-11-09T14:00:00Z",
+          "expires_at": "2026-11-12T14:00:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "negotiating"
+          }
+        },
+        {
+          "id": "t5",
+          "by": "lee",
+          "type": "request",
+          "at": "2026-11-09T14:00:00Z",
+          "expires_at": "2026-11-12T14:00:00Z",
+          "expected": {
+            "outcome": "refused",
+            "code": "thread_state",
+            "state": "negotiating"
+          }
+        },
+        {
+          "id": "t6",
+          "by": "lee",
+          "type": "inform",
+          "at": "2026-11-09T14:00:00Z",
+          "expires_at": "2026-11-12T14:00:00Z",
+          "expected": {
+            "outcome": "refused",
+            "code": "thread_state",
+            "state": "negotiating"
+          }
+        },
+        {
+          "id": "t7",
+          "by": "lee",
+          "type": "counter",
+          "in_reply_to": "t4",
+          "at": "2026-11-09T14:00:00Z",
+          "expires_at": "2026-11-12T14:00:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "negotiating"
+          }
+        },
+        {
+          "id": "t8",
+          "by": "ana",
+          "type": "accept",
+          "in_reply_to": "t7",
+          "terms": "T",
+          "at": "2026-11-09T14:00:00Z",
+          "expires_at": "2026-11-12T14:00:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "agreed"
+          }
+        },
+        {
+          "id": "t9",
+          "by": "lee",
+          "type": "propose",
+          "at": "2026-11-09T14:00:00Z",
+          "expires_at": "2026-11-12T14:00:00Z",
+          "expected": {
+            "outcome": "refused",
+            "code": "thread_state",
+            "state": "agreed"
+          }
+        },
+        {
+          "id": "t10",
+          "by": "lee",
+          "type": "request",
+          "at": "2026-11-09T14:00:00Z",
+          "expires_at": "2026-11-12T14:00:00Z",
+          "expected": {
+            "outcome": "refused",
+            "code": "thread_state",
+            "state": "agreed"
+          }
+        },
+        {
+          "id": "t11",
+          "by": "lee",
+          "type": "commit",
+          "in_reply_to": "t8",
+          "terms": "T",
+          "ratified": [
+            "ana"
+          ],
+          "at": "2026-11-09T14:00:00Z",
+          "expires_at": "2026-11-12T14:00:00Z",
+          "expected": {
+            "outcome": "refused",
+            "code": "needs_ratification",
+            "state": "agreed"
+          }
+        },
+        {
+          "id": "t12",
+          "by": "lee",
+          "type": "commit",
+          "in_reply_to": "t8",
+          "terms": "X",
+          "ratified": [
+            "ana",
+            "lee"
+          ],
+          "at": "2026-11-09T14:00:00Z",
+          "expires_at": "2026-11-12T14:00:00Z",
+          "expected": {
+            "outcome": "refused",
+            "code": "thread_state",
+            "state": "agreed"
+          }
+        },
+        {
+          "id": "t13",
+          "by": "lee",
+          "type": "commit",
+          "in_reply_to": "t8",
+          "terms": "T",
+          "ratified": [
+            "ana",
+            "lee"
+          ],
+          "at": "2026-11-09T14:00:00Z",
+          "expires_at": "2026-11-12T14:00:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "committed"
+          }
+        },
+        {
+          "id": "t14",
+          "by": "lee",
+          "type": "inform",
+          "in_reply_to": "t13",
+          "at": "2026-11-09T14:00:00Z",
+          "expires_at": "2026-11-12T14:00:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "committed"
+          }
+        },
+        {
+          "id": "t15",
+          "by": "ana",
+          "type": "inform",
+          "in_reply_to": "t14",
+          "at": "2026-11-09T14:00:00Z",
+          "expires_at": "2026-11-12T14:00:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "committed"
+          }
+        },
+        {
+          "id": "t16",
+          "by": "ana",
+          "type": "request",
+          "at": "2026-11-09T14:00:00Z",
+          "expires_at": "2026-11-12T14:00:00Z",
+          "expected": {
+            "outcome": "refused",
+            "code": "thread_state",
+            "state": "committed"
+          }
+        },
+        {
+          "id": "t17",
+          "by": "ana",
+          "type": "commit",
+          "in_reply_to": "t8",
+          "terms": "T",
+          "ratified": [
+            "ana",
+            "lee"
+          ],
+          "at": "2026-11-09T14:00:00Z",
+          "expires_at": "2026-11-12T14:00:00Z",
+          "expected": {
+            "outcome": "refused",
+            "code": "thread_state",
+            "state": "committed"
+          }
+        },
+        {
+          "id": "t18",
+          "by": "ana",
+          "type": "ack",
+          "in_reply_to": "t14",
+          "status": "completed",
+          "at": "2026-11-09T14:00:00Z",
+          "expires_at": "2026-11-12T14:00:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "done"
+          }
+        }
+      ]
+    },
+    {
+      "name": "alp.meeting/1: an accept or a counter answers the other party's latest proposal, never the sender's own or one a later proposal replaced",
+      "scope": "alp.meeting/1",
+      "turns": [
+        {
+          "id": "t1",
+          "by": "ana",
+          "type": "propose",
+          "at": "2026-11-09T14:00:00Z",
+          "expires_at": "2026-11-12T14:00:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "negotiating"
+          }
+        },
+        {
+          "id": "t2",
+          "by": "ana",
+          "type": "accept",
+          "in_reply_to": "t1",
+          "terms": "A",
+          "at": "2026-11-09T14:00:00Z",
+          "expires_at": "2026-11-12T14:00:00Z",
+          "expected": {
+            "outcome": "refused",
+            "code": "thread_state",
+            "state": "negotiating"
+          }
+        },
+        {
+          "id": "t3",
+          "by": "ana",
+          "type": "counter",
+          "in_reply_to": "t1",
+          "at": "2026-11-09T14:00:00Z",
+          "expires_at": "2026-11-12T14:00:00Z",
+          "expected": {
+            "outcome": "refused",
+            "code": "thread_state",
+            "state": "negotiating"
+          }
+        },
+        {
+          "id": "t4",
+          "by": "lee",
+          "type": "counter",
+          "in_reply_to": "t1",
+          "at": "2026-11-09T14:00:00Z",
+          "expires_at": "2026-11-12T14:00:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "negotiating"
+          }
+        },
+        {
+          "id": "t5",
+          "by": "ana",
+          "type": "accept",
+          "in_reply_to": "t1",
+          "terms": "A",
+          "at": "2026-11-09T14:00:00Z",
+          "expires_at": "2026-11-12T14:00:00Z",
+          "expected": {
+            "outcome": "refused",
+            "code": "thread_state",
+            "state": "negotiating"
+          }
+        },
+        {
+          "id": "t6",
+          "by": "ana",
+          "type": "counter",
+          "in_reply_to": "t4",
+          "at": "2026-11-09T14:00:00Z",
+          "expires_at": "2026-11-12T14:00:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "negotiating"
+          }
+        },
+        {
+          "id": "t7",
+          "by": "ana",
+          "type": "accept",
+          "in_reply_to": "t4",
+          "terms": "L",
+          "at": "2026-11-09T14:00:00Z",
+          "expires_at": "2026-11-12T14:00:00Z",
+          "expected": {
+            "outcome": "refused",
+            "code": "thread_state",
+            "state": "negotiating"
+          }
+        },
+        {
+          "id": "t8",
+          "by": "lee",
+          "type": "accept",
+          "in_reply_to": "t4",
+          "terms": "L",
+          "at": "2026-11-09T14:00:00Z",
+          "expires_at": "2026-11-12T14:00:00Z",
+          "expected": {
+            "outcome": "refused",
+            "code": "thread_state",
+            "state": "negotiating"
+          }
+        },
+        {
+          "id": "t9",
+          "by": "lee",
+          "type": "accept",
+          "in_reply_to": "t6",
+          "terms": "C",
+          "at": "2026-11-09T14:00:00Z",
+          "expires_at": "2026-11-12T14:00:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "agreed"
+          }
+        }
+      ]
+    },
+    {
+      "name": "alp.meeting/1: agreed terms end with a commit, a decline or expiry: an ack can't close them, and acknowledgements and errors don't prolong them",
+      "scope": "alp.meeting/1",
+      "turns": [
+        {
+          "id": "t1",
+          "by": "lee",
+          "type": "propose",
+          "at": "2026-11-09T14:00:00Z",
+          "expires_at": "2026-11-10T14:00:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "negotiating"
+          }
+        },
+        {
+          "id": "t2",
+          "by": "ana",
+          "type": "accept",
+          "in_reply_to": "t1",
+          "terms": "T",
+          "at": "2026-11-09T15:00:00Z",
+          "expires_at": "2026-11-10T15:00:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "agreed"
+          }
+        },
+        {
+          "id": "t3",
+          "by": "lee",
+          "type": "ack",
+          "in_reply_to": "t2",
+          "status": "completed",
+          "at": "2026-11-09T16:00:00Z",
+          "expires_at": "2026-11-12T16:00:00Z",
+          "expected": {
+            "outcome": "refused",
+            "code": "thread_state",
+            "state": "agreed"
+          }
+        },
+        {
+          "id": "t4",
+          "by": "lee",
+          "type": "ack",
+          "in_reply_to": "t2",
+          "status": "received",
+          "at": "2026-11-09T16:00:00Z",
+          "expires_at": "2026-11-16T16:00:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "agreed"
+          }
+        },
+        {
+          "id": "t5",
+          "by": "ana",
+          "type": "error",
+          "at": "2026-11-09T17:00:00Z",
+          "expires_at": "2026-11-16T17:00:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "agreed"
+          }
+        },
+        {
+          "id": "t6",
+          "by": "lee",
+          "type": "commit",
+          "in_reply_to": "t2",
+          "terms": "T",
+          "ratified": [
+            "ana",
+            "lee"
+          ],
+          "at": "2026-11-10T15:00:00Z",
+          "expires_at": "2026-11-13T15:00:00Z",
+          "expected": {
+            "outcome": "refused",
+            "code": "thread_state",
+            "state": "expired"
+          }
+        }
+      ]
+    },
+    {
+      "name": "alp.meeting/1: a commit needs both ratification records still valid; a decline then cancels the terms",
+      "scope": "alp.meeting/1",
+      "turns": [
+        {
+          "id": "t1",
+          "by": "ana",
+          "type": "propose",
+          "at": "2026-11-09T14:00:00Z",
+          "expires_at": "2026-11-16T14:00:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "negotiating"
+          }
+        },
+        {
+          "id": "t2",
+          "by": "lee",
+          "type": "accept",
+          "in_reply_to": "t1",
+          "terms": "T",
+          "at": "2026-11-09T14:10:00Z",
+          "expires_at": "2026-11-16T14:10:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "agreed"
+          }
+        },
+        {
+          "id": "t3",
+          "by": "ana",
+          "type": "commit",
+          "in_reply_to": "t2",
+          "terms": "T",
+          "ratified": [
+            "ana",
+            "lee"
+          ],
+          "ratified_until": "2026-11-12T14:00:00Z",
+          "at": "2026-11-13T14:00:00Z",
+          "expires_at": "2026-11-16T14:00:00Z",
+          "expected": {
+            "outcome": "refused",
+            "code": "thread_state",
+            "state": "agreed"
+          }
+        },
+        {
+          "id": "t4",
+          "by": "ana",
+          "type": "decline",
+          "in_reply_to": "t2",
+          "at": "2026-11-13T14:00:00Z",
+          "expires_at": "2026-11-16T14:00:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "cancelled"
+          }
+        }
+      ]
+    },
+    {
+      "name": "alp.document_request/1: the request clarified both ways; propose answers a request (it doesn't start these threads); only the proposer commits; informs after the commit",
+      "scope": "alp.document_request/1",
+      "turns": [
+        {
+          "id": "t1",
+          "by": "ana",
+          "type": "request",
+          "at": "2026-11-09T14:00:00Z",
+          "expires_at": "2026-11-12T14:00:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t2",
+          "by": "lee",
+          "type": "request",
+          "in_reply_to": "t1",
+          "at": "2026-11-09T14:00:00Z",
+          "expires_at": "2026-11-12T14:00:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t3",
+          "by": "ana",
+          "type": "request",
+          "in_reply_to": "t2",
+          "at": "2026-11-09T14:00:00Z",
+          "expires_at": "2026-11-12T14:00:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t4",
+          "by": "lee",
+          "type": "propose",
+          "at": "2026-11-09T14:00:00Z",
+          "expires_at": "2026-11-12T14:00:00Z",
+          "expected": {
+            "outcome": "refused",
+            "code": "thread_state",
+            "state": "open"
+          }
+        },
+        {
+          "id": "t5",
+          "by": "lee",
+          "type": "propose",
+          "in_reply_to": "t3",
+          "at": "2026-11-09T14:00:00Z",
+          "expires_at": "2026-11-12T14:00:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "negotiating"
+          }
+        },
+        {
+          "id": "t6",
+          "by": "ana",
+          "type": "accept",
+          "in_reply_to": "t5",
+          "terms": "D",
+          "at": "2026-11-09T14:00:00Z",
+          "expires_at": "2026-11-12T14:00:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "agreed"
+          }
+        },
+        {
+          "id": "t7",
+          "by": "ana",
+          "type": "commit",
+          "in_reply_to": "t6",
+          "terms": "D",
+          "ratified": [
+            "ana",
+            "lee"
+          ],
+          "at": "2026-11-09T14:00:00Z",
+          "expires_at": "2026-11-12T14:00:00Z",
+          "expected": {
+            "outcome": "refused",
+            "code": "thread_state",
+            "state": "agreed"
+          }
+        },
+        {
+          "id": "t8",
+          "by": "lee",
+          "type": "commit",
+          "in_reply_to": "t6",
+          "terms": "D",
+          "ratified": [
+            "ana",
+            "lee"
+          ],
+          "at": "2026-11-09T14:00:00Z",
+          "expires_at": "2026-11-12T14:00:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "committed"
+          }
+        },
+        {
+          "id": "t9",
+          "by": "lee",
+          "type": "inform",
+          "at": "2026-11-09T14:00:00Z",
+          "expires_at": "2026-11-12T14:00:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "committed"
+          }
+        },
+        {
+          "id": "t10",
+          "by": "ana",
+          "type": "inform",
+          "in_reply_to": "t9",
+          "at": "2026-11-09T14:00:00Z",
+          "expires_at": "2026-11-12T14:00:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "committed"
+          }
+        }
+      ]
+    },
+    {
+      "name": "alp.meeting/1: a decline after agreement cancels the terms, and nothing more is accepted",
+      "scope": "alp.meeting/1",
+      "turns": [
+        {
+          "id": "t1",
+          "by": "lee",
+          "type": "propose",
+          "at": "2026-11-09T14:00:00Z",
+          "expires_at": "2026-11-12T14:00:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "negotiating"
+          }
+        },
+        {
+          "id": "t2",
+          "by": "ana",
+          "type": "accept",
+          "in_reply_to": "t1",
+          "terms": "T",
+          "at": "2026-11-09T14:00:00Z",
+          "expires_at": "2026-11-12T14:00:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "agreed"
+          }
+        },
+        {
+          "id": "t3",
+          "by": "lee",
+          "type": "decline",
+          "in_reply_to": "t2",
+          "at": "2026-11-09T14:00:00Z",
+          "expires_at": "2026-11-12T14:00:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "cancelled"
+          }
+        },
+        {
+          "id": "t4",
+          "by": "ana",
+          "type": "inform",
+          "at": "2026-11-09T14:00:00Z",
+          "expires_at": "2026-11-12T14:00:00Z",
+          "expected": {
+            "outcome": "refused",
+            "code": "thread_state",
+            "state": "cancelled"
+          }
+        }
+      ]
+    },
+    {
+      "name": "alp.meeting/1: a committed thread doesn't expire; it stays open for reports until either side closes it",
+      "scope": "alp.meeting/1",
+      "turns": [
+        {
+          "id": "t1",
+          "by": "ana",
+          "type": "propose",
+          "at": "2026-11-09T14:00:00Z",
+          "expires_at": "2026-11-09T15:00:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "negotiating"
+          }
+        },
+        {
+          "id": "t2",
+          "by": "lee",
+          "type": "accept",
+          "in_reply_to": "t1",
+          "terms": "T",
+          "at": "2026-11-09T14:10:00Z",
+          "expires_at": "2026-11-09T15:00:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "agreed"
+          }
+        },
+        {
+          "id": "t3",
+          "by": "ana",
+          "type": "commit",
+          "in_reply_to": "t2",
+          "terms": "T",
+          "ratified": [
+            "ana",
+            "lee"
+          ],
+          "at": "2026-11-09T14:20:00Z",
+          "expires_at": "2026-11-09T15:00:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "committed"
+          }
+        },
+        {
+          "id": "t4",
+          "by": "lee",
+          "type": "inform",
+          "at": "2026-11-11T14:00:00Z",
+          "expires_at": "2026-11-14T14:00:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "committed"
+          }
+        },
+        {
+          "id": "t5",
+          "by": "ana",
+          "type": "ack",
+          "in_reply_to": "t4",
+          "status": "completed",
+          "at": "2026-11-11T14:00:00Z",
+          "expires_at": "2026-11-14T14:00:00Z",
+          "expected": {
+            "outcome": "accepted",
+            "state": "done"
+          }
+        }
+      ]
+    }
+  ]
+}

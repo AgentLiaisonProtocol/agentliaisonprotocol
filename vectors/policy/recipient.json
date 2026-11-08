@@ -1,0 +1,1522 @@
+{
+  "description": "Recipient-side evaluation, acceptance steps 7-11 (spec 6.7). The recipient's org policy is world.org_policies['example.org']; the recipient's delegates are in world.delegates. An agent may receive a message only if no kill switch blocks it and the policy's clients list allows its client; with to.delegate, only the agent it names counts. state.recent is the count of messages already accepted in the grant's rate-limit window. Thread checks (step 8's participants, state and replies) and the semantic rules that compare a message with others in its thread are out of scope here: an envelope that names in_reply_to answers a request the recipient sent in an open thread of the envelope's scope, which the recipient's broker holds under that in_reply_to_hash.",
+  "now": "2026-11-09T14:00:00Z",
+  "cases": [
+    {
+      "name": "accepted through the default relationship and delivered",
+      "recipient": "alp:lee@example.org",
+      "envelope": {
+        "alp": "0.1",
+        "id": "01M709CM6RXEDZVPJFZATMKNR4",
+        "thread": "01M709CM6RXEDZVPJFZATMKNR4",
+        "from": {
+          "address": "alp:ana@example.org",
+          "principal_id": "ana-7f3a9c41d2e8b605",
+          "delegate": "alp:ana@example.org/agent-a",
+          "attestation": "vendor",
+          "class": "business"
+        },
+        "to": {
+          "address": "alp:lee@example.org",
+          "principal_id": "lee-2b8e61f0a9c4d735"
+        },
+        "aud": "https://broker.example.org",
+        "scope": "alp.briefing/1",
+        "type": "request",
+        "body": {
+          "topic": "Q4 launch staffing plan",
+          "questions": [
+            "Which teams are short-staffed?"
+          ],
+          "depth": "summary"
+        },
+        "grant": "default:analysts-leaders",
+        "labels": [
+          "internal"
+        ],
+        "created_at": "2026-11-09T13:59:00Z",
+        "expires_at": "2026-11-10T14:00:00Z",
+        "origin_broker": "https://broker.example.org",
+        "decision": {
+          "outcome": "allowed",
+          "redacted": [],
+          "policy_ids": [
+            "example.org#12"
+          ]
+        },
+        "broker_sig": "eyJhbGciOiJFZDI1NTE5Iiwia2lkIjoiUWxidm1jOERXeVRRX3BFMnlzTEFwbjRUMDNqdy1jNlZxNjVMT0RPekdGayIsInR5cCI6ImFscC1lbnZlbG9wZStqd3MifQ..9-9rCaoo6qHxVU8kwRq47XeG_kWtX_Swm4WteSZ43xQ_e8QEH49t4fnMEkdS2k44c_MH5cdpvOoHee0eklCsCA"
+      },
+      "grants": [],
+      "state": {},
+      "expected": {
+        "outcome": "accepted",
+        "delivery": "deliver"
+      }
+    },
+    {
+      "name": "a decline is accepted without field coverage (common-type body)",
+      "recipient": "alp:ana@example.org",
+      "envelope": {
+        "alp": "0.1",
+        "id": "01M709CM6R1YV3BT9BARJ0N3E0",
+        "thread": "01M709QMR0V6NZ7VMP83Z8R91Q",
+        "in_reply_to": "01M709QMR0V6NZ7VMP83Z8R91Q",
+        "in_reply_to_hash": "sha256:hi0S1KiwO5tNhf6wWB6hd4N11ejn1BJnWCkUBF0sKBA",
+        "from": {
+          "address": "alp:lee@example.org",
+          "principal_id": "lee-2b8e61f0a9c4d735",
+          "delegate": "alp:lee@example.org/agent-b",
+          "attestation": "vendor",
+          "class": "business"
+        },
+        "to": {
+          "address": "alp:ana@example.org",
+          "principal_id": "ana-7f3a9c41d2e8b605"
+        },
+        "aud": "https://broker.example.org",
+        "scope": "alp.briefing/1",
+        "type": "decline",
+        "body": {
+          "of": "01M709QMR0V6NZ7VMP83Z8R91Q",
+          "reason": "not_available"
+        },
+        "grant": "default:analysts-leaders",
+        "labels": [
+          "internal"
+        ],
+        "created_at": "2026-11-09T13:59:00Z",
+        "expires_at": "2026-11-10T14:00:00Z",
+        "origin_broker": "https://broker.example.org",
+        "decision": {
+          "outcome": "allowed",
+          "redacted": [],
+          "policy_ids": [
+            "example.org#12"
+          ]
+        },
+        "broker_sig": "eyJhbGciOiJFZDI1NTE5Iiwia2lkIjoiUWxidm1jOERXeVRRX3BFMnlzTEFwbjRUMDNqdy1jNlZxNjVMT0RPekdGayIsInR5cCI6ImFscC1lbnZlbG9wZStqd3MifQ..DHx1WeO6uHCUcV42u0_pIAZfacEa0xNdBMO1bBVYGZySTv1ydfDxa_8IiTWXiyPKBVT1K1HWTkeNQc37vBJUDA"
+      },
+      "grants": [],
+      "state": {},
+      "expected": {
+        "outcome": "accepted",
+        "delivery": "deliver"
+      }
+    },
+    {
+      "name": "stranger's message is refused and becomes a contact attempt",
+      "recipient": "alp:lee@example.org",
+      "envelope": {
+        "alp": "0.1",
+        "id": "01M709BQWGDYERC7GQH97V984K",
+        "thread": "01M709BQWGDYERC7GQH97V984K",
+        "from": {
+          "address": "alp:mallory@outside.example",
+          "principal_id": "mal-5d7e2c9a1f0b4e63",
+          "delegate": "alp:mallory@outside.example/agent-d",
+          "attestation": "vendor",
+          "class": "consumer"
+        },
+        "to": {
+          "address": "alp:lee@example.org"
+        },
+        "aud": "https://broker.example.org",
+        "scope": "alp.briefing/1",
+        "type": "request",
+        "body": {
+          "topic": "Your notes on the merger",
+          "depth": "detailed"
+        },
+        "grant": "g-lax",
+        "labels": [
+          "internal"
+        ],
+        "created_at": "2026-11-09T13:59:00Z",
+        "expires_at": "2026-11-10T14:00:00Z",
+        "origin_broker": "https://broker.outside.example",
+        "decision": {
+          "outcome": "allowed",
+          "redacted": [],
+          "policy_ids": []
+        },
+        "broker_sig": "eyJhbGciOiJFZDI1NTE5Iiwia2lkIjoiRmp4RF95N0tTdy1STTFWU1NnQVpMcVcwbG5rNEJMUGxBRVdYZXB1ZmoxayIsInR5cCI6ImFscC1lbnZlbG9wZStqd3MifQ..IcAgC6oqcPF3C65laUi_alXMsiEW9bnlftmCFctFCNPsnIBhkYUTgWPZNItYYj-YGOsM40lpwElef_pnr6LdBw"
+      },
+      "grants": [],
+      "state": {},
+      "expected": {
+        "outcome": "refused",
+        "code": "not_accepted",
+        "contact_attempt": true
+      }
+    },
+    {
+      "name": "field outside the recipient's receive list",
+      "recipient": "alp:lee@example.org",
+      "envelope": {
+        "alp": "0.1",
+        "id": "01M7098X28ANFQM32GDRAZR8R6",
+        "thread": "01M7098X28ANFQM32GDRAZR8R6",
+        "from": {
+          "address": "alp:pat@partner.example",
+          "principal_id": "pat-91c0e4a7b3d2f816",
+          "delegate": "alp:pat@partner.example/agent-c",
+          "attestation": "self",
+          "class": "consumer"
+        },
+        "to": {
+          "address": "alp:lee@example.org"
+        },
+        "aud": "https://broker.example.org",
+        "scope": "alp.status/1",
+        "type": "inform",
+        "body": {
+          "subject": "Launch-day dashboards",
+          "state": "in_progress",
+          "updated_at": "2026-11-09T12:00:00Z"
+        },
+        "grant": "01M6V4Y6R0ZP55BRGVHFME05BR",
+        "labels": [
+          "internal"
+        ],
+        "created_at": "2026-11-09T13:59:00Z",
+        "expires_at": "2026-11-10T14:00:00Z",
+        "origin_broker": "https://broker.partner.example",
+        "decision": {
+          "outcome": "allowed",
+          "redacted": [],
+          "policy_ids": [
+            "partner.example#3"
+          ]
+        },
+        "broker_sig": "eyJhbGciOiJFZDI1NTE5Iiwia2lkIjoiR1kySmx4ZldzdTBvZno4MVJnMkgzSmJUNmRCZS15NzJzNTVKdjZFS3JIcyIsInR5cCI6ImFscC1lbnZlbG9wZStqd3MifQ..rvuV48wy8DX0XtZQ5PxM4Fw17GuauaZz_Le5U05-ghAKCF4Qu26Gh4HRq9Dgkcy-193I-v9ChvReDr_ZABW2Bg"
+      },
+      "grants": [
+        {
+          "alp": "0.1",
+          "id": "01M6XQAXR0876X406BF9PBTX7C",
+          "principal": "alp:lee@example.org",
+          "principal_id": "lee-2b8e61f0a9c4d735",
+          "counterparty": "alp:pat@partner.example",
+          "counterparty_principal_id": "pat-91c0e4a7b3d2f816",
+          "basis": "consent",
+          "status": "active",
+          "scopes": {
+            "alp.status/1": {
+              "may": [
+                "request",
+                "inform",
+                "ack"
+              ],
+              "disclose": [
+                "/body/subject",
+                "/body/state",
+                "/body/updated_at"
+              ],
+              "receive": [
+                "/body/subject"
+              ],
+              "commit": "ask_me",
+              "redaction": "reject"
+            }
+          },
+          "created_at": "2026-11-01T14:00:00Z",
+          "updated_at": "2026-11-01T14:00:00Z",
+          "sealed": {
+            "by": "lee-2b8e61f0a9c4d735",
+            "method": "sso-stepup",
+            "at": "2026-11-01T14:00:00Z"
+          }
+        }
+      ],
+      "state": {},
+      "expected": {
+        "outcome": "refused",
+        "code": "not_accepted"
+      }
+    },
+    {
+      "name": "note refused: the recipient narrowed the default and left /note out",
+      "recipient": "alp:lee@example.org",
+      "envelope": {
+        "alp": "0.1",
+        "id": "01M709B6A0KKAEXHD5GJFTFDBA",
+        "thread": "01M709B6A0KKAEXHD5GJFTFDBA",
+        "from": {
+          "address": "alp:ana@example.org",
+          "principal_id": "ana-7f3a9c41d2e8b605",
+          "delegate": "alp:ana@example.org/agent-a",
+          "attestation": "vendor",
+          "class": "business"
+        },
+        "to": {
+          "address": "alp:lee@example.org",
+          "principal_id": "lee-2b8e61f0a9c4d735"
+        },
+        "aud": "https://broker.example.org",
+        "scope": "alp.briefing/1",
+        "type": "request",
+        "body": {
+          "topic": "Q4 launch staffing plan",
+          "depth": "headline"
+        },
+        "note": "Lee, quick one before Monday.",
+        "grant": "default:analysts-leaders",
+        "labels": [
+          "internal"
+        ],
+        "created_at": "2026-11-09T13:59:00Z",
+        "expires_at": "2026-11-10T14:00:00Z",
+        "origin_broker": "https://broker.example.org",
+        "decision": {
+          "outcome": "allowed",
+          "redacted": [],
+          "policy_ids": [
+            "example.org#12"
+          ]
+        },
+        "broker_sig": "eyJhbGciOiJFZDI1NTE5Iiwia2lkIjoiUWxidm1jOERXeVRRX3BFMnlzTEFwbjRUMDNqdy1jNlZxNjVMT0RPekdGayIsInR5cCI6ImFscC1lbnZlbG9wZStqd3MifQ..lD86dNX3gRmDVXzpT6YzQtm50vBd0VoNP34_m2ywOTm1QHzAOqRhAW6OmiKT0OoxwS_IvB-unQ7ywLrxW16KBw"
+      },
+      "grants": [
+        {
+          "alp": "0.1",
+          "id": "01M6XQAXR0RAFJ3GRRP7GH6HHK",
+          "principal": "alp:lee@example.org",
+          "principal_id": "lee-2b8e61f0a9c4d735",
+          "counterparty": "alp:ana@example.org",
+          "basis": "narrowing",
+          "status": "active",
+          "scopes": {
+            "alp.briefing/1": {
+              "may": [
+                "request",
+                "inform",
+                "decline",
+                "ack",
+                "ask_human",
+                "error"
+              ],
+              "disclose": [
+                "/body/points/*",
+                "/body/as_of",
+                "/body/confidence",
+                "/body/follow_up"
+              ],
+              "receive": [
+                "/body/topic",
+                "/body/questions/*",
+                "/body/depth",
+                "/body/due_by",
+                "/body/context/project",
+                "/body/context/amount"
+              ],
+              "commit": "ask_me",
+              "redaction": "reject"
+            }
+          },
+          "created_at": "2026-11-08T14:00:00Z",
+          "updated_at": "2026-11-08T14:00:00Z",
+          "sealed": {
+            "by": "lee-2b8e61f0a9c4d735",
+            "method": "sso-stepup",
+            "at": "2026-11-08T14:00:00Z"
+          }
+        }
+      ],
+      "state": {},
+      "expected": {
+        "outcome": "refused",
+        "code": "not_accepted"
+      }
+    },
+    {
+      "name": "inbound classification rule (financial figure from outside)",
+      "recipient": "alp:lee@example.org",
+      "envelope": {
+        "alp": "0.1",
+        "id": "01M709A448BE7D07RW49AY00TZ",
+        "thread": "01M709A448BE7D07RW49AY00TZ",
+        "from": {
+          "address": "alp:pat@partner.example",
+          "principal_id": "pat-91c0e4a7b3d2f816",
+          "delegate": "alp:pat@partner.example/agent-c",
+          "attestation": "self",
+          "class": "consumer"
+        },
+        "to": {
+          "address": "alp:lee@example.org"
+        },
+        "aud": "https://broker.example.org",
+        "scope": "alp.briefing/1",
+        "type": "request",
+        "body": {
+          "topic": "Deal terms",
+          "depth": "summary",
+          "context": {
+            "amount": {
+              "value": 900000,
+              "currency": "USD"
+            }
+          }
+        },
+        "grant": "01M6V4Y6R0ZP55BRGVHFME05BR",
+        "labels": [
+          "internal"
+        ],
+        "created_at": "2026-11-09T13:59:00Z",
+        "expires_at": "2026-11-10T14:00:00Z",
+        "origin_broker": "https://broker.partner.example",
+        "decision": {
+          "outcome": "allowed",
+          "redacted": [],
+          "policy_ids": [
+            "partner.example#3"
+          ]
+        },
+        "broker_sig": "eyJhbGciOiJFZDI1NTE5Iiwia2lkIjoiR1kySmx4ZldzdTBvZno4MVJnMkgzSmJUNmRCZS15NzJzNTVKdjZFS3JIcyIsInR5cCI6ImFscC1lbnZlbG9wZStqd3MifQ..6JylwhgGQlOsJoH35Cj08la29LHMMHDBesVoxq0sFThdWNPAljDCn362OSSkuiqdgbrWpoePc18dOQ4NVg07DA"
+      },
+      "grants": [
+        {
+          "alp": "0.1",
+          "id": "01M6XQAXR0AKXT0PKMBP97D5WV",
+          "principal": "alp:lee@example.org",
+          "principal_id": "lee-2b8e61f0a9c4d735",
+          "counterparty": "alp:pat@partner.example",
+          "counterparty_principal_id": "pat-91c0e4a7b3d2f816",
+          "basis": "consent",
+          "status": "active",
+          "scopes": {
+            "alp.briefing/1": {
+              "may": [
+                "request",
+                "ack"
+              ],
+              "disclose": [
+                "/body/points/*",
+                "/body/as_of",
+                "/body/confidence",
+                "/body/follow_up"
+              ],
+              "receive": [
+                "/body/topic",
+                "/body/questions/*",
+                "/body/depth",
+                "/body/context/amount"
+              ],
+              "commit": "ask_me",
+              "redaction": "reject"
+            }
+          },
+          "created_at": "2026-11-01T14:00:00Z",
+          "updated_at": "2026-11-01T14:00:00Z",
+          "sealed": {
+            "by": "lee-2b8e61f0a9c4d735",
+            "method": "sso-stepup",
+            "at": "2026-11-01T14:00:00Z"
+          }
+        }
+      ],
+      "state": {},
+      "expected": {
+        "outcome": "refused",
+        "code": "not_accepted"
+      }
+    },
+    {
+      "name": "a rule that lists only restricted.* also matches the label restricted itself (spec 6.5)",
+      "recipient": "alp:lee@example.org",
+      "envelope": {
+        "alp": "0.1",
+        "id": "01M7095GNGYWBA8P44ZFJVYRDW",
+        "thread": "01M7095GNGYWBA8P44ZFJVYRDW",
+        "from": {
+          "address": "alp:pat@partner.example",
+          "principal_id": "pat-91c0e4a7b3d2f816",
+          "delegate": "alp:pat@partner.example/agent-c",
+          "attestation": "self",
+          "class": "consumer"
+        },
+        "to": {
+          "address": "alp:lee@example.org"
+        },
+        "aud": "https://broker.example.org",
+        "scope": "alp.status/1",
+        "type": "request",
+        "body": {
+          "subject": "Launch-day dashboards"
+        },
+        "grant": "01M6V4Y6R0ZP55BRGVHFME05BR",
+        "labels": [
+          "internal",
+          "restricted"
+        ],
+        "created_at": "2026-11-09T13:59:00Z",
+        "expires_at": "2026-11-10T14:00:00Z",
+        "origin_broker": "https://broker.partner.example",
+        "decision": {
+          "outcome": "allowed",
+          "redacted": [],
+          "policy_ids": [
+            "partner.example#3"
+          ]
+        },
+        "broker_sig": "eyJhbGciOiJFZDI1NTE5Iiwia2lkIjoiR1kySmx4ZldzdTBvZno4MVJnMkgzSmJUNmRCZS15NzJzNTVKdjZFS3JIcyIsInR5cCI6ImFscC1lbnZlbG9wZStqd3MifQ..jOZ0HnRBrboHaiJ41LugEG9Mkhk35B1Xga8WD6_KyNxI2cOSqTtA9rYcCPnaw71diqDeKZDKaGe5j1ZwP3MUCw"
+      },
+      "grants": [
+        {
+          "alp": "0.1",
+          "id": "01M6XQAXR0876X406BF9PBTX7C",
+          "principal": "alp:lee@example.org",
+          "principal_id": "lee-2b8e61f0a9c4d735",
+          "counterparty": "alp:pat@partner.example",
+          "counterparty_principal_id": "pat-91c0e4a7b3d2f816",
+          "basis": "consent",
+          "status": "active",
+          "scopes": {
+            "alp.status/1": {
+              "may": [
+                "request",
+                "inform",
+                "ack"
+              ],
+              "disclose": [
+                "/body/subject",
+                "/body/state",
+                "/body/updated_at"
+              ],
+              "receive": [
+                "/body/subject",
+                "/body/ref",
+                "/body/state",
+                "/body/percent_complete",
+                "/body/eta",
+                "/body/updated_at"
+              ],
+              "commit": "ask_me",
+              "redaction": "reject"
+            }
+          },
+          "created_at": "2026-11-01T14:00:00Z",
+          "updated_at": "2026-11-01T14:00:00Z",
+          "sealed": {
+            "by": "lee-2b8e61f0a9c4d735",
+            "method": "sso-stepup",
+            "at": "2026-11-01T14:00:00Z"
+          }
+        }
+      ],
+      "state": {},
+      "expected": {
+        "outcome": "refused",
+        "code": "not_accepted"
+      }
+    },
+    {
+      "name": "inbound DLP on free text",
+      "recipient": "alp:lee@example.org",
+      "envelope": {
+        "alp": "0.1",
+        "id": "01M7097H40J6GXEFFETNZ9Z5Q9",
+        "thread": "01M7097H40J6GXEFFETNZ9Z5Q9",
+        "from": {
+          "address": "alp:pat@partner.example",
+          "principal_id": "pat-91c0e4a7b3d2f816",
+          "delegate": "alp:pat@partner.example/agent-c",
+          "attestation": "self",
+          "class": "consumer"
+        },
+        "to": {
+          "address": "alp:lee@example.org"
+        },
+        "aud": "https://broker.example.org",
+        "scope": "alp.status/1",
+        "type": "request",
+        "body": {
+          "subject": "-----BEGIN PRIVATE KEY----- MC4CAQAwBQYDK2VwBCIEIA"
+        },
+        "grant": "01M6V4Y6R0ZP55BRGVHFME05BR",
+        "labels": [
+          "internal"
+        ],
+        "created_at": "2026-11-09T13:59:00Z",
+        "expires_at": "2026-11-10T14:00:00Z",
+        "origin_broker": "https://broker.partner.example",
+        "decision": {
+          "outcome": "allowed",
+          "redacted": [],
+          "policy_ids": [
+            "partner.example#3"
+          ]
+        },
+        "broker_sig": "eyJhbGciOiJFZDI1NTE5Iiwia2lkIjoiR1kySmx4ZldzdTBvZno4MVJnMkgzSmJUNmRCZS15NzJzNTVKdjZFS3JIcyIsInR5cCI6ImFscC1lbnZlbG9wZStqd3MifQ..Qg9WmN9sesUXEP9_YiA-maPiNePnv25KQA7Y8_47G-Lvpm1PsAzZ1VU7oY3rEjBC5QCgs9sThsJjlg_M2OwQAQ"
+      },
+      "grants": [
+        {
+          "alp": "0.1",
+          "id": "01M6XQAXR0876X406BF9PBTX7C",
+          "principal": "alp:lee@example.org",
+          "principal_id": "lee-2b8e61f0a9c4d735",
+          "counterparty": "alp:pat@partner.example",
+          "counterparty_principal_id": "pat-91c0e4a7b3d2f816",
+          "basis": "consent",
+          "status": "active",
+          "scopes": {
+            "alp.status/1": {
+              "may": [
+                "request",
+                "inform",
+                "ack"
+              ],
+              "disclose": [
+                "/body/subject",
+                "/body/state",
+                "/body/updated_at"
+              ],
+              "receive": [
+                "/body/subject",
+                "/body/ref",
+                "/body/state",
+                "/body/percent_complete",
+                "/body/eta",
+                "/body/updated_at"
+              ],
+              "commit": "ask_me",
+              "redaction": "reject"
+            }
+          },
+          "created_at": "2026-11-01T14:00:00Z",
+          "updated_at": "2026-11-01T14:00:00Z",
+          "sealed": {
+            "by": "lee-2b8e61f0a9c4d735",
+            "method": "sso-stepup",
+            "at": "2026-11-01T14:00:00Z"
+          }
+        }
+      ],
+      "state": {},
+      "expected": {
+        "outcome": "refused",
+        "code": "not_accepted"
+      }
+    },
+    {
+      "name": "delivery constraint no delegate meets: held for the person's web view",
+      "recipient": "alp:lee@example.org",
+      "envelope": {
+        "alp": "0.1",
+        "id": "01M7096ZHGDVZFP8NVVCVJN8E1",
+        "thread": "01M7096ZHGDVZFP8NVVCVJN8E1",
+        "from": {
+          "address": "alp:ana@example.org",
+          "principal_id": "ana-7f3a9c41d2e8b605",
+          "delegate": "alp:ana@example.org/agent-a",
+          "attestation": "vendor",
+          "class": "business"
+        },
+        "to": {
+          "address": "alp:lee@example.org",
+          "principal_id": "lee-2b8e61f0a9c4d735"
+        },
+        "aud": "https://broker.example.org",
+        "scope": "alp.briefing/1",
+        "type": "request",
+        "body": {
+          "topic": "Q4 launch staffing plan",
+          "depth": "headline"
+        },
+        "grant": "default:analysts-leaders",
+        "labels": [
+          "internal"
+        ],
+        "constraints": {
+          "deliver_to": {
+            "min_class": "enterprise"
+          }
+        },
+        "created_at": "2026-11-09T13:59:00Z",
+        "expires_at": "2026-11-10T14:00:00Z",
+        "origin_broker": "https://broker.example.org",
+        "decision": {
+          "outcome": "allowed",
+          "redacted": [],
+          "policy_ids": [
+            "example.org#12"
+          ]
+        },
+        "broker_sig": "eyJhbGciOiJFZDI1NTE5Iiwia2lkIjoiUWxidm1jOERXeVRRX3BFMnlzTEFwbjRUMDNqdy1jNlZxNjVMT0RPekdGayIsInR5cCI6ImFscC1lbnZlbG9wZStqd3MifQ..gx4eOYFmsfrcl2gsrDVE_6Mujf3Fcyb31-QtnN1k8RYF2CERe80MpfPmn8PkoqVj_XCy7L7l3uprZf-qhbTbBg"
+      },
+      "grants": [],
+      "state": {},
+      "expected": {
+        "outcome": "accepted",
+        "delivery": "hold_for_web_view"
+      }
+    },
+    {
+      "name": "rate limit of the relationship",
+      "recipient": "alp:lee@example.org",
+      "envelope": {
+        "alp": "0.1",
+        "id": "01M709DBMR81TJCEEE4AN4X0PD",
+        "thread": "01M709DBMR81TJCEEE4AN4X0PD",
+        "from": {
+          "address": "alp:pat@partner.example",
+          "principal_id": "pat-91c0e4a7b3d2f816",
+          "delegate": "alp:pat@partner.example/agent-c",
+          "attestation": "self",
+          "class": "consumer"
+        },
+        "to": {
+          "address": "alp:lee@example.org"
+        },
+        "aud": "https://broker.example.org",
+        "scope": "alp.status/1",
+        "type": "request",
+        "body": {
+          "subject": "Launch-day dashboards"
+        },
+        "grant": "01M6V4Y6R0ZP55BRGVHFME05BR",
+        "labels": [
+          "internal"
+        ],
+        "created_at": "2026-11-09T13:59:00Z",
+        "expires_at": "2026-11-10T14:00:00Z",
+        "origin_broker": "https://broker.partner.example",
+        "decision": {
+          "outcome": "allowed",
+          "redacted": [],
+          "policy_ids": [
+            "partner.example#3"
+          ]
+        },
+        "broker_sig": "eyJhbGciOiJFZDI1NTE5Iiwia2lkIjoiR1kySmx4ZldzdTBvZno4MVJnMkgzSmJUNmRCZS15NzJzNTVKdjZFS3JIcyIsInR5cCI6ImFscC1lbnZlbG9wZStqd3MifQ..EDsln4uRPdWJBOQFjuIdxPd60pp-9aRER5qsy8dMrzDvXAQGLFIFkubQ2AnLK8zL8qSbxm7sarYdYWtmiF-pCA"
+      },
+      "grants": [
+        {
+          "alp": "0.1",
+          "id": "01M6XQAXR0CP2JB5FDMKRSAJN4",
+          "principal": "alp:lee@example.org",
+          "principal_id": "lee-2b8e61f0a9c4d735",
+          "counterparty": "alp:pat@partner.example",
+          "counterparty_principal_id": "pat-91c0e4a7b3d2f816",
+          "basis": "consent",
+          "status": "active",
+          "scopes": {
+            "alp.status/1": {
+              "may": [
+                "request",
+                "inform",
+                "ack"
+              ],
+              "disclose": [
+                "/body/subject",
+                "/body/state",
+                "/body/updated_at"
+              ],
+              "receive": [
+                "/body/subject",
+                "/body/ref",
+                "/body/state",
+                "/body/percent_complete",
+                "/body/eta",
+                "/body/updated_at"
+              ],
+              "commit": "ask_me",
+              "redaction": "reject"
+            }
+          },
+          "created_at": "2026-11-01T14:00:00Z",
+          "updated_at": "2026-11-01T14:00:00Z",
+          "sealed": {
+            "by": "lee-2b8e61f0a9c4d735",
+            "method": "sso-stepup",
+            "at": "2026-11-01T14:00:00Z"
+          },
+          "rate_limit": {
+            "count": 2,
+            "per_seconds": 3600
+          }
+        }
+      ],
+      "state": {
+        "recent": 2
+      },
+      "expected": {
+        "outcome": "refused",
+        "code": "rate_limited"
+      }
+    },
+    {
+      "name": "body fails the scope schema at the recipient",
+      "recipient": "alp:lee@example.org",
+      "envelope": {
+        "alp": "0.1",
+        "id": "01M709CH90JM8NM35PXFM90KAP",
+        "thread": "01M709CH90JM8NM35PXFM90KAP",
+        "from": {
+          "address": "alp:pat@partner.example",
+          "principal_id": "pat-91c0e4a7b3d2f816",
+          "delegate": "alp:pat@partner.example/agent-c",
+          "attestation": "self",
+          "class": "consumer"
+        },
+        "to": {
+          "address": "alp:lee@example.org"
+        },
+        "aud": "https://broker.example.org",
+        "scope": "alp.status/1",
+        "type": "inform",
+        "body": {
+          "subject": "Launch-day dashboards",
+          "updated_at": "2026-11-09T12:00:00Z"
+        },
+        "grant": "01M6V4Y6R0ZP55BRGVHFME05BR",
+        "labels": [
+          "internal"
+        ],
+        "created_at": "2026-11-09T13:59:00Z",
+        "expires_at": "2026-11-10T14:00:00Z",
+        "origin_broker": "https://broker.partner.example",
+        "decision": {
+          "outcome": "allowed",
+          "redacted": [],
+          "policy_ids": [
+            "partner.example#3"
+          ]
+        },
+        "broker_sig": "eyJhbGciOiJFZDI1NTE5Iiwia2lkIjoiR1kySmx4ZldzdTBvZno4MVJnMkgzSmJUNmRCZS15NzJzNTVKdjZFS3JIcyIsInR5cCI6ImFscC1lbnZlbG9wZStqd3MifQ..DJzxC2da0qw2EjU355P3nx9N0z_rUNzv46CwNbjbyHsrbpdScoIoC_ijsy9vXHxgs3YDUNAqzCwR9AhxccSoAA"
+      },
+      "grants": [
+        {
+          "alp": "0.1",
+          "id": "01M6XQAXR0876X406BF9PBTX7C",
+          "principal": "alp:lee@example.org",
+          "principal_id": "lee-2b8e61f0a9c4d735",
+          "counterparty": "alp:pat@partner.example",
+          "counterparty_principal_id": "pat-91c0e4a7b3d2f816",
+          "basis": "consent",
+          "status": "active",
+          "scopes": {
+            "alp.status/1": {
+              "may": [
+                "request",
+                "inform",
+                "ack"
+              ],
+              "disclose": [
+                "/body/subject",
+                "/body/state",
+                "/body/updated_at"
+              ],
+              "receive": [
+                "/body/subject",
+                "/body/ref",
+                "/body/state",
+                "/body/percent_complete",
+                "/body/eta",
+                "/body/updated_at"
+              ],
+              "commit": "ask_me",
+              "redaction": "reject"
+            }
+          },
+          "created_at": "2026-11-01T14:00:00Z",
+          "updated_at": "2026-11-01T14:00:00Z",
+          "sealed": {
+            "by": "lee-2b8e61f0a9c4d735",
+            "method": "sso-stepup",
+            "at": "2026-11-01T14:00:00Z"
+          }
+        }
+      ],
+      "state": {},
+      "expected": {
+        "outcome": "refused",
+        "code": "schema_invalid"
+      }
+    },
+    {
+      "name": "quiet hours: accepted and held",
+      "recipient": "alp:lee@example.org",
+      "now": "2026-11-10T04:00:00Z",
+      "envelope": {
+        "alp": "0.1",
+        "id": "01M7099CP8SG9SKTN2BNEBMR6E",
+        "thread": "01M7099CP8SG9SKTN2BNEBMR6E",
+        "from": {
+          "address": "alp:pat@partner.example",
+          "principal_id": "pat-91c0e4a7b3d2f816",
+          "delegate": "alp:pat@partner.example/agent-c",
+          "attestation": "self",
+          "class": "consumer"
+        },
+        "to": {
+          "address": "alp:lee@example.org"
+        },
+        "aud": "https://broker.example.org",
+        "scope": "alp.status/1",
+        "type": "request",
+        "body": {
+          "subject": "Launch-day dashboards"
+        },
+        "grant": "01M6V4Y6R0ZP55BRGVHFME05BR",
+        "labels": [
+          "internal"
+        ],
+        "created_at": "2026-11-10T03:59:00Z",
+        "expires_at": "2026-11-11T03:59:00Z",
+        "origin_broker": "https://broker.partner.example",
+        "decision": {
+          "outcome": "allowed",
+          "redacted": [],
+          "policy_ids": [
+            "partner.example#3"
+          ]
+        },
+        "broker_sig": "eyJhbGciOiJFZDI1NTE5Iiwia2lkIjoiR1kySmx4ZldzdTBvZno4MVJnMkgzSmJUNmRCZS15NzJzNTVKdjZFS3JIcyIsInR5cCI6ImFscC1lbnZlbG9wZStqd3MifQ..yb2fmf3dkBPEgU946v8rlvjb2lTSPOk3EGeprQxu6Y9WVvf9Tz8fIMqLcrnRvU1y6b2EPK3c5tO7ivQYA2fHAg"
+      },
+      "grants": [
+        {
+          "alp": "0.1",
+          "id": "01M6XQAXR02NS7NXTDNTZPWBXP",
+          "principal": "alp:lee@example.org",
+          "principal_id": "lee-2b8e61f0a9c4d735",
+          "counterparty": "alp:pat@partner.example",
+          "counterparty_principal_id": "pat-91c0e4a7b3d2f816",
+          "basis": "consent",
+          "status": "active",
+          "scopes": {
+            "alp.status/1": {
+              "may": [
+                "request",
+                "inform",
+                "ack"
+              ],
+              "disclose": [
+                "/body/subject",
+                "/body/state",
+                "/body/updated_at"
+              ],
+              "receive": [
+                "/body/subject",
+                "/body/ref",
+                "/body/state",
+                "/body/percent_complete",
+                "/body/eta",
+                "/body/updated_at"
+              ],
+              "commit": "ask_me",
+              "redaction": "reject"
+            }
+          },
+          "created_at": "2026-11-01T14:00:00Z",
+          "updated_at": "2026-11-01T14:00:00Z",
+          "sealed": {
+            "by": "lee-2b8e61f0a9c4d735",
+            "method": "sso-stepup",
+            "at": "2026-11-01T14:00:00Z"
+          },
+          "quiet_hours": {
+            "tz": "America/New_York",
+            "start": "22:00",
+            "end": "07:00"
+          }
+        }
+      ],
+      "state": {},
+      "expected": {
+        "outcome": "accepted",
+        "delivery": "hold_until",
+        "hold_until": "2026-11-10T12:00:00Z"
+      }
+    },
+    {
+      "name": "a grant bound to an earlier holder of the sender's address is void: a contact attempt (spec 5.2)",
+      "recipient": "alp:lee@example.org",
+      "envelope": {
+        "alp": "0.1",
+        "id": "01M709CDC0YR0QF3GMV5PXHH5S",
+        "thread": "01M709CDC0YR0QF3GMV5PXHH5S",
+        "from": {
+          "address": "alp:pat@partner.example",
+          "principal_id": "pat-91c0e4a7b3d2f816",
+          "delegate": "alp:pat@partner.example/agent-c",
+          "attestation": "self",
+          "class": "consumer"
+        },
+        "to": {
+          "address": "alp:lee@example.org"
+        },
+        "aud": "https://broker.example.org",
+        "scope": "alp.status/1",
+        "type": "request",
+        "body": {
+          "subject": "Quarterly numbers"
+        },
+        "grant": "01M6V4Y6R0ZP55BRGVHFME05BR",
+        "labels": [
+          "internal"
+        ],
+        "created_at": "2026-11-09T13:59:00Z",
+        "expires_at": "2026-11-10T14:00:00Z",
+        "origin_broker": "https://broker.partner.example",
+        "decision": {
+          "outcome": "allowed",
+          "redacted": [],
+          "policy_ids": [
+            "partner.example#3"
+          ]
+        },
+        "broker_sig": "eyJhbGciOiJFZDI1NTE5Iiwia2lkIjoiR1kySmx4ZldzdTBvZno4MVJnMkgzSmJUNmRCZS15NzJzNTVKdjZFS3JIcyIsInR5cCI6ImFscC1lbnZlbG9wZStqd3MifQ..FUTI3DM7T1TBAKtNovJM7GspNS5ckUMuhpfJxoByf8cM5OJgjLaJNaZQBHs0qSAnGv4lO8E6bfTEH1RuGTbxAw"
+      },
+      "grants": [
+        {
+          "alp": "0.1",
+          "id": "01M6XQAXR0RGND2PJ8DXT6N2YW",
+          "principal": "alp:lee@example.org",
+          "principal_id": "lee-2b8e61f0a9c4d735",
+          "counterparty": "alp:pat@partner.example",
+          "counterparty_principal_id": "pat-earlier-holder-000001",
+          "basis": "consent",
+          "status": "active",
+          "scopes": {
+            "alp.status/1": {
+              "may": [
+                "request",
+                "inform",
+                "ack"
+              ],
+              "disclose": [
+                "/body/subject",
+                "/body/state",
+                "/body/updated_at"
+              ],
+              "receive": [
+                "/body/subject",
+                "/body/ref",
+                "/body/state",
+                "/body/percent_complete",
+                "/body/eta",
+                "/body/updated_at"
+              ],
+              "commit": "ask_me",
+              "redaction": "reject"
+            }
+          },
+          "created_at": "2026-11-01T14:00:00Z",
+          "updated_at": "2026-11-01T14:00:00Z",
+          "sealed": {
+            "by": "lee-2b8e61f0a9c4d735",
+            "method": "sso-stepup",
+            "at": "2026-11-01T14:00:00Z"
+          }
+        }
+      ],
+      "state": {},
+      "expected": {
+        "outcome": "refused",
+        "code": "not_accepted",
+        "contact_attempt": true
+      }
+    },
+    {
+      "name": "a retention constraint the broker can't honor",
+      "recipient": "alp:lee@example.org",
+      "broker_capabilities": {
+        "retention_max": false
+      },
+      "envelope": {
+        "alp": "0.1",
+        "id": "01M7099TBRVDK3DGJQH8AH7FNM",
+        "thread": "01M7099TBRVDK3DGJQH8AH7FNM",
+        "from": {
+          "address": "alp:ana@example.org",
+          "principal_id": "ana-7f3a9c41d2e8b605",
+          "delegate": "alp:ana@example.org/agent-a",
+          "attestation": "vendor",
+          "class": "business"
+        },
+        "to": {
+          "address": "alp:lee@example.org",
+          "principal_id": "lee-2b8e61f0a9c4d735"
+        },
+        "aud": "https://broker.example.org",
+        "scope": "alp.briefing/1",
+        "type": "request",
+        "body": {
+          "topic": "Q4 launch staffing plan",
+          "depth": "headline"
+        },
+        "grant": "default:analysts-leaders",
+        "labels": [
+          "internal"
+        ],
+        "constraints": {
+          "retention_max": 7
+        },
+        "created_at": "2026-11-09T13:59:00Z",
+        "expires_at": "2026-11-10T14:00:00Z",
+        "origin_broker": "https://broker.example.org",
+        "decision": {
+          "outcome": "allowed",
+          "redacted": [],
+          "policy_ids": [
+            "example.org#12"
+          ]
+        },
+        "broker_sig": "eyJhbGciOiJFZDI1NTE5Iiwia2lkIjoiUWxidm1jOERXeVRRX3BFMnlzTEFwbjRUMDNqdy1jNlZxNjVMT0RPekdGayIsInR5cCI6ImFscC1lbnZlbG9wZStqd3MifQ..yz7fKBqIfodCQdx6ECFqNVlpHU1Vo9jWKGPckSMO1rHgjGLZSTs9BUPSGWtslQqw42d6UlvGgXskSUwWedfiCQ"
+      },
+      "grants": [],
+      "state": {},
+      "expected": {
+        "outcome": "refused",
+        "code": "constraints_unsupported"
+      }
+    },
+    {
+      "name": "to.delegate names one of the recipient's agents that may receive it: delivered",
+      "recipient": "alp:lee@example.org",
+      "envelope": {
+        "alp": "0.1",
+        "id": "01M7095HMRW8S2SC5APS0C6VNW",
+        "thread": "01M7095HMRW8S2SC5APS0C6VNW",
+        "from": {
+          "address": "alp:ana@example.org",
+          "principal_id": "ana-7f3a9c41d2e8b605",
+          "delegate": "alp:ana@example.org/agent-a",
+          "attestation": "vendor",
+          "class": "business"
+        },
+        "to": {
+          "address": "alp:lee@example.org",
+          "principal_id": "lee-2b8e61f0a9c4d735",
+          "delegate": "alp:lee@example.org/agent-b"
+        },
+        "aud": "https://broker.example.org",
+        "scope": "alp.briefing/1",
+        "type": "request",
+        "body": {
+          "topic": "For agent-b",
+          "depth": "headline"
+        },
+        "grant": "default:analysts-leaders",
+        "labels": [
+          "internal"
+        ],
+        "created_at": "2026-11-09T13:59:00Z",
+        "expires_at": "2026-11-10T14:00:00Z",
+        "origin_broker": "https://broker.example.org",
+        "decision": {
+          "outcome": "allowed",
+          "redacted": [],
+          "policy_ids": [
+            "example.org#12"
+          ]
+        },
+        "broker_sig": "eyJhbGciOiJFZDI1NTE5Iiwia2lkIjoiUWxidm1jOERXeVRRX3BFMnlzTEFwbjRUMDNqdy1jNlZxNjVMT0RPekdGayIsInR5cCI6ImFscC1lbnZlbG9wZStqd3MifQ.._aq8B0RsWDowi1lKcYfQS50Pd-zdUJ7-wr76QSf_Nfm6I6vl7bBMATAdYY4qjjUugUdMXs8Pi0qKklhIZM9lBA"
+      },
+      "grants": [],
+      "state": {},
+      "expected": {
+        "outcome": "accepted",
+        "delivery": "deliver"
+      }
+    },
+    {
+      "name": "to.delegate names no agent of the recipient's: accepted and held for the person, never refused and never given to the person's other agents (spec 6.7)",
+      "recipient": "alp:lee@example.org",
+      "envelope": {
+        "alp": "0.1",
+        "id": "01M709CX008DHDKBGB9YD88WX1",
+        "thread": "01M709CX008DHDKBGB9YD88WX1",
+        "from": {
+          "address": "alp:ana@example.org",
+          "principal_id": "ana-7f3a9c41d2e8b605",
+          "delegate": "alp:ana@example.org/agent-a",
+          "attestation": "vendor",
+          "class": "business"
+        },
+        "to": {
+          "address": "alp:lee@example.org",
+          "principal_id": "lee-2b8e61f0a9c4d735",
+          "delegate": "alp:lee@example.org/nobody"
+        },
+        "aud": "https://broker.example.org",
+        "scope": "alp.briefing/1",
+        "type": "request",
+        "body": {
+          "topic": "For nobody",
+          "depth": "headline"
+        },
+        "grant": "default:analysts-leaders",
+        "labels": [
+          "internal"
+        ],
+        "created_at": "2026-11-09T13:59:00Z",
+        "expires_at": "2026-11-10T14:00:00Z",
+        "origin_broker": "https://broker.example.org",
+        "decision": {
+          "outcome": "allowed",
+          "redacted": [],
+          "policy_ids": [
+            "example.org#12"
+          ]
+        },
+        "broker_sig": "eyJhbGciOiJFZDI1NTE5Iiwia2lkIjoiUWxidm1jOERXeVRRX3BFMnlzTEFwbjRUMDNqdy1jNlZxNjVMT0RPekdGayIsInR5cCI6ImFscC1lbnZlbG9wZStqd3MifQ..XggqPWgQ4OtvPmv46aIeVaElX05gE4wfhPTMGo3uzGOoYVtgAtmo8dG8g23inJ3DKMqd5Dp4fz35xnMEXI0lCQ"
+      },
+      "grants": [],
+      "state": {},
+      "expected": {
+        "outcome": "accepted",
+        "delivery": "hold_for_web_view"
+      }
+    },
+    {
+      "name": "to.delegate names an agent the organization blocked: held for the person (spec 5.8, 6.7)",
+      "recipient": "alp:lee@example.org",
+      "envelope": {
+        "alp": "0.1",
+        "id": "01M7099RD8JEJ432RMTS3NS7WS",
+        "thread": "01M7099RD8JEJ432RMTS3NS7WS",
+        "from": {
+          "address": "alp:ana@example.org",
+          "principal_id": "ana-7f3a9c41d2e8b605",
+          "delegate": "alp:ana@example.org/agent-a",
+          "attestation": "vendor",
+          "class": "business"
+        },
+        "to": {
+          "address": "alp:lee@example.org",
+          "principal_id": "lee-2b8e61f0a9c4d735",
+          "delegate": "alp:lee@example.org/agent-a"
+        },
+        "aud": "https://broker.example.org",
+        "scope": "alp.briefing/1",
+        "type": "request",
+        "body": {
+          "topic": "For agent-a",
+          "depth": "headline"
+        },
+        "grant": "default:analysts-leaders",
+        "labels": [
+          "internal"
+        ],
+        "created_at": "2026-11-09T13:59:00Z",
+        "expires_at": "2026-11-10T14:00:00Z",
+        "origin_broker": "https://broker.example.org",
+        "decision": {
+          "outcome": "allowed",
+          "redacted": [],
+          "policy_ids": [
+            "example.org#12"
+          ]
+        },
+        "broker_sig": "eyJhbGciOiJFZDI1NTE5Iiwia2lkIjoiUWxidm1jOERXeVRRX3BFMnlzTEFwbjRUMDNqdy1jNlZxNjVMT0RPekdGayIsInR5cCI6ImFscC1lbnZlbG9wZStqd3MifQ..XVUwuq4D_cNGF2rHsjn1iH1EuinWltVAgeBao0Lxof0X0gv7XJe2n8Y9mMcicymCUa0yFPBJpApXTmBeC8auAA"
+      },
+      "grants": [],
+      "state": {},
+      "expected": {
+        "outcome": "accepted",
+        "delivery": "hold_for_web_view"
+      }
+    },
+    {
+      "name": "to.delegate names an agent whose client the organization's list doesn't name: held for the person (spec 6.7, 6.10)",
+      "recipient": "alp:lee@example.org",
+      "envelope": {
+        "alp": "0.1",
+        "id": "01M709EBW0JC6EJQCPA6K9E657",
+        "thread": "01M709EBW0JC6EJQCPA6K9E657",
+        "from": {
+          "address": "alp:ana@example.org",
+          "principal_id": "ana-7f3a9c41d2e8b605",
+          "delegate": "alp:ana@example.org/agent-a",
+          "attestation": "vendor",
+          "class": "business"
+        },
+        "to": {
+          "address": "alp:lee@example.org",
+          "principal_id": "lee-2b8e61f0a9c4d735",
+          "delegate": "alp:lee@example.org/old-tool"
+        },
+        "aud": "https://broker.example.org",
+        "scope": "alp.briefing/1",
+        "type": "request",
+        "body": {
+          "topic": "For old-tool",
+          "depth": "headline"
+        },
+        "grant": "default:analysts-leaders",
+        "labels": [
+          "internal"
+        ],
+        "created_at": "2026-11-09T13:59:00Z",
+        "expires_at": "2026-11-10T14:00:00Z",
+        "origin_broker": "https://broker.example.org",
+        "decision": {
+          "outcome": "allowed",
+          "redacted": [],
+          "policy_ids": [
+            "example.org#12"
+          ]
+        },
+        "broker_sig": "eyJhbGciOiJFZDI1NTE5Iiwia2lkIjoiUWxidm1jOERXeVRRX3BFMnlzTEFwbjRUMDNqdy1jNlZxNjVMT0RPekdGayIsInR5cCI6ImFscC1lbnZlbG9wZStqd3MifQ..rg0KFIygXnn-5OyKkLONUIozTORIVyXsGKBbTmivwlhhPKnPpRtlK_pwcotYEjSAi90NwuoOYN0TeO_NQ0WUBw"
+      },
+      "grants": [],
+      "state": {},
+      "expected": {
+        "outcome": "accepted",
+        "delivery": "hold_for_web_view"
+      }
+    },
+    {
+      "name": "to.delegate names an agent that doesn't meet the delivery constraints, though another of the recipient's agents does: held for the person (spec 6.7, 6.11)",
+      "recipient": "alp:lee@example.org",
+      "envelope": {
+        "alp": "0.1",
+        "id": "01M7096EY8VARF4R38Z56ZF34F",
+        "thread": "01M7096EY8VARF4R38Z56ZF34F",
+        "from": {
+          "address": "alp:ana@example.org",
+          "principal_id": "ana-7f3a9c41d2e8b605",
+          "delegate": "alp:ana@example.org/agent-a",
+          "attestation": "vendor",
+          "class": "business"
+        },
+        "to": {
+          "address": "alp:lee@example.org",
+          "principal_id": "lee-2b8e61f0a9c4d735",
+          "delegate": "alp:lee@example.org/agent-e"
+        },
+        "aud": "https://broker.example.org",
+        "scope": "alp.briefing/1",
+        "type": "request",
+        "body": {
+          "topic": "For agent-e",
+          "depth": "headline"
+        },
+        "grant": "default:analysts-leaders",
+        "labels": [
+          "internal"
+        ],
+        "constraints": {
+          "deliver_to": {
+            "min_class": "business"
+          }
+        },
+        "created_at": "2026-11-09T13:59:00Z",
+        "expires_at": "2026-11-10T14:00:00Z",
+        "origin_broker": "https://broker.example.org",
+        "decision": {
+          "outcome": "allowed",
+          "redacted": [],
+          "policy_ids": [
+            "example.org#12"
+          ]
+        },
+        "broker_sig": "eyJhbGciOiJFZDI1NTE5Iiwia2lkIjoiUWxidm1jOERXeVRRX3BFMnlzTEFwbjRUMDNqdy1jNlZxNjVMT0RPekdGayIsInR5cCI6ImFscC1lbnZlbG9wZStqd3MifQ..EIuf9vwy4SlXHWBjN987gYNh1wzRdngvvNUFd-sfST-IeToDk0EURX0G4HPuDSKxzs9ulUR-hvDijIkI1blCCQ"
+      },
+      "grants": [],
+      "state": {},
+      "expected": {
+        "outcome": "accepted",
+        "delivery": "hold_for_web_view"
+      }
+    },
+    {
+      "name": "a reply asking a further question, from the analyst, is accepted like a first request, and delivered",
+      "recipient": "alp:lee@example.org",
+      "envelope": {
+        "alp": "0.1",
+        "id": "01M7099HJGPQ011X3D5YCYWVC9",
+        "thread": "01M709QMR05YDM2CVHK09AWWD7",
+        "in_reply_to": "01M709QMR0819DM5NHAJ7FV7QQ",
+        "in_reply_to_hash": "sha256:CiEgzjc51jqXEji_u-CL5SdHbqZZZGvInjcxDKPT8wc",
+        "from": {
+          "address": "alp:ana@example.org",
+          "principal_id": "ana-7f3a9c41d2e8b605",
+          "delegate": "alp:ana@example.org/agent-a",
+          "attestation": "vendor",
+          "class": "business"
+        },
+        "to": {
+          "address": "alp:lee@example.org",
+          "principal_id": "lee-2b8e61f0a9c4d735"
+        },
+        "aud": "https://broker.example.org",
+        "scope": "alp.briefing/1",
+        "type": "request",
+        "body": {
+          "topic": "Q4 launch staffing plan",
+          "questions": [
+            "Until when is support short?"
+          ],
+          "depth": "headline"
+        },
+        "grant": "default:analysts-leaders",
+        "labels": [
+          "internal"
+        ],
+        "created_at": "2026-11-09T13:59:00Z",
+        "expires_at": "2026-11-10T14:00:00Z",
+        "origin_broker": "https://broker.example.org",
+        "decision": {
+          "outcome": "allowed",
+          "redacted": [],
+          "policy_ids": [
+            "example.org#12"
+          ]
+        },
+        "broker_sig": "eyJhbGciOiJFZDI1NTE5Iiwia2lkIjoiUWxidm1jOERXeVRRX3BFMnlzTEFwbjRUMDNqdy1jNlZxNjVMT0RPekdGayIsInR5cCI6ImFscC1lbnZlbG9wZStqd3MifQ..Tm1Z4-L96utK9ZItsda2PFgAcXoXszZl6T7jA5X_xCKs01RDPKkWMjEw71WNkO-9vnc8EcAbyP-FSxpOMQy-Dw"
+      },
+      "grants": [],
+      "state": {},
+      "expected": {
+        "outcome": "accepted",
+        "delivery": "deliver"
+      }
+    },
+    {
+      "name": "a question back (a request answering a request) from the leader is refused at the analyst's broker: the default's reverse terms have no request",
+      "recipient": "alp:ana@example.org",
+      "envelope": {
+        "alp": "0.1",
+        "id": "01M709BXR0W0445FWB8N6K2PP1",
+        "thread": "01M709QMR023VB3Q1RBYAFEK68",
+        "in_reply_to": "01M709QMR0A168P9NCK754QBJ5",
+        "in_reply_to_hash": "sha256:hi0S1KiwO5tNhf6wWB6hd4N11ejn1BJnWCkUBF0sKBA",
+        "from": {
+          "address": "alp:lee@example.org",
+          "principal_id": "lee-2b8e61f0a9c4d735",
+          "delegate": "alp:lee@example.org/agent-b",
+          "attestation": "vendor",
+          "class": "business"
+        },
+        "to": {
+          "address": "alp:ana@example.org",
+          "principal_id": "ana-7f3a9c41d2e8b605"
+        },
+        "aud": "https://broker.example.org",
+        "scope": "alp.briefing/1",
+        "type": "request",
+        "body": {
+          "topic": "Q4 launch staffing plan",
+          "questions": [
+            "Do you mean contractors too?"
+          ],
+          "depth": "headline"
+        },
+        "grant": "default:analysts-leaders",
+        "labels": [
+          "internal"
+        ],
+        "created_at": "2026-11-09T13:59:00Z",
+        "expires_at": "2026-11-10T14:00:00Z",
+        "origin_broker": "https://broker.example.org",
+        "decision": {
+          "outcome": "allowed",
+          "redacted": [],
+          "policy_ids": [
+            "example.org#12"
+          ]
+        },
+        "broker_sig": "eyJhbGciOiJFZDI1NTE5Iiwia2lkIjoiUWxidm1jOERXeVRRX3BFMnlzTEFwbjRUMDNqdy1jNlZxNjVMT0RPekdGayIsInR5cCI6ImFscC1lbnZlbG9wZStqd3MifQ..eJJylS8xABnOnlGr0DmLm1m9MDcEddQ2Rv_Ev0b4fOSNrBfPKs5hFpTQHxsJxyGl0u4F49M1W45yRLkaD7RhBA"
+      },
+      "grants": [],
+      "state": {},
+      "expected": {
+        "outcome": "refused",
+        "code": "not_accepted"
+      }
+    },
+    {
+      "name": "an ack needs no may: accepted though the recipient's narrowed grant allows only requests",
+      "recipient": "alp:lee@example.org",
+      "envelope": {
+        "alp": "0.1",
+        "id": "01M709BTT8Y4GGX77ENN1HTJMM",
+        "thread": "01M709QMR0NWP3QR5M99KYC6FT",
+        "in_reply_to": "01M709QMR0CN3MH3WSMX1AGAE2",
+        "in_reply_to_hash": "sha256:Wq-NO8nXIFyHhGCowvMAt4YcWMp6HbG4ogU6mByszYc",
+        "from": {
+          "address": "alp:ana@example.org",
+          "principal_id": "ana-7f3a9c41d2e8b605",
+          "delegate": "alp:ana@example.org/agent-a",
+          "attestation": "vendor",
+          "class": "business"
+        },
+        "to": {
+          "address": "alp:lee@example.org",
+          "principal_id": "lee-2b8e61f0a9c4d735"
+        },
+        "aud": "https://broker.example.org",
+        "scope": "alp.briefing/1",
+        "type": "ack",
+        "body": {
+          "of": "01M709QMR0CN3MH3WSMX1AGAE2",
+          "status": "completed"
+        },
+        "grant": "default:analysts-leaders",
+        "labels": [
+          "internal"
+        ],
+        "created_at": "2026-11-09T13:59:00Z",
+        "expires_at": "2026-11-10T14:00:00Z",
+        "origin_broker": "https://broker.example.org",
+        "decision": {
+          "outcome": "allowed",
+          "redacted": [],
+          "policy_ids": [
+            "example.org#12"
+          ]
+        },
+        "broker_sig": "eyJhbGciOiJFZDI1NTE5Iiwia2lkIjoiUWxidm1jOERXeVRRX3BFMnlzTEFwbjRUMDNqdy1jNlZxNjVMT0RPekdGayIsInR5cCI6ImFscC1lbnZlbG9wZStqd3MifQ..bOEJNzbSnkUMSJOu673ffoaAPHjpi79zjnlmLO7ExtFvoZ_pv35-xy6jOdmazDN41deRABq1K6qPsYaD5KioCw"
+      },
+      "grants": [
+        {
+          "alp": "0.1",
+          "id": "01M6XQAXR00Y7T2V2XWRFMBYA7",
+          "principal": "alp:lee@example.org",
+          "principal_id": "lee-2b8e61f0a9c4d735",
+          "counterparty": "alp:ana@example.org",
+          "basis": "narrowing",
+          "status": "active",
+          "scopes": {
+            "alp.briefing/1": {
+              "may": [
+                "request"
+              ],
+              "disclose": [
+                "/body/points/*",
+                "/body/as_of",
+                "/body/confidence",
+                "/body/follow_up"
+              ],
+              "receive": [
+                "/body/topic",
+                "/body/questions/*",
+                "/body/depth",
+                "/body/due_by",
+                "/body/context/project",
+                "/body/context/amount"
+              ],
+              "commit": "ask_me",
+              "redaction": "reject"
+            }
+          },
+          "created_at": "2026-11-08T14:00:00Z",
+          "updated_at": "2026-11-08T14:00:00Z",
+          "sealed": {
+            "by": "lee-2b8e61f0a9c4d735",
+            "method": "sso-stepup",
+            "at": "2026-11-08T14:00:00Z"
+          }
+        }
+      ],
+      "state": {},
+      "expected": {
+        "outcome": "accepted",
+        "delivery": "deliver"
+      }
+    }
+  ]
+}

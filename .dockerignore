@@ -1,0 +1,14 @@
+**/node_modules
+**/.data
+**/*.log
+**/.env
+**/.env.*
+.git
+.github
+reference/src/**/*.test.ts
+reference/src/conformance
+tools
+vectors
+announcement
+site
+bridge-kit

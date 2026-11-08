@@ -1,0 +1,221 @@
+{
+  "alp": "0.1",
+  "id": "example-org",
+  "serial": 1,
+  "domains": [
+    "example.org"
+  ],
+  "updated_at": "2026-11-09T14:00:00Z",
+  "groups": {
+    "analysts": {
+      "members": [
+        "alp:ana@example.org"
+      ]
+    },
+    "leaders": {
+      "members": [
+        "alp:lee@example.org"
+      ]
+    },
+    "finance": {
+      "claim": {
+        "issuer": "https://login.microsoftonline.com/00000000-0000-0000-0000-000000000000/v2.0",
+        "name": "roles",
+        "value": "Finance"
+      }
+    }
+  },
+  "classification": {
+    "rules": [
+      {
+        "id": "financial-stays-in-finance",
+        "labels": [
+          "confidential.financial"
+        ],
+        "direction": "both",
+        "allow": [
+          "group:finance"
+        ],
+        "action": "reject",
+        "mode": "enforce",
+        "description": "Financial figures go only to the finance group."
+      },
+      {
+        "id": "confidential-stays-inside",
+        "labels": [
+          "confidential",
+          "confidential.*"
+        ],
+        "direction": "outbound",
+        "allow": [
+          "@org"
+        ],
+        "action": "reject",
+        "mode": "enforce",
+        "description": "Confidential fields never leave the organization."
+      }
+    ]
+  },
+  "default_relationships": [
+    {
+      "id": "analysts-leaders",
+      "from": [
+        "group:analysts"
+      ],
+      "to": [
+        "group:leaders"
+      ],
+      "scopes": {
+        "alp.briefing/1": {
+          "forward": {
+            "may": [
+              "request",
+              "inform",
+              "ask_human"
+            ],
+            "fields": [
+              "/body/topic",
+              "/body/questions/*",
+              "/body/depth",
+              "/body/due_by",
+              "/body/points/*",
+              "/body/as_of",
+              "/body/confidence",
+              "/body/follow_up"
+            ]
+          },
+          "reverse": {
+            "may": [
+              "request",
+              "inform",
+              "decline",
+              "ask_human"
+            ],
+            "fields": [
+              "/body/topic",
+              "/body/questions/*",
+              "/body/depth",
+              "/body/due_by",
+              "/body/points/*",
+              "/body/as_of",
+              "/body/confidence",
+              "/body/follow_up"
+            ]
+          }
+        },
+        "alp.availability/1": {
+          "forward": {
+            "may": [
+              "request"
+            ],
+            "fields": [
+              "/body/window",
+              "/body/duration_minutes",
+              "/body/timezone",
+              "/body/purpose"
+            ]
+          },
+          "reverse": {
+            "may": [
+              "inform",
+              "decline"
+            ],
+            "fields": [
+              "/body/free",
+              "/body/timezone",
+              "/body/as_of"
+            ]
+          }
+        }
+      },
+      "rate_limit": {
+        "count": 50,
+        "per_seconds": 86400
+      }
+    }
+  ],
+  "ratification": {
+    "required_scopes": [
+      "alp.document_request/1"
+    ]
+  },
+  "dlp": {
+    "categories": [
+      "payment_card",
+      "private_key",
+      "credential",
+      "government_id"
+    ],
+    "inbound": true,
+    "timeout_ms": 2000,
+    "on_error": "block"
+  },
+  "retention": {
+    "ledger_days": 365,
+    "store_values": "free_text"
+  },
+  "federation": {
+    "mode": "allow",
+    "domains": []
+  },
+  "connection_requests": {
+    "inbound": "allow"
+  },
+  "clients": {
+    "mode": "enforce",
+    "allowed": [
+      {
+        "client_id": "https://claude.ai/oauth/mcp-oauth-client-metadata",
+        "label": "claude",
+        "scopes": [
+          "alp.briefing/1",
+          "alp.availability/1",
+          "alp.meeting/1",
+          "alp.status/1"
+        ],
+        "attestation": "vendor",
+        "class": "business",
+        "no_training": false
+      },
+      {
+        "client_id": "https://chatgpt.com/oauth/client.json",
+        "label": "chatgpt",
+        "scopes": [
+          "alp.briefing/1",
+          "alp.availability/1",
+          "alp.meeting/1",
+          "alp.status/1"
+        ],
+        "attestation": "vendor",
+        "class": "business",
+        "no_training": false
+      },
+      {
+        "client_id": "org-workspace-agent",
+        "label": "workspace",
+        "scopes": [
+          "alp.availability/1",
+          "alp.briefing/1",
+          "alp.meeting/1",
+          "alp.status/1",
+          "alp.document_request/1"
+        ],
+        "attestation": "org-client",
+        "class": "enterprise",
+        "no_training": false
+      }
+    ]
+  },
+  "delivery_minimums": [
+    {
+      "labels": [
+        "confidential",
+        "confidential.*"
+      ],
+      "min_class": "business"
+    }
+  ],
+  "human_fallback": "notify_only",
+  "sms": false,
+  "inbound_default": "response_only"
+}

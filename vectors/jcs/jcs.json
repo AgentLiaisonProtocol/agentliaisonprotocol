@@ -1,0 +1,30 @@
+{
+  "description": "RFC 8785 canonical forms. input_text is parsed with a strict I-JSON parser, then canonicalized.",
+  "cases": [
+    {
+      "name": "member order by UTF-16 code units",
+      "input_text": "{\"b\":1,\"a\":2,\"A\":3,\"é\":4,\"€\":5,\"😀\":6,\"\\u0000\":7}",
+      "expected": "{\"\\u0000\":7,\"A\":3,\"a\":2,\"b\":1,\"é\":4,\"€\":5,\"😀\":6}"
+    },
+    {
+      "name": "numbers",
+      "input_text": "[1.0, -0, 1e21, 1e-7, 123456789012345680000, 0.1]",
+      "expected": "[1,0,1e+21,1e-7,123456789012345680000,0.1]"
+    },
+    {
+      "name": "escapes",
+      "input_text": "\"\\u000a\\u0009\\u001f\\\"\\\\/\\u2028\"",
+      "expected": "\"\\n\\t\\u001f\\\"\\\\/ \""
+    },
+    {
+      "name": "nested and whitespace",
+      "input_text": "{ \"z\": [ {\"y\":true, \"x\":null} ], \"a\": \"s\" }",
+      "expected": "{\"a\":\"s\",\"z\":[{\"x\":null,\"y\":true}]}"
+    },
+    {
+      "name": "duplicate member is refused",
+      "input_text": "{\"a\":1,\"a\":2}",
+      "expected_error": "duplicate member name"
+    }
+  ]
+}

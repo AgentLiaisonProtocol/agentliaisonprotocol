@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/messages/connection_request.schema.json",
+  "title": "connection_request body",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "scopes",
+    "purpose"
+  ],
+  "properties": {
+    "scopes": {
+      "type": "array",
+      "items": {
+        "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/scope_id"
+      },
+      "minItems": 1,
+      "maxItems": 10,
+      "uniqueItems": true
+    },
+    "purpose": {
+      "enum": [
+        "work_request",
+        "scheduling",
+        "briefing",
+        "status_updates",
+        "document_exchange",
+        "introduction",
+        "other"
+      ]
+    },
+    "display_name": {
+      "type": "string",
+      "maxLength": 64,
+      "minLength": 1,
+      "description": "The name the requester's home broker asserts for its principal."
+    }
+  }
+}

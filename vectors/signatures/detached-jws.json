@@ -1,0 +1,99 @@
+{
+  "description": "Detached JWS (RFC 7515 Appendix F) over the JCS form of the object without broker_sig. Ed25519 is deterministic, so expected values are exact.",
+  "cases": [
+    {
+      "name": "envelope, Ed25519",
+      "key": "broker.example.org/federation-1",
+      "typ": "alp-envelope+jws",
+      "object": {
+        "alp": "0.1",
+        "id": "01M709KZJ03BHCCM1NX9BT2MVE",
+        "thread": "01M709KZJ03BHCCM1NX9BT2MVE",
+        "from": {
+          "address": "alp:ana@example.org",
+          "principal_id": "ana-7f3a9c41d2e8b605",
+          "delegate": "alp:ana@example.org/agent-a",
+          "attestation": "vendor",
+          "class": "business"
+        },
+        "to": {
+          "address": "alp:lee@example.org",
+          "principal_id": "lee-2b8e61f0a9c4d735"
+        },
+        "aud": "https://broker.example.org",
+        "scope": "alp.briefing/1",
+        "type": "request",
+        "body": {
+          "topic": "Q4 launch staffing plan",
+          "questions": [
+            "Which teams are short-staffed?"
+          ],
+          "depth": "summary"
+        },
+        "grant": "default:analysts-leaders",
+        "labels": [
+          "internal"
+        ],
+        "created_at": "2026-11-09T13:58:00Z",
+        "expires_at": "2026-11-10T13:58:00Z",
+        "origin_broker": "https://broker.example.org",
+        "decision": {
+          "outcome": "allowed",
+          "redacted": [],
+          "policy_ids": [
+            "example.org#12"
+          ]
+        }
+      },
+      "expected": {
+        "jcs": "{\"alp\":\"0.1\",\"aud\":\"https://broker.example.org\",\"body\":{\"depth\":\"summary\",\"questions\":[\"Which teams are short-staffed?\"],\"topic\":\"Q4 launch staffing plan\"},\"created_at\":\"2026-11-09T13:58:00Z\",\"decision\":{\"outcome\":\"allowed\",\"policy_ids\":[\"example.org#12\"],\"redacted\":[]},\"expires_at\":\"2026-11-10T13:58:00Z\",\"from\":{\"address\":\"alp:ana@example.org\",\"attestation\":\"vendor\",\"class\":\"business\",\"delegate\":\"alp:ana@example.org/agent-a\",\"principal_id\":\"ana-7f3a9c41d2e8b605\"},\"grant\":\"default:analysts-leaders\",\"id\":\"01M709KZJ03BHCCM1NX9BT2MVE\",\"labels\":[\"internal\"],\"origin_broker\":\"https://broker.example.org\",\"scope\":\"alp.briefing/1\",\"thread\":\"01M709KZJ03BHCCM1NX9BT2MVE\",\"to\":{\"address\":\"alp:lee@example.org\",\"principal_id\":\"lee-2b8e61f0a9c4d735\"},\"type\":\"request\"}",
+        "protected_header": {
+          "alg": "Ed25519",
+          "kid": "Qlbvmc8DWyTQ_pE2ysLApn4T03jw-c6Vq65LODOzGFk",
+          "typ": "alp-envelope+jws"
+        },
+        "protected_b64": "eyJhbGciOiJFZDI1NTE5Iiwia2lkIjoiUWxidm1jOERXeVRRX3BFMnlzTEFwbjRUMDNqdy1jNlZxNjVMT0RPekdGayIsInR5cCI6ImFscC1lbnZlbG9wZStqd3MifQ",
+        "signing_input_prefix": "eyJhbGciOiJFZDI1NTE5Iiwia2lkIjoiUWxidm1jOERXeVRRX3BFMnlzTEFwbjRUMDNqdy1jNlZxNjVMT0RPekdGayIsInR5cCI6ImFscC1lbnZlbG9wZStqd3MifQ.",
+        "broker_sig": "eyJhbGciOiJFZDI1NTE5Iiwia2lkIjoiUWxidm1jOERXeVRRX3BFMnlzTEFwbjRUMDNqdy1jNlZxNjVMT0RPekdGayIsInR5cCI6ImFscC1lbnZlbG9wZStqd3MifQ..rreCmIOL3-xmMQaBaV4K3rCNvncGJVWA8QdC_XuyRPv9k8qCeUsJvec4lLIUAKOYoOnur5eC5042SpA41nUoCw",
+        "envelope_hash": "sha256:EqyxHr6qZqwa1WEfon7ufTXzTboeh1v-2TjkzlLoIsE"
+      }
+    },
+    {
+      "name": "receipt, Ed25519",
+      "key": "broker.example.org/federation-1",
+      "typ": "alp-receipt+jws",
+      "object": {
+        "alp": "0.1",
+        "id": "01M709M0H8E66YTKED4MYCNSKN",
+        "envelope_id": "01M709KZJ03BHCCM1NX9BT2MVE",
+        "envelope_hash": "sha256:EqyxHr6qZqwa1WEfon7ufTXzTboeh1v-2TjkzlLoIsE",
+        "status": "accepted",
+        "ledger_hash": "sha256:5KbNgZiPXzmG8tDSt02vs4aVQXv_I0ZWJQyMi0ptV-s",
+        "created_at": "2026-11-09T13:58:01Z",
+        "expires_at": "2026-11-16T13:58:01Z",
+        "origin_broker": "https://broker.example.org",
+        "aud": "https://broker.example.org"
+      },
+      "expected": {
+        "jcs": "{\"alp\":\"0.1\",\"aud\":\"https://broker.example.org\",\"created_at\":\"2026-11-09T13:58:01Z\",\"envelope_hash\":\"sha256:EqyxHr6qZqwa1WEfon7ufTXzTboeh1v-2TjkzlLoIsE\",\"envelope_id\":\"01M709KZJ03BHCCM1NX9BT2MVE\",\"expires_at\":\"2026-11-16T13:58:01Z\",\"id\":\"01M709M0H8E66YTKED4MYCNSKN\",\"ledger_hash\":\"sha256:5KbNgZiPXzmG8tDSt02vs4aVQXv_I0ZWJQyMi0ptV-s\",\"origin_broker\":\"https://broker.example.org\",\"status\":\"accepted\"}",
+        "protected_header": {
+          "alg": "Ed25519",
+          "kid": "Qlbvmc8DWyTQ_pE2ysLApn4T03jw-c6Vq65LODOzGFk",
+          "typ": "alp-receipt+jws"
+        },
+        "broker_sig": "eyJhbGciOiJFZDI1NTE5Iiwia2lkIjoiUWxidm1jOERXeVRRX3BFMnlzTEFwbjRUMDNqdy1jNlZxNjVMT0RPekdGayIsInR5cCI6ImFscC1yZWNlaXB0K2p3cyJ9..jxeN_vqLF80l8HA1r8xf-RWwbJSfPzY0A69hMFj6GCaj6fWQHKjvC-TRQ1DPtpe9o2DHCon5f47FpjZIPjEBCQ"
+      }
+    },
+    {
+      "name": "ES256 verify-only",
+      "key": "broker.partner.example/federation-2",
+      "typ": "alp-envelope+jws",
+      "object": {
+        "alp": "0.1",
+        "note": "ES256 signatures are randomized; this vector is verify-only."
+      },
+      "verify_only": true,
+      "broker_sig": "eyJhbGciOiJFUzI1NiIsImtpZCI6IjkxTlN6bzJuWGtETHdmblVYU1YyY3VZMmNKMVFJUG5nRjhDV1JoZlgxQjgiLCJ0eXAiOiJhbHAtZW52ZWxvcGUrandzIn0..sg_a4wBrhdwEJX-0CpVN2oJq8SPFD2cr47BGbbeGbowdS6NxqLfccB39maY9xTpvPIyTQ-OjgqChQMfGfEoWOg"
+    }
+  ]
+}

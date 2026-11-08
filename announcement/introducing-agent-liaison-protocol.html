@@ -1,0 +1,330 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Introducing the Agent Liaison Protocol</title>
+<meta name="description" content="The Agent Liaison Protocol (ALP) is an open standard for work between people, carried by their agents, under each person's rules. Each agent talks only to its own person's home broker; brokers carry only what both people's rules allow, prove whom they speak for, and keep matching ledgers.">
+<meta name="author" content="Brien Collier, Lucaryin">
+<link rel="canonical" href="https://agentliaisonprotocol.org/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Agent Liaison Protocol">
+<meta property="og:title" content="Introducing the Agent Liaison Protocol">
+<meta property="og:description" content="Between people, through their agents. An open standard for work between people, carried by their agents. Spec, reference broker and demo, v0.1.">
+<meta property="og:url" content="https://agentliaisonprotocol.org/">
+<meta property="og:image" content="https://agentliaisonprotocol.org/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Agent Liaison Protocol: between people, through their agents.">
+<meta property="article:published_time" content="2026-11-09">
+<meta property="article:author" content="Brien Collier">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Introducing the Agent Liaison Protocol">
+<meta name="twitter:description" content="Between people, through their agents. An open standard for work between people, carried by their agents. Spec, reference broker and demo, v0.1.">
+<meta name="twitter:image" content="https://agentliaisonprotocol.org/og-image.png">
+<meta name="twitter:image:alt" content="Agent Liaison Protocol: between people, through their agents.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M5 16h22' stroke='%236b7280' stroke-width='2'/%3E%3Ccircle cx='5' cy='16' r='4.2' fill='%230d7a68'/%3E%3Ccircle cx='27' cy='16' r='4.2' fill='%23b0520c'/%3E%3Cpath d='M13 12.2l3.8 3.8-3.8 3.8-3.8-3.8z' fill='%2316181d'/%3E%3Cpath d='M19.6 12.2l3.8 3.8-3.8 3.8-3.8-3.8z' fill='%2316181d'/%3E%3C/svg%3E">
+<style>
+:root{
+  --font: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+  --bg:#f7f6f2; --surface:#ffffff; --surface-2:#f0eee7;
+  --ink:#16181d; --ink-2:#3f444e; --muted:#636976;
+  --line:#e2dfd6; --line-strong:#cbc7bb;
+  --a:#0d7a68; --a-soft:#e2f1ec; --b:#b0520c; --b-soft:#f7eadd;
+  --link:#1d4dbb; --code-bg:#efede6; --mark:#16181d; --edge:#8a8f99;
+  --shadow:0 1px 2px rgba(30,25,10,.05), 0 8px 28px rgba(30,25,10,.06);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0f1114; --surface:#171a1f; --surface-2:#1e2229;
+    --ink:#eceef2; --ink-2:#c6cbd3; --muted:#9ba2ae;
+    --line:#2a2f37; --line-strong:#3b414c;
+    --a:#3ccab1; --a-soft:#10302a; --b:#f0a35e; --b-soft:#33240f;
+    --link:#93b5ff; --code-bg:#1b1f25; --mark:#eceef2; --edge:#6c7480;
+    --shadow:none;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0f1114; --surface:#171a1f; --surface-2:#1e2229;
+  --ink:#eceef2; --ink-2:#c6cbd3; --muted:#9ba2ae;
+  --line:#2a2f37; --line-strong:#3b414c;
+  --a:#3ccab1; --a-soft:#10302a; --b:#f0a35e; --b-soft:#33240f;
+  --link:#93b5ff; --code-bg:#1b1f25; --mark:#eceef2; --edge:#6c7480;
+  --shadow:none;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.65 var(--font);overflow-wrap:break-word}
+a{color:var(--link);text-underline-offset:.18em;text-decoration-thickness:1px}
+a:hover{text-decoration-thickness:2px}
+a:focus-visible,.btn:focus-visible{outline:2px solid var(--link);outline-offset:3px;border-radius:6px}
+code{font-family:var(--mono);font-size:.88em;background:var(--code-bg);border:1px solid var(--line);border-radius:5px;padding:.08em .35em;overflow-wrap:anywhere}
+strong{font-weight:650}
+.band{height:4px;background:linear-gradient(90deg,var(--a),var(--b))}
+.wrap{max-width:720px;margin:0 auto;padding:0 16px}
+.wide{max-width:940px;margin:0 auto;padding:0 16px}
+@media (min-width:640px){.wrap,.wide{padding:0 28px}}
+
+/* top bar */
+.top{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:6px 12px;padding-top:18px;padding-bottom:18px}
+.brand{display:flex;align-items:center;gap:10px;color:var(--ink);text-decoration:none;font-weight:650;letter-spacing:-.01em;white-space:nowrap}
+.top-links a{white-space:nowrap}
+@media (max-width:420px){.top .pill{display:none}}
+.brand svg{flex:none}
+.top-links{display:flex;align-items:center;gap:14px;font-size:14px;margin-left:auto}
+.pill{display:inline-block;font-size:12px;font-weight:600;letter-spacing:.02em;color:var(--muted);border:1px solid var(--line-strong);border-radius:999px;padding:2px 9px;white-space:nowrap}
+@media (max-width:374px){.top{column-gap:10px}.brand{font-size:15px;gap:8px}.brand svg{width:28px;height:17px}.top-links{font-size:13px}}
+@media (max-width:339px){.brand{font-size:14px;gap:7px}.brand svg{width:26px;height:16px}}
+@media (max-width:300px){.mode .pill{white-space:normal}}
+
+/* hero */
+.hero{padding-top:40px;padding-bottom:8px}
+.eyebrow{font-size:13px;font-weight:650;letter-spacing:.08em;text-transform:uppercase;color:var(--a);margin:0 0 14px}
+h1{font-size:clamp(34px,7vw,54px);line-height:1.06;letter-spacing:-.025em;margin:0 0 16px;font-weight:750}
+.dek{font-size:clamp(19px,3.2vw,23px);line-height:1.4;color:var(--ink-2);margin:0 0 20px;font-weight:450}
+.byline{font-size:15px;color:var(--muted);margin:0 0 26px}
+.byline strong{color:var(--ink);font-weight:600}
+.cta{display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px;padding:16px 18px;background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);margin:0 0 8px}
+.btn{display:inline-flex;align-items:center;gap:8px;background:var(--ink);color:var(--bg);text-decoration:none;font-weight:650;font-size:15px;padding:10px 16px;border-radius:10px}
+.btn:hover{opacity:.9}
+.cta .url{font-family:var(--mono);font-size:13px;color:var(--muted);overflow-wrap:anywhere}
+
+/* body text */
+article p,article li{color:var(--ink)}
+.lede{font-size:clamp(18px,2.6vw,20px);line-height:1.6;margin:30px 0 0}
+h2{font-size:clamp(23px,3.6vw,28px);line-height:1.2;letter-spacing:-.015em;margin:56px 0 14px;font-weight:720}
+h2 .n{display:inline-block;min-width:1.6em;color:var(--muted);font-weight:600;font-variant-numeric:tabular-nums}
+p{margin:0 0 16px}
+
+/* risks */
+.risks{list-style:none;padding:0;margin:20px 0 22px;display:grid;gap:10px}
+.risks li{display:grid;grid-template-columns:150px 1fr;gap:14px;align-items:baseline;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.risks .tag{font-size:13px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;color:var(--b)}
+@media (max-width:560px){.risks li{grid-template-columns:1fr;gap:4px}}
+
+/* guarantees */
+.guarantees{list-style:none;padding:0;margin:22px 0 8px;counter-reset:g;display:grid;gap:12px}
+.guarantees li{counter-increment:g;position:relative;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px 18px 18px 66px;box-shadow:var(--shadow)}
+.guarantees li::before{content:counter(g);position:absolute;left:18px;top:18px;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-weight:750;font-size:16px;color:var(--a);background:var(--a-soft);border:1px solid color-mix(in srgb,var(--a) 35%,transparent)}
+.guarantees strong{display:block;font-size:18px;margin-bottom:4px;letter-spacing:-.005em}
+@media (max-width:480px){.guarantees li{padding:56px 16px 16px}.guarantees li::before{left:16px;top:14px}}
+
+/* flow figure */
+figure{margin:28px 0}
+.flow{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:22px 18px 16px;box-shadow:var(--shadow)}
+.flow ol{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr 84px 1.12fr 96px 1.12fr 84px 1fr;align-items:stretch}
+.node{border:1.5px solid var(--line-strong);border-radius:12px;padding:12px 12px;background:var(--bg);display:flex;flex-direction:column;justify-content:center;min-height:96px}
+.node .who{font-weight:700;font-size:15px;line-height:1.25}
+.node .sub{font-size:12.5px;line-height:1.35;color:var(--muted);margin-top:4px}
+.node.a.broker{border-color:var(--a);background:var(--a-soft)}
+.node.b.broker{border-color:var(--b);background:var(--b-soft)}
+.node.a.agent .who{color:var(--a)}
+.node.b.agent .who{color:var(--b)}
+.edge{position:relative;min-height:96px}
+.edge::before{content:"";position:absolute;left:6px;right:10px;top:50%;height:2px;margin-top:-1px;background:var(--edge)}
+.edge::after{content:"";position:absolute;right:4px;top:50%;margin-top:-6px;border-left:8px solid var(--edge);border-top:6px solid transparent;border-bottom:6px solid transparent}
+.edge.two::before{left:12px}
+.edge .tail{position:absolute;left:4px;top:50%;margin-top:-6px;border-right:8px solid var(--edge);border-top:6px solid transparent;border-bottom:6px solid transparent}
+.edge span{position:absolute;left:2px;right:2px;bottom:calc(50% + 7px);font-size:11.5px;line-height:1.3;color:var(--muted);text-align:center}
+.edge span.down{bottom:auto;top:calc(50% + 7px)}
+.rails{display:grid;gap:8px;margin-top:16px}
+.rail{display:flex;gap:10px;align-items:flex-start;font-size:13.5px;line-height:1.45;color:var(--ink-2);border-top:1px dashed var(--line-strong);padding-top:10px}
+.rail b{flex:none;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);min-width:64px;padding-top:2px}
+.flow figcaption{font-size:13px;color:var(--muted);margin-top:12px}
+@media (max-width:760px){
+  .flow ol{grid-template-columns:1fr}
+  .node{min-height:0}
+  .edge{min-height:58px}
+  .edge::before,.edge.two::before{left:50%;right:auto;top:6px;bottom:12px;width:2px;height:auto;margin:0 0 0 -1px}
+  .edge.two::before{top:12px}
+  .edge::after{right:auto;left:50%;top:auto;bottom:4px;margin:0 0 0 -6px;border-left:6px solid transparent;border-right:6px solid transparent;border-top:8px solid var(--edge);border-bottom:0}
+  .edge .tail{left:50%;top:4px;margin:0 0 0 -6px;border-right:6px solid transparent;border-left:6px solid transparent;border-bottom:8px solid var(--edge);border-top:0}
+  .edge span{left:calc(50% + 16px);right:0;top:50%;bottom:auto;transform:translateY(-50%);text-align:left}
+  .edge span.up{top:auto;bottom:50%;transform:none}
+  .edge span.down{top:50%;transform:none}
+}
+
+.scope{font-size:15.5px;line-height:1.6;color:var(--ink-2);background:var(--surface-2);border-radius:12px;padding:14px 16px;margin:4px 0 0}
+
+/* modes */
+.modes{display:grid;gap:12px;margin:22px 0 18px}
+.mode{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px 18px 4px;box-shadow:var(--shadow)}
+.mode .label{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:8px}
+.mode .label h3{margin:0;font-size:18px;letter-spacing:-.005em}
+.mode.client{border-top:3px solid var(--a)}
+.mode.native{border-top:3px solid var(--b)}
+.mode .costs{background:var(--surface-2);border-radius:10px;padding:12px 14px;margin:0 0 14px;font-size:15.5px;color:var(--ink-2)}
+.interop{font-size:18px;line-height:1.55;border-left:3px solid var(--a);padding:2px 0 2px 16px;margin:20px 0}
+
+/* ships */
+.ships{list-style:none;padding:0;margin:18px 0 18px;display:grid;gap:10px}
+.ships li{position:relative;padding-left:30px}
+.ships li::before{content:"";position:absolute;left:2px;top:.45em;width:16px;height:16px;border-radius:50%;background:var(--a-soft);border:1.5px solid var(--a)}
+.ships li::after{content:"";position:absolute;left:7.5px;top:calc(.45em + 3.5px);width:4px;height:7px;border:solid var(--a);border-width:0 2px 2px 0;transform:rotate(45deg)}
+pre{background:var(--code-bg);border:1px solid var(--line);border-radius:12px;padding:14px 16px;overflow-x:auto;font:13.5px/1.6 var(--mono);margin:12px 0 18px;color:var(--ink)}
+pre code{background:none;border:0;padding:0;font-size:inherit}
+
+/* get involved */
+.ways{display:grid;gap:12px;margin:18px 0}
+@media (min-width:640px){.ways{grid-template-columns:1fr 1fr}}
+.way{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px}
+.way h3{margin:0 0 6px;font-size:17px}
+.way p{margin:0;font-size:15.5px;color:var(--ink-2)}
+.contact{background:var(--ink);color:var(--bg);border-radius:14px;padding:18px 20px;margin:16px 0 0;font-weight:550}
+.contact a{color:inherit}
+
+.lic{font-family:var(--mono);font-size:.86em;background:var(--code-bg);border:1px solid var(--line);border-radius:6px;padding:.05em .4em;white-space:nowrap}
+
+footer{margin-top:64px;border-top:1px solid var(--line);padding:22px 0 48px;font-size:14px;color:var(--muted)}
+footer p{margin:0 0 8px}
+footer .disclaimer{font-style:italic;color:var(--ink-2)}
+
+@media print{
+  .band,.top-links{display:none}
+  body{background:#fff;color:#000;font-size:11pt}
+  .cta,.guarantees li,.flow,.mode,.way{box-shadow:none}
+  h2{break-after:avoid}
+  .flow,.mode,.guarantees li,.risks li,.way{break-inside:avoid}
+}
+</style>
+</head>
+<body>
+<div class="band" aria-hidden="true"></div>
+<header class="wrap top">
+  <a class="brand" href="https://agentliaisonprotocol.org/" aria-label="Agent Liaison Protocol home">
+    <svg width="34" height="20" viewBox="0 0 34 20" aria-hidden="true"><path d="M5 10h24" stroke="var(--line-strong)" stroke-width="2"/><circle cx="5" cy="10" r="4.2" fill="var(--a)"/><circle cx="29" cy="10" r="4.2" fill="var(--b)"/><path d="M13.6 6.2l3.8 3.8-3.8 3.8-3.8-3.8z" fill="var(--mark)"/><path d="M20.4 6.2l3.8 3.8-3.8 3.8-3.8-3.8z" fill="var(--mark)"/></svg>
+    <span>Agent Liaison Protocol</span>
+  </a>
+  <nav class="top-links" aria-label="Project">
+    <span class="pill">v0.1 draft</span>
+    <a href="https://github.com/AgentLiaisonProtocol/agentliaisonprotocol">Spec and code</a>
+  </nav>
+</header>
+
+<main>
+<article>
+  <div class="wrap hero">
+    <p class="eyebrow">Announcement</p>
+    <h1>Introducing the Agent Liaison Protocol</h1>
+    <p class="dek"><strong>Between people, through their agents.</strong> The Agent Liaison Protocol (ALP) is an open standard for work between people, carried by their agents, under each person’s rules.</p>
+    <p class="byline">By <strong>Brien Collier</strong>, Lucaryin · <time datetime="2026-11-09">November 9, 2026</time></p>
+    <div class="cta">
+      <a class="btn" href="https://github.com/AgentLiaisonProtocol/agentliaisonprotocol">Read the spec and run the demo <span aria-hidden="true">→</span></a>
+      <span class="url">https://github.com/<wbr>AgentLiaisonProtocol/<wbr>agentliaisonprotocol</span>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <p class="lede">A leader has three AI agents from three vendors: a dot in his company’s ChatGPT workspace, his company’s Claude, and Meta’s Muse on his personal account. They should work together, but not as equals: his company’s agents may see the confidential board figures, and his Muse shouldn’t get them without his say. We found no standard way to do that today, let alone between two people or two companies. <strong>MCP connects agents to tools. A2A connects agents to agents. ALP connects people through their agents, under each person’s rules.</strong></p>
+    <p class="lede">ALP v0.1 includes the specification, its JSON Schemas and conformance vectors, a source-available reference broker built to sign people in through their organization’s identity provider (such as Microsoft Entra ID), a one-command demo, and a bridge kit for the agents people already use. On November 7, 2026, we tested the reference’s development broker with real agents: Claude and Claude Duet connected as one test person and Muse as another, Duet and Muse exchanged a typed request and its reply, and the broker refused a message claiming another person’s address and a request carrying a confidential amount.</p>
+
+    <h2 id="problem">The problem</h2>
+    <p>Now add a second person: an analyst preparing a quarterly review. Her agent, a Claude in her company’s workspace, needs the priorities of the leader she reports to, and an hour on his calendar. His dot has both. Three things go wrong at once:</p>
+    <ul class="risks">
+      <li><span class="tag">Data leakage</span><span>Her agent’s request shouldn’t carry her draft numbers, and his agent shouldn’t answer with more than he would share.</span></li>
+      <li><span class="tag">Access sprawl</span><span>Her agent shouldn’t need a login to his calendar, mailbox or documents to get an answer.</span></li>
+      <li><span class="tag">Impersonation</span><span>His agent shouldn’t respond to anything that merely claims to be hers.</span></li>
+    </ul>
+    <p>Across organizations it’s harder still: different vendors, identity systems and security policies, and neither company will give the other’s agent a login. Logging one agent in to another person’s tools creates the standing access security teams work to remove, and still doesn’t say who is asking.</p>
+
+    <h2 id="guarantees">Three guarantees</h2>
+    <p>In ALP, agents never talk to each other directly. Each talks only to its own person’s <strong>home broker</strong>, and brokers keep three promises:</p>
+    <ol class="guarantees">
+      <li><strong>Nothing crosses that both people’s rules don’t allow.</strong> Each message type’s schema classifies every field, and a field crosses only if the sender’s permissions, each side’s organization policy and the recipient’s rules allow it. Free text is off unless the recipient opts in, capped at 280 characters, checked for sensitive data and labeled untrusted.</li>
+      <li><strong>No agent gets into another person’s accounts.</strong> Each agent signs in only to its own person’s broker and never holds another person’s tokens, cookies or sessions.</li>
+      <li><strong>Senders are proven, not claimed.</strong> Identity is proven by the sender’s domain and home broker, never by the message. Strangers can only send a connection request, which goes to the person, not the agent.</li>
+    </ol>
+    <p class="scope">These hold on the ALP channel: nothing leaves a person’s side that their rules don’t allow, and nothing reaches their agent from anyone they, or their organization’s policy, haven’t approved. ALP can’t control what a vendor’s agent does with what it reads, or how a vendor stores it, and a stolen sign-in or a compromised broker can still speak for its own people until it’s revoked.</p>
+
+    <h2 id="how">How it works: like email</h2>
+    <p>Every person has an address on a domain, such as <code>ana@example.org</code>, and each domain that federates publishes, at a well-known HTTPS address, which broker is home for its people. A broker is to an agent what a mail server is to a mail client.</p>
+  </div>
+
+  <div class="wide">
+    <figure class="flow" aria-labelledby="flow-cap">
+      <ol>
+        <li class="node a agent"><span class="who">Ana’s agent</span><span class="sub">talks only to her broker</span></li>
+        <li class="edge" aria-hidden="true"><span>connector,<br>her sign-in</span></li>
+        <li class="node a broker"><span class="who">Ana’s home broker</span><span class="sub">checks her permissions and policy, then signs</span></li>
+        <li class="edge two" aria-hidden="true"><i class="tail"></i><span class="up">signed message</span><span class="down">signed receipt</span></li>
+        <li class="node b broker"><span class="who">Lee’s home broker</span><span class="sub">checks the signer is Ana’s home broker, then Lee’s rules</span></li>
+        <li class="edge" aria-hidden="true"><span>inbox,<br>his sign-in</span></li>
+        <li class="node b agent"><span class="who">Lee’s agent</span><span class="sub">sees a verified sender</span></li>
+      </ol>
+      <div class="rails">
+        <p class="rail"><b>Domain</b><span><code>example.org/.well-known/alp.json</code> names the home broker for example.org addresses.</span></p>
+        <p class="rail"><b>Ledgers</b><span>Each broker keeps its person’s ledger, and each entry carries the other side’s receipt.</span></p>
+      </div>
+      <figcaption id="flow-cap">One request across two brokers. The agents never connect to each other. Inside one organization, one broker usually plays both parts.</figcaption>
+    </figure>
+  </div>
+
+  <div class="wrap">
+    <p>When Ana’s agent needs something from Lee’s, it hands a typed request to Ana’s broker, which checks it against her permissions and her organization’s policy, signs it and sends it to Lee’s broker. Lee’s broker checks that the signer is Ana’s home broker, then applies Lee’s rules before his agent sees anything. Both sides keep a ledger their person can read, each carrying the other’s signed receipt.</p>
+    <p>One person’s own agents work the same way: they write to each other through his home broker, which knows each agent, and how far to trust it, from his organization’s list, never from what the agent claims. Each message reaches the dot under a line the broker writes, such as “from your own agent muse (consumer, self-attested)”, so the dot can answer Muse differently from Claude. Whatever the dot does, the broker enforces the difference: a confidential field reaches company agents that sign in with a credential only the company holds, and his Muse gets the message without it until he decides on his approvals page.</p>
+    <p>Organizations can pre-approve relationships among their own people. Anything that commits a person, such as accepting a meeting, needs that person’s approval on their approvals page unless given in advance.</p>
+
+    <h2 id="modes">Two ways in, and nobody migrates</h2>
+    <div class="modes">
+      <section class="mode client" aria-labelledby="client-h">
+        <div class="label"><h3 id="client-h">Client mode</h3><span class="pill">works through custom connectors</span></div>
+        <p><strong>Client mode needs a broker that someone runs (your organization’s, your own or a hosted one), but no workspace platform and no vendor work.</strong> The person, or their IT team, adds one custom MCP connector pointing at that broker, and the person signs in with their own account, again each time the grant ends (after at most 30 days for organization accounts). The agent gets a mailbox; the broker enforces the rest. It uses the custom-connector features of Claude (all plans), ChatGPT Business and Enterprise (dots on Business Premium and Enterprise), Grok, Microsoft 365 Copilot and the Gemini app, and Muse can build its own connector to the broker’s REST API; the <a href="https://github.com/AgentLiaisonProtocol/agentliaisonprotocol/tree/main/bridge-kit">bridge kit</a> lists each product’s limits, and <a href="#tested">What’s tested and what isn’t</a> says which have been tried. Without connector support, the person gets a notification and acts on their approvals page.</p>
+        <p class="costs">Client mode has costs: setup once per person, a confirmation before each send in most products, and replies in minutes or hours where an agent can’t receive pushes, as most can’t.</p>
+      </section>
+      <section class="mode native" aria-labelledby="native-h">
+        <div class="label"><h3 id="native-h">Native mode</h3><span class="pill">as providers adopt</span></div>
+        <p><strong>Native mode is for providers.</strong> A provider can build the client side into its agent, so no connector is needed, while the organization keeps its broker, policy and ledger. In v0.1 people still approve things on their approvals page; approving inside the vendor’s app is planned for a later version.</p>
+      </section>
+    </div>
+    <p class="interop">Both modes share addresses, messages, permissions and ledgers, and brokers federate, so a client-mode agent is designed to work with a native one. When a provider adopts, people keep their addresses and relationships; the connector just becomes unnecessary.</p>
+
+    <h2 id="where">Where brokers run</h2>
+    <p>The reference broker is free for any organization to use, modify and run for itself (see <a href="#governance">Governance and licenses</a>). An organization can run it on its own servers or inside its workspace platform for the strongest control, start with its own people and no public domain document, and federate when ready. <a href="https://github.com/AgentLiaisonProtocol/agentliaisonprotocol/blob/main/SELF-HOST.md">SELF-HOST.md</a> shows how to run one, and what isn’t built yet.</p>
+
+    <h2 id="ships">What v0.1 ships</h2>
+    <ul class="ships">
+      <li>The specification (a draft for implementers), its JSON Schemas and conformance test vectors.</li>
+      <li>A reference broker in TypeScript: policy enforcement on both sides, federation, an MCP connector and matching REST API with OAuth 2.1 sign-in, ledgers with receipts, and an approvals page.</li>
+      <li>A one-command demo: one person’s three agents of different trust, then two people inside one organization and across two, with a confidential field stopped before it leaves, a rogue broker refused, and matching ledgers.</li>
+      <li>A bridge kit for client mode, with an instruction snippet for agents.</li>
+    </ul>
+    <p>To try it, start at <a href="https://github.com/AgentLiaisonProtocol/agentliaisonprotocol">https://github.com/AgentLiaisonProtocol/agentliaisonprotocol</a>:</p>
+<pre><code>git clone https://github.com/AgentLiaisonProtocol/agentliaisonprotocol alp &amp;&amp; cd alp/reference
+npm ci            # Node 22.18 or later
+npm run demo      # the whole story, over real HTTP on your machine
+npm test          # the test suite, including every conformance vector</code></pre>
+
+    <h2 id="builds-on">Built on what already exists</h2>
+    <p>ALP builds on MCP and A2A rather than competing with them: MCP is the door an agent uses to reach its own person’s broker, and an A2A agent can join the same way. ALP adds what those protocols leave to each deployment: which person an agent works for, proven by that person’s own sign-in and domain; whether the person contacted wants to hear from this sender at all; what each person agreed to share, checked field by field outside the agent before anything leaves; and a record on each side that the other can check. Pieces of this exist elsewhere, and we cite them; we found no deployed standard that combines them for work between people, with the agents they already use.</p>
+    <p><strong>Could those three agents use A2A today?</strong> Not as shipped. We found no documented way for an outside agent to reach any of them over A2A: the doors they document are connectors they call out through (MCP connectors for dots and Claude, and connectors Muse writes itself for APIs). A2A also leaves identity outside its own messages, with no notion of what a person agreed to share or of a company-versus-personal trust class. Doing it today means building a hub all three connect to, tying each agent to its person, and inventing trust classes, consent and two-sided records for it. That is what ALP standardizes: each person’s home broker is that hub, on an organization’s own servers or inside its workspace platform. An A2A mapping between brokers is future work.</p>
+    <p>Agents sign in to their broker with <strong>OAuth 2.1</strong>, and the broker signs people in through their organization’s identity provider with <strong>OpenID Connect</strong>; the demo uses test identities. Person-to-business protocols (Poppy, PACT) and commerce protocols (AP2, ACP) complement ALP, and we intend to align with the IETF’s agentproto and AIMS work.</p>
+
+    <h2 id="tested">What’s tested and what isn’t</h2>
+    <p>The reference broker’s test suite (<code>npm test</code>) runs every conformance vector, and the specification tools check every schema and vector with an evaluator written independently of the reference broker.</p>
+    <p><strong>Tested with real agents together.</strong> On November 7, 2026, we connected real agent products to the reference’s development broker, with test identities, through a temporary tunnel. Claude connected as the test person Ana through a custom connector, signing in by OAuth with Claude’s published client identity, and Claude Duet used the same connector, though Anthropic’s documentation doesn’t say it can. Muse connected as the test person Lee: it read the broker’s REST description, built its own connector and took a personal access token only through its secure credential prompt. Duet sent Muse a typed availability request, and Muse saw the sender the broker had verified and replied. The broker refused a message from Muse claiming to come from Ana and a briefing request from Duet carrying a confidential amount, and held a confidential request for Lee’s approvals page rather than give it to Muse, a consumer-class agent. Both ledgers verified, and all six envelopes matched across them. Duet asked before each send, and Muse before every call. Not tested: ChatGPT and dots, Grok, Gemini, Microsoft 365 Copilot, Muse through MCP, Duet’s scheduled background checks, withholding a single field from a person’s own personal agent, and federation between brokers. The test ran the reference broker as it was before the changes the <a href="https://github.com/AgentLiaisonProtocol/agentliaisonprotocol/blob/main/CHANGELOG.md">changelog</a> lists under “Changed before publication”; the <a href="https://github.com/AgentLiaisonProtocol/agentliaisonprotocol/blob/main/bridge-kit/README.md#tested-with-real-agents">bridge kit</a> has the details.</p>
+    <p>The broker’s sign-in through an organization’s identity provider is built and tested against a standard OIDC provider, and was tested once, on November 8, 2026, against a single-tenant Microsoft Entra ID (Free) tenant with test users: Claude on claude.ai connected through it, and the binding to tenant and object id, app roles in policy, a fresh Entra sign-in for each approval and the re-check at each token refresh (about every 10 minutes while the agent is in use) all worked; disabling a user ended their agent’s connection at its next refresh, about 8 minutes later. Conditional Access, group claims, guests and multi-tenant apps weren’t tried. The reference broker is new code and hasn’t had an independent security review; it doesn’t send email or push yet, and <a href="https://github.com/AgentLiaisonProtocol/agentliaisonprotocol/blob/main/KNOWN-GAPS.md">KNOWN-GAPS.md</a> lists the other known gaps.</p>
+
+    <h2 id="governance">Governance and licenses</h2>
+    <p>The specification is licensed <span class="lic">CC BY 4.0</span>, and its schemas and conformance vectors <span class="lic">Apache-2.0</span>, so anyone can implement ALP without asking, including in a broker of their own that they sell. The reference broker is source-available under the <a href="https://github.com/AgentLiaisonProtocol/agentliaisonprotocol/blob/main/reference/LICENSE.md">Functional Source License</a> (<span class="lic">FSL-1.1-ALv2</span>): it is free for any organization to use, modify and run for itself, but may not be made available to others in a commercial product or service that substitutes for it or offers substantially similar functionality, and each version becomes <span class="lic">Apache-2.0</span> two years after it is first published. Lucaryin wrote v0.1 and is its initial steward; contributions are open, and we intend to move the specification to a neutral foundation. v0.1 is a draft and will change.</p>
+
+    <h2 id="get-involved">Get involved</h2>
+    <p>ALP is open to implementers and contributors:</p>
+    <div class="ways">
+      <section class="way"><h3>Read the specification</h3><p><a href="https://github.com/AgentLiaisonProtocol/agentliaisonprotocol/blob/main/spec/alp-v0.1.md">spec/alp-v0.1.md</a>, and tell us where it’s wrong, unclear or incomplete.</p></section>
+      <section class="way"><h3>Run the demo and the tests</h3><p>The commands are above. The conformance vectors in <code>vectors/</code> test your own implementation too.</p></section>
+      <section class="way"><h3>Implement it</h3><p>Agent providers, workspace and collaboration platforms, agent frameworks, and organizations running their own broker.</p></section>
+      <section class="way"><h3>Contribute and file issues</h3><p>On <a href="https://github.com/AgentLiaisonProtocol/agentliaisonprotocol/issues">GitHub</a>; see <a href="https://github.com/AgentLiaisonProtocol/agentliaisonprotocol/blob/main/CONTRIBUTING.md">CONTRIBUTING.md</a>.</p></section>
+    </div>
+    <p class="contact">Questions: <a href="mailto:hello@agentliaisonprotocol.org">hello@agentliaisonprotocol.org</a>. Security vulnerabilities go privately to <a href="mailto:security@agentliaisonprotocol.org">security@agentliaisonprotocol.org</a> (<a href="https://github.com/AgentLiaisonProtocol/agentliaisonprotocol/blob/main/SECURITY.md">SECURITY.md</a>), not to a public issue.</p>
+  </div>
+</article>
+</main>
+
+<footer class="wrap">
+  <p class="disclaimer">ALP is an independent proposal. Naming a product or standard here describes the landscape and compatibility; it doesn’t mean the maker has reviewed or endorsed ALP.</p>
+  <p>Agent Liaison Protocol v0.1 · specification <span class="lic">CC BY 4.0</span> · schemas and vectors <span class="lic">Apache-2.0</span> · reference broker <span class="lic">FSL-1.1-ALv2</span> · <a href="https://github.com/AgentLiaisonProtocol/agentliaisonprotocol">https://github.com/AgentLiaisonProtocol/agentliaisonprotocol</a></p>
+</footer>
+</body>
+</html>

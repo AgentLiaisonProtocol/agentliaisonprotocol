@@ -1,0 +1,308 @@
+{
+  "description": "Domain document checks (spec 4.3) and home-broker resolution (spec 4.5).",
+  "documents": [
+    {
+      "name": "valid",
+      "document": {
+        "alp": "0.1",
+        "domain": "example.org",
+        "serial": 42,
+        "max_age": 3600,
+        "mode": "enforce",
+        "brokers": [
+          {
+            "id": "https://broker.example.org",
+            "inbox": "https://broker.example.org/federation/inbox",
+            "jwks_uri": "https://broker.example.org/.well-known/jwks.json",
+            "mcp": "https://broker.example.org/mcp",
+            "rest": "https://broker.example.org/rest",
+            "jkt": [
+              "Qlbvmc8DWyTQ_pE2ysLApn4T03jw-c6Vq65LODOzGFk"
+            ],
+            "principals": "*"
+          },
+          {
+            "id": "https://hosted.example.net",
+            "inbox": "https://hosted.example.net/federation/inbox",
+            "jwks_uri": "https://hosted.example.net/.well-known/jwks.json",
+            "mcp": "https://hosted.example.net/mcp",
+            "rest": "https://hosted.example.net/rest",
+            "jkt": [
+              "ZqZe_gv4v1WAxBpfLZrWBfWhvD8ZY0r63gw9kuLJAuU"
+            ],
+            "principals": [
+              "alp:guest@example.org"
+            ]
+          }
+        ],
+        "security_contact": [
+          "mailto:security@example.org"
+        ],
+        "updated_at": "2026-11-01T09:00:00Z"
+      },
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "name": "two * brokers",
+      "document": {
+        "alp": "0.1",
+        "domain": "example.org",
+        "serial": 42,
+        "max_age": 3600,
+        "mode": "enforce",
+        "brokers": [
+          {
+            "id": "https://broker.example.org",
+            "inbox": "https://broker.example.org/federation/inbox",
+            "jwks_uri": "https://broker.example.org/.well-known/jwks.json",
+            "mcp": "https://broker.example.org/mcp",
+            "rest": "https://broker.example.org/rest",
+            "jkt": [
+              "Qlbvmc8DWyTQ_pE2ysLApn4T03jw-c6Vq65LODOzGFk"
+            ],
+            "principals": "*"
+          },
+          {
+            "id": "https://hosted.example.net",
+            "inbox": "https://hosted.example.net/federation/inbox",
+            "jwks_uri": "https://hosted.example.net/.well-known/jwks.json",
+            "mcp": "https://hosted.example.net/mcp",
+            "rest": "https://hosted.example.net/rest",
+            "jkt": [
+              "ZqZe_gv4v1WAxBpfLZrWBfWhvD8ZY0r63gw9kuLJAuU"
+            ],
+            "principals": "*"
+          }
+        ],
+        "security_contact": [
+          "mailto:security@example.org"
+        ],
+        "updated_at": "2026-11-01T09:00:00Z"
+      },
+      "expected": {
+        "valid": false
+      }
+    },
+    {
+      "name": "an address listed twice",
+      "document": {
+        "alp": "0.1",
+        "domain": "example.org",
+        "serial": 42,
+        "max_age": 3600,
+        "mode": "enforce",
+        "brokers": [
+          {
+            "id": "https://broker.example.org",
+            "inbox": "https://broker.example.org/federation/inbox",
+            "jwks_uri": "https://broker.example.org/.well-known/jwks.json",
+            "mcp": "https://broker.example.org/mcp",
+            "rest": "https://broker.example.org/rest",
+            "jkt": [
+              "Qlbvmc8DWyTQ_pE2ysLApn4T03jw-c6Vq65LODOzGFk"
+            ],
+            "principals": [
+              "alp:ana@example.org"
+            ]
+          },
+          {
+            "id": "https://hosted.example.net",
+            "inbox": "https://hosted.example.net/federation/inbox",
+            "jwks_uri": "https://hosted.example.net/.well-known/jwks.json",
+            "mcp": "https://hosted.example.net/mcp",
+            "rest": "https://hosted.example.net/rest",
+            "jkt": [
+              "ZqZe_gv4v1WAxBpfLZrWBfWhvD8ZY0r63gw9kuLJAuU"
+            ],
+            "principals": [
+              "alp:ana@example.org"
+            ]
+          }
+        ],
+        "security_contact": [
+          "mailto:security@example.org"
+        ],
+        "updated_at": "2026-11-01T09:00:00Z"
+      },
+      "expected": {
+        "valid": false,
+        "semantic": "overlapping authorizations"
+      }
+    },
+    {
+      "name": "jwks_uri on another origin",
+      "document": {
+        "alp": "0.1",
+        "domain": "example.org",
+        "serial": 42,
+        "max_age": 3600,
+        "mode": "enforce",
+        "brokers": [
+          {
+            "id": "https://broker.example.org",
+            "inbox": "https://broker.example.org/federation/inbox",
+            "jwks_uri": "https://cdn.example.net/jwks.json",
+            "mcp": "https://broker.example.org/mcp",
+            "rest": "https://broker.example.org/rest",
+            "jkt": [
+              "Qlbvmc8DWyTQ_pE2ysLApn4T03jw-c6Vq65LODOzGFk"
+            ],
+            "principals": "*"
+          }
+        ],
+        "security_contact": [
+          "mailto:security@example.org"
+        ],
+        "updated_at": "2026-11-01T09:00:00Z"
+      },
+      "expected": {
+        "valid": false,
+        "semantic": "same-origin"
+      }
+    },
+    {
+      "name": "a listed address on another domain",
+      "document": {
+        "alp": "0.1",
+        "domain": "example.org",
+        "serial": 42,
+        "max_age": 3600,
+        "mode": "enforce",
+        "brokers": [
+          {
+            "id": "https://hosted.example.net",
+            "inbox": "https://hosted.example.net/federation/inbox",
+            "jwks_uri": "https://hosted.example.net/.well-known/jwks.json",
+            "mcp": "https://hosted.example.net/mcp",
+            "rest": "https://hosted.example.net/rest",
+            "jkt": [
+              "ZqZe_gv4v1WAxBpfLZrWBfWhvD8ZY0r63gw9kuLJAuU"
+            ],
+            "principals": [
+              "alp:ana@partner.example"
+            ]
+          }
+        ],
+        "security_contact": [
+          "mailto:security@example.org"
+        ],
+        "updated_at": "2026-11-01T09:00:00Z"
+      },
+      "expected": {
+        "valid": false,
+        "semantic": "foreign address"
+      }
+    },
+    {
+      "name": "max_age above 24 hours",
+      "document": {
+        "alp": "0.1",
+        "domain": "example.org",
+        "serial": 42,
+        "max_age": 90000,
+        "mode": "enforce",
+        "brokers": [
+          {
+            "id": "https://broker.example.org",
+            "inbox": "https://broker.example.org/federation/inbox",
+            "jwks_uri": "https://broker.example.org/.well-known/jwks.json",
+            "mcp": "https://broker.example.org/mcp",
+            "rest": "https://broker.example.org/rest",
+            "jkt": [
+              "Qlbvmc8DWyTQ_pE2ysLApn4T03jw-c6Vq65LODOzGFk"
+            ],
+            "principals": "*"
+          },
+          {
+            "id": "https://hosted.example.net",
+            "inbox": "https://hosted.example.net/federation/inbox",
+            "jwks_uri": "https://hosted.example.net/.well-known/jwks.json",
+            "mcp": "https://hosted.example.net/mcp",
+            "rest": "https://hosted.example.net/rest",
+            "jkt": [
+              "ZqZe_gv4v1WAxBpfLZrWBfWhvD8ZY0r63gw9kuLJAuU"
+            ],
+            "principals": [
+              "alp:guest@example.org"
+            ]
+          }
+        ],
+        "security_contact": [
+          "mailto:security@example.org"
+        ],
+        "updated_at": "2026-11-01T09:00:00Z"
+      },
+      "expected": {
+        "valid": false
+      }
+    }
+  ],
+  "resolution": [
+    {
+      "document": "example.org@42",
+      "address": "alp:ana@example.org",
+      "expected_home": "https://broker.example.org"
+    },
+    {
+      "document": "example.org@42",
+      "address": "alp:guest@example.org",
+      "expected_home": "https://hosted.example.net"
+    },
+    {
+      "document": "example.org@41",
+      "address": "alp:ana@example.org",
+      "expected_home": "https://old-broker.example.org"
+    },
+    {
+      "document": {
+        "alp": "0.1",
+        "domain": "example.org",
+        "serial": 50,
+        "max_age": 3600,
+        "mode": "enforce",
+        "brokers": [
+          {
+            "id": "https://hosted.example.net",
+            "inbox": "https://hosted.example.net/federation/inbox",
+            "jwks_uri": "https://hosted.example.net/.well-known/jwks.json",
+            "mcp": "https://hosted.example.net/mcp",
+            "rest": "https://hosted.example.net/rest",
+            "jkt": [
+              "ZqZe_gv4v1WAxBpfLZrWBfWhvD8ZY0r63gw9kuLJAuU"
+            ],
+            "principals": [
+              "alp:guest@example.org"
+            ]
+          }
+        ],
+        "security_contact": [
+          "mailto:security@example.org"
+        ]
+      },
+      "address": "alp:ana@example.org",
+      "expected_home": null
+    }
+  ],
+  "txt": [
+    {
+      "record": "v=ALP1; id=42",
+      "valid": true,
+      "id": "42"
+    },
+    {
+      "record": "v=ALP1; id=20261101T0900",
+      "valid": true,
+      "id": "20261101T0900"
+    },
+    {
+      "record": "v=ALP1; id=42; uri=https://evil.example/doc.json",
+      "valid": false
+    },
+    {
+      "record": "v=spf1 include:example.net",
+      "valid": false
+    }
+  ]
+}

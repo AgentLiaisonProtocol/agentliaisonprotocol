@@ -1,0 +1,114 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/jwks.schema.json",
+  "title": "ALP broker JWKS",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "keys"
+  ],
+  "properties": {
+    "keys": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "kty",
+              "crv",
+              "x",
+              "kid",
+              "alg",
+              "use",
+              "alp_use"
+            ],
+            "properties": {
+              "kty": {
+                "const": "OKP"
+              },
+              "crv": {
+                "const": "Ed25519"
+              },
+              "x": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9_-]{43}$"
+              },
+              "kid": {
+                "type": "string",
+                "maxLength": 128,
+                "minLength": 1
+              },
+              "alg": {
+                "const": "Ed25519"
+              },
+              "use": {
+                "const": "sig"
+              },
+              "alp_use": {
+                "enum": [
+                  "federation",
+                  "http",
+                  "ledger",
+                  "push"
+                ]
+              }
+            }
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "kty",
+              "crv",
+              "x",
+              "y",
+              "kid",
+              "alg",
+              "use",
+              "alp_use"
+            ],
+            "properties": {
+              "kty": {
+                "const": "EC"
+              },
+              "crv": {
+                "const": "P-256"
+              },
+              "x": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9_-]{43}$"
+              },
+              "y": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9_-]{43}$"
+              },
+              "kid": {
+                "type": "string",
+                "maxLength": 128,
+                "minLength": 1
+              },
+              "alg": {
+                "const": "ES256"
+              },
+              "use": {
+                "const": "sig"
+              },
+              "alp_use": {
+                "enum": [
+                  "federation",
+                  "http",
+                  "ledger",
+                  "push"
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "minItems": 1,
+      "maxItems": 32
+    }
+  }
+}

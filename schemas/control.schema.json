@@ -1,0 +1,147 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/control.schema.json",
+  "title": "ALP control envelope (JWS typ alp-control+jws)",
+  "description": "connection_request, connection_response and revoke. Control envelopes reach people and brokers, never agents.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "alp",
+    "id",
+    "thread",
+    "from",
+    "to",
+    "aud",
+    "type",
+    "body",
+    "created_at",
+    "expires_at",
+    "origin_broker",
+    "broker_sig"
+  ],
+  "properties": {
+    "alp": {
+      "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/version"
+    },
+    "id": {
+      "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/ulid"
+    },
+    "thread": {
+      "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/ulid"
+    },
+    "in_reply_to": {
+      "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/ulid"
+    },
+    "in_reply_to_hash": {
+      "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/sha256"
+    },
+    "from": {
+      "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/sender"
+    },
+    "to": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "address"
+      ],
+      "properties": {
+        "address": {
+          "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/address"
+        },
+        "principal_id": {
+          "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/principal_id"
+        }
+      }
+    },
+    "aud": {
+      "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/broker_id"
+    },
+    "type": {
+      "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/control_type"
+    },
+    "body": {
+      "type": "object"
+    },
+    "note": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 140
+    },
+    "created_at": {
+      "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/timestamp"
+    },
+    "expires_at": {
+      "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/timestamp"
+    },
+    "origin_broker": {
+      "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/broker_id"
+    },
+    "broker_sig": {
+      "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/detached_jws"
+    }
+  },
+  "dependentRequired": {
+    "in_reply_to": [
+      "in_reply_to_hash"
+    ],
+    "in_reply_to_hash": [
+      "in_reply_to"
+    ]
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "type": {
+            "const": "connection_request"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "body": {
+            "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/messages/connection_request.schema.json"
+          },
+          "in_reply_to": false
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "type": {
+            "const": "connection_response"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "body": {
+            "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/messages/connection_response.schema.json"
+          },
+          "note": false
+        },
+        "required": [
+          "in_reply_to"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "type": {
+            "const": "revoke"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "body": {
+            "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/messages/revoke.schema.json"
+          },
+          "note": false
+        }
+      }
+    }
+  ]
+}

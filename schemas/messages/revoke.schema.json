@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/messages/revoke.schema.json",
+  "title": "revoke body",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "scopes",
+    "reason",
+    "effective_at"
+  ],
+  "properties": {
+    "scopes": {
+      "oneOf": [
+        {
+          "type": "array",
+          "items": {
+            "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/scope_id"
+          },
+          "minItems": 1,
+          "maxItems": 32,
+          "uniqueItems": true
+        },
+        {
+          "const": [
+            "*"
+          ]
+        }
+      ]
+    },
+    "reason": {
+      "enum": [
+        "principal_revoked",
+        "policy",
+        "account_closed",
+        "address_reassigned",
+        "security",
+        "other"
+      ]
+    },
+    "effective_at": {
+      "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/timestamp"
+    }
+  }
+}

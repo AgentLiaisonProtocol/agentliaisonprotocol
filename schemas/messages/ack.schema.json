@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/messages/ack.schema.json",
+  "title": "ack body",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "of",
+    "status"
+  ],
+  "properties": {
+    "of": {
+      "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/common.schema.json#/$defs/ulid"
+    },
+    "status": {
+      "enum": [
+        "received",
+        "completed",
+        "ratified"
+      ]
+    },
+    "ratification": {
+      "$ref": "tag:agentliaisonprotocol.org,2026-11-08:spec/0.1/schemas/ratification.schema.json"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "ratified"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "ratification"
+        ]
+      },
+      "else": {
+        "properties": {
+          "ratification": false
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,1066 @@
+{
+  "description": "Sender-side evaluation (spec 6.6). The sender's org policy is world.org_policies['example.org']; installed scopes are the five core scopes. grants are the caller's explicit grants. Thread checks (S3) and the semantic rules that compare a message with others in its thread are out of scope here.",
+  "now": "2026-11-09T14:00:00Z",
+  "cases": [
+    {
+      "name": "allowed through the organization's default relationship",
+      "caller": {
+        "principal": "alp:ana@example.org",
+        "principal_id": "ana-7f3a9c41d2e8b605",
+        "delegate": "alp:ana@example.org/agent-a",
+        "client_id": "https://agent-a.example/oauth/client.json",
+        "attestation": "vendor",
+        "class": "business"
+      },
+      "draft": {
+        "to": "lee@example.org",
+        "scope": "alp.briefing/1",
+        "type": "request",
+        "body": {
+          "topic": "Q4 launch staffing plan",
+          "questions": [
+            "Which teams are short-staffed?"
+          ],
+          "depth": "summary"
+        }
+      },
+      "grants": [],
+      "expected": {
+        "outcome": "allowed",
+        "grant": "default:analysts-leaders",
+        "labels": [
+          "internal"
+        ],
+        "redacted": [],
+        "policy_ids": [
+          "example.org#12"
+        ],
+        "status": "queued"
+      }
+    },
+    {
+      "name": "financial figure blocked by org rule fin-1 before anything leaves",
+      "caller": {
+        "principal": "alp:ana@example.org",
+        "principal_id": "ana-7f3a9c41d2e8b605",
+        "delegate": "alp:ana@example.org/agent-a",
+        "client_id": "https://agent-a.example/oauth/client.json",
+        "attestation": "vendor",
+        "class": "business"
+      },
+      "draft": {
+        "to": "lee@example.org",
+        "scope": "alp.briefing/1",
+        "type": "request",
+        "body": {
+          "topic": "Q4 launch staffing plan",
+          "depth": "summary",
+          "context": {
+            "amount": {
+              "value": 1250000,
+              "currency": "USD"
+            }
+          }
+        }
+      },
+      "grants": [],
+      "expected": {
+        "outcome": "rejected",
+        "code": "org_policy",
+        "pointers": [
+          "/body/context/amount/currency",
+          "/body/context/amount/value"
+        ],
+        "rule": "fin-1"
+      }
+    },
+    {
+      "name": "confidential field allowed inside the organization, with delivery constraints",
+      "caller": {
+        "principal": "alp:ana@example.org",
+        "principal_id": "ana-7f3a9c41d2e8b605",
+        "delegate": "alp:ana@example.org/agent-a",
+        "client_id": "https://agent-a.example/oauth/client.json",
+        "attestation": "vendor",
+        "class": "business"
+      },
+      "draft": {
+        "to": "lee@example.org",
+        "scope": "alp.briefing/1",
+        "type": "request",
+        "body": {
+          "topic": "Q4 launch staffing plan",
+          "depth": "summary",
+          "context": {
+            "project": "Project Lantern"
+          }
+        }
+      },
+      "grants": [],
+      "expected": {
+        "outcome": "allowed",
+        "grant": "default:analysts-leaders",
+        "labels": [
+          "confidential",
+          "internal"
+        ],
+        "redacted": [],
+        "policy_ids": [
+          "example.org#12"
+        ],
+        "constraints": {
+          "deliver_to": {
+            "min_class": "business"
+          },
+          "no_training": true
+        },
+        "status": "queued"
+      }
+    },
+    {
+      "name": "field outside the narrowed grant is refused (reject mode)",
+      "caller": {
+        "principal": "alp:ana@example.org",
+        "principal_id": "ana-7f3a9c41d2e8b605",
+        "delegate": "alp:ana@example.org/agent-a",
+        "client_id": "https://agent-a.example/oauth/client.json",
+        "attestation": "vendor",
+        "class": "business"
+      },
+      "draft": {
+        "to": "lee@example.org",
+        "scope": "alp.briefing/1",
+        "type": "request",
+        "body": {
+          "topic": "Q4 launch staffing plan",
+          "questions": [
+            "Which teams are short-staffed?"
+          ],
+          "depth": "summary"
+        }
+      },
+      "grants": [
+        {
+          "alp": "0.1",
+          "id": "01M6XQAXR0NMDWZ8EPKM8N9A74",
+          "principal": "alp:ana@example.org",
+          "principal_id": "ana-7f3a9c41d2e8b605",
+          "counterparty": "alp:lee@example.org",
+          "basis": "narrowing",
+          "status": "active",
+          "scopes": {
+            "alp.briefing/1": {
+              "may": [
+                "request",
+                "ack"
+              ],
+              "disclose": [
+                "/body/topic",
+                "/body/depth"
+              ],
+              "receive": [
+                "/body/points/*",
+                "/body/as_of",
+                "/body/confidence",
+                "/body/follow_up"
+              ],
+              "commit": "ask_me",
+              "redaction": "reject"
+            }
+          },
+          "created_at": "2026-11-08T14:00:00Z",
+          "updated_at": "2026-11-08T14:00:00Z",
+          "sealed": {
+            "by": "ana-7f3a9c41d2e8b605",
+            "method": "webauthn-uv",
+            "at": "2026-11-08T14:00:00Z"
+          }
+        }
+      ],
+      "expected": {
+        "outcome": "rejected",
+        "code": "not_disclosed",
+        "pointers": [
+          "/body/questions/0"
+        ]
+      }
+    },
+    {
+      "name": "field outside the narrowed grant is removed (redact mode)",
+      "caller": {
+        "principal": "alp:ana@example.org",
+        "principal_id": "ana-7f3a9c41d2e8b605",
+        "delegate": "alp:ana@example.org/agent-a",
+        "client_id": "https://agent-a.example/oauth/client.json",
+        "attestation": "vendor",
+        "class": "business"
+      },
+      "draft": {
+        "to": "lee@example.org",
+        "scope": "alp.briefing/1",
+        "type": "request",
+        "body": {
+          "topic": "Q4 launch staffing plan",
+          "questions": [
+            "Which teams are short-staffed?"
+          ],
+          "depth": "summary"
+        }
+      },
+      "grants": [
+        {
+          "alp": "0.1",
+          "id": "01M6XQAXR0YEVHGDR96541F5C4",
+          "principal": "alp:ana@example.org",
+          "principal_id": "ana-7f3a9c41d2e8b605",
+          "counterparty": "alp:lee@example.org",
+          "basis": "narrowing",
+          "status": "active",
+          "scopes": {
+            "alp.briefing/1": {
+              "may": [
+                "request",
+                "ack"
+              ],
+              "disclose": [
+                "/body/topic",
+                "/body/depth"
+              ],
+              "receive": [
+                "/body/points/*",
+                "/body/as_of",
+                "/body/confidence",
+                "/body/follow_up"
+              ],
+              "commit": "ask_me",
+              "redaction": "redact"
+            }
+          },
+          "created_at": "2026-11-08T14:00:00Z",
+          "updated_at": "2026-11-08T14:00:00Z",
+          "sealed": {
+            "by": "ana-7f3a9c41d2e8b605",
+            "method": "webauthn-uv",
+            "at": "2026-11-08T14:00:00Z"
+          }
+        }
+      ],
+      "expected": {
+        "outcome": "redacted",
+        "grant": "01M6XQAXR0YEVHGDR96541F5C4",
+        "redacted": [
+          "/body/questions/0"
+        ],
+        "body": {
+          "topic": "Q4 launch staffing plan",
+          "depth": "summary"
+        },
+        "labels": [
+          "internal"
+        ],
+        "policy_ids": [
+          "example.org#12"
+        ],
+        "status": "queued"
+      }
+    },
+    {
+      "name": "free text blocked by DLP (payment card)",
+      "caller": {
+        "principal": "alp:ana@example.org",
+        "principal_id": "ana-7f3a9c41d2e8b605",
+        "delegate": "alp:ana@example.org/agent-a",
+        "client_id": "https://agent-a.example/oauth/client.json",
+        "attestation": "vendor",
+        "class": "business"
+      },
+      "draft": {
+        "to": "lee@example.org",
+        "scope": "alp.briefing/1",
+        "type": "request",
+        "body": {
+          "topic": "Expense review",
+          "questions": [
+            "Was card 4111 1111 1111 1111 charged twice?"
+          ],
+          "depth": "headline"
+        }
+      },
+      "grants": [],
+      "expected": {
+        "outcome": "rejected",
+        "code": "dlp_blocked",
+        "pointers": [
+          "/body/questions/0"
+        ],
+        "categories": [
+          "payment_card"
+        ]
+      }
+    },
+    {
+      "name": "note refused: the sender narrowed the default and left /note out",
+      "caller": {
+        "principal": "alp:ana@example.org",
+        "principal_id": "ana-7f3a9c41d2e8b605",
+        "delegate": "alp:ana@example.org/agent-a",
+        "client_id": "https://agent-a.example/oauth/client.json",
+        "attestation": "vendor",
+        "class": "business"
+      },
+      "draft": {
+        "to": "lee@example.org",
+        "scope": "alp.briefing/1",
+        "type": "request",
+        "body": {
+          "topic": "Q4 launch staffing plan",
+          "depth": "headline"
+        },
+        "note": "Lee, quick one before Monday."
+      },
+      "grants": [
+        {
+          "alp": "0.1",
+          "id": "01M6XQAXR0E4B2YFZ44VVV45EE",
+          "principal": "alp:ana@example.org",
+          "principal_id": "ana-7f3a9c41d2e8b605",
+          "counterparty": "alp:lee@example.org",
+          "basis": "narrowing",
+          "status": "active",
+          "scopes": {
+            "alp.briefing/1": {
+              "may": [
+                "request",
+                "ack",
+                "ask_human"
+              ],
+              "disclose": [
+                "/body/topic",
+                "/body/questions/*",
+                "/body/depth",
+                "/body/due_by",
+                "/body/context/project",
+                "/body/context/amount"
+              ],
+              "receive": [
+                "/body/points/*",
+                "/body/as_of",
+                "/body/confidence",
+                "/body/follow_up"
+              ],
+              "commit": "ask_me",
+              "redaction": "reject"
+            }
+          },
+          "created_at": "2026-11-08T14:00:00Z",
+          "updated_at": "2026-11-08T14:00:00Z",
+          "sealed": {
+            "by": "ana-7f3a9c41d2e8b605",
+            "method": "webauthn-uv",
+            "at": "2026-11-08T14:00:00Z"
+          }
+        }
+      ],
+      "expected": {
+        "outcome": "rejected",
+        "code": "not_disclosed",
+        "pointers": [
+          "/note"
+        ]
+      }
+    },
+    {
+      "name": "note allowed: the default relationship opts /note in",
+      "caller": {
+        "principal": "alp:ana@example.org",
+        "principal_id": "ana-7f3a9c41d2e8b605",
+        "delegate": "alp:ana@example.org/agent-a",
+        "client_id": "https://agent-a.example/oauth/client.json",
+        "attestation": "vendor",
+        "class": "business"
+      },
+      "draft": {
+        "to": "lee@example.org",
+        "scope": "alp.briefing/1",
+        "type": "request",
+        "body": {
+          "topic": "Q4 launch staffing plan",
+          "depth": "headline"
+        },
+        "note": "Lee, quick one before Monday."
+      },
+      "grants": [],
+      "expected": {
+        "outcome": "allowed",
+        "grant": "default:analysts-leaders",
+        "labels": [
+          "internal"
+        ],
+        "redacted": [],
+        "policy_ids": [
+          "example.org#12"
+        ],
+        "status": "queued"
+      }
+    },
+    {
+      "name": "no relationship with an outside person",
+      "caller": {
+        "principal": "alp:ana@example.org",
+        "principal_id": "ana-7f3a9c41d2e8b605",
+        "delegate": "alp:ana@example.org/agent-a",
+        "client_id": "https://agent-a.example/oauth/client.json",
+        "attestation": "vendor",
+        "class": "business"
+      },
+      "draft": {
+        "to": "pat@partner.example",
+        "scope": "alp.briefing/1",
+        "type": "request",
+        "body": {
+          "topic": "x",
+          "depth": "headline"
+        }
+      },
+      "grants": [],
+      "expected": {
+        "outcome": "rejected",
+        "code": "no_relationship"
+      }
+    },
+    {
+      "name": "type not allowed in this direction",
+      "caller": {
+        "principal": "alp:ana@example.org",
+        "principal_id": "ana-7f3a9c41d2e8b605",
+        "delegate": "alp:ana@example.org/agent-a",
+        "client_id": "https://agent-a.example/oauth/client.json",
+        "attestation": "vendor",
+        "class": "business"
+      },
+      "draft": {
+        "to": "lee@example.org",
+        "scope": "alp.briefing/1",
+        "type": "inform",
+        "in_reply_to": "01M709QMR0V6NZ7VMP83Z8R91Q",
+        "body": {
+          "points": [
+            "x"
+          ],
+          "as_of": "2026-11-09T13:00:00Z"
+        }
+      },
+      "grants": [],
+      "expected": {
+        "outcome": "rejected",
+        "code": "type_not_allowed"
+      }
+    },
+    {
+      "name": "payload claims another principal",
+      "caller": {
+        "principal": "alp:ana@example.org",
+        "principal_id": "ana-7f3a9c41d2e8b605",
+        "delegate": "alp:ana@example.org/agent-a",
+        "client_id": "https://agent-a.example/oauth/client.json",
+        "attestation": "vendor",
+        "class": "business"
+      },
+      "draft": {
+        "to": "lee@example.org",
+        "scope": "alp.briefing/1",
+        "type": "request",
+        "body": {
+          "topic": "x",
+          "depth": "headline"
+        },
+        "from": "alp:lee@example.org"
+      },
+      "grants": [],
+      "expected": {
+        "outcome": "rejected",
+        "code": "identity_mismatch"
+      }
+    },
+    {
+      "name": "outside domain on the federation deny-list",
+      "caller": {
+        "principal": "alp:ana@example.org",
+        "principal_id": "ana-7f3a9c41d2e8b605",
+        "delegate": "alp:ana@example.org/agent-a",
+        "client_id": "https://agent-a.example/oauth/client.json",
+        "attestation": "vendor",
+        "class": "business"
+      },
+      "draft": {
+        "to": "kim@blocked.example",
+        "scope": "alp.briefing/1",
+        "type": "request",
+        "body": {
+          "topic": "x",
+          "depth": "headline"
+        }
+      },
+      "grants": [],
+      "expected": {
+        "outcome": "rejected",
+        "code": "federation_blocked"
+      }
+    },
+    {
+      "name": "kill switch on a domain",
+      "caller": {
+        "principal": "alp:ana@example.org",
+        "principal_id": "ana-7f3a9c41d2e8b605",
+        "delegate": "alp:ana@example.org/agent-a",
+        "client_id": "https://agent-a.example/oauth/client.json",
+        "attestation": "vendor",
+        "class": "business"
+      },
+      "draft": {
+        "to": "sam@spam.example",
+        "scope": "alp.briefing/1",
+        "type": "request",
+        "body": {
+          "topic": "x",
+          "depth": "headline"
+        }
+      },
+      "grants": [],
+      "expected": {
+        "outcome": "rejected",
+        "code": "blocked"
+      }
+    },
+    {
+      "name": "body fails the scope schema",
+      "caller": {
+        "principal": "alp:ana@example.org",
+        "principal_id": "ana-7f3a9c41d2e8b605",
+        "delegate": "alp:ana@example.org/agent-a",
+        "client_id": "https://agent-a.example/oauth/client.json",
+        "attestation": "vendor",
+        "class": "business"
+      },
+      "draft": {
+        "to": "lee@example.org",
+        "scope": "alp.briefing/1",
+        "type": "request",
+        "body": {
+          "topic": "Q4 launch staffing plan",
+          "depth": "verbose"
+        }
+      },
+      "grants": [],
+      "expected": {
+        "outcome": "rejected",
+        "code": "schema_invalid",
+        "pointers": [
+          "/body/depth"
+        ]
+      }
+    },
+    {
+      "name": "client not on the organization's allow-list",
+      "caller": {
+        "principal": "alp:ana@example.org",
+        "principal_id": "ana-7f3a9c41d2e8b605",
+        "delegate": "alp:ana@example.org/agent-a",
+        "client_id": "https://unknown-agent.example/client.json",
+        "attestation": "self",
+        "class": "consumer"
+      },
+      "draft": {
+        "to": "lee@example.org",
+        "scope": "alp.briefing/1",
+        "type": "request",
+        "body": {
+          "topic": "x",
+          "depth": "headline"
+        }
+      },
+      "grants": [],
+      "expected": {
+        "outcome": "rejected",
+        "code": "client_not_allowed"
+      }
+    },
+    {
+      "name": "scope not installed",
+      "caller": {
+        "principal": "alp:ana@example.org",
+        "principal_id": "ana-7f3a9c41d2e8b605",
+        "delegate": "alp:ana@example.org/agent-a",
+        "client_id": "https://agent-a.example/oauth/client.json",
+        "attestation": "vendor",
+        "class": "business"
+      },
+      "draft": {
+        "to": "lee@example.org",
+        "scope": "org.example.org.expenses/1",
+        "type": "request",
+        "body": {}
+      },
+      "grants": [],
+      "expected": {
+        "outcome": "rejected",
+        "code": "unknown_scope"
+      }
+    },
+    {
+      "name": "a decline needs no field coverage (common-type body)",
+      "caller": {
+        "principal": "alp:lee@example.org",
+        "principal_id": "lee-2b8e61f0a9c4d735",
+        "delegate": "alp:lee@example.org/agent-b",
+        "client_id": "https://agent-b.example/oauth/client.json",
+        "attestation": "vendor",
+        "class": "business"
+      },
+      "draft": {
+        "to": "ana@example.org",
+        "scope": "alp.briefing/1",
+        "type": "decline",
+        "in_reply_to": "01M709QMR0V6NZ7VMP83Z8R91Q",
+        "body": {
+          "of": "01M709QMR0V6NZ7VMP83Z8R91Q",
+          "reason": "not_available"
+        }
+      },
+      "grants": [],
+      "expected": {
+        "outcome": "allowed",
+        "grant": "default:analysts-leaders",
+        "labels": [
+          "internal"
+        ],
+        "redacted": [],
+        "policy_ids": [
+          "example.org#12"
+        ],
+        "status": "queued"
+      }
+    },
+    {
+      "name": "a decline still needs the /note opt-in for its note",
+      "caller": {
+        "principal": "alp:lee@example.org",
+        "principal_id": "lee-2b8e61f0a9c4d735",
+        "delegate": "alp:lee@example.org/agent-b",
+        "client_id": "https://agent-b.example/oauth/client.json",
+        "attestation": "vendor",
+        "class": "business"
+      },
+      "draft": {
+        "to": "ana@example.org",
+        "scope": "alp.briefing/1",
+        "type": "decline",
+        "in_reply_to": "01M709QMR0V6NZ7VMP83Z8R91Q",
+        "body": {
+          "of": "01M709QMR0V6NZ7VMP83Z8R91Q",
+          "reason": "not_available"
+        },
+        "note": "Out until Thursday."
+      },
+      "grants": [],
+      "expected": {
+        "outcome": "rejected",
+        "code": "not_disclosed",
+        "pointers": [
+          "/note"
+        ]
+      }
+    },
+    {
+      "name": "an added label the rules don't know is refused, so labels can't carry data (spec 6.5)",
+      "caller": {
+        "principal": "alp:ana@example.org",
+        "principal_id": "ana-7f3a9c41d2e8b605",
+        "delegate": "alp:ana@example.org/agent-a",
+        "client_id": "https://agent-a.example/oauth/client.json",
+        "attestation": "vendor",
+        "class": "business"
+      },
+      "draft": {
+        "to": "lee@example.org",
+        "scope": "alp.briefing/1",
+        "type": "request",
+        "body": {
+          "topic": "Q4 launch staffing plan",
+          "depth": "headline"
+        },
+        "labels": [
+          "x.merger_contoso_42_per_share"
+        ]
+      },
+      "grants": [],
+      "expected": {
+        "outcome": "rejected",
+        "code": "invalid_input"
+      }
+    },
+    {
+      "name": "at most four added labels (spec 6.5)",
+      "caller": {
+        "principal": "alp:ana@example.org",
+        "principal_id": "ana-7f3a9c41d2e8b605",
+        "delegate": "alp:ana@example.org/agent-a",
+        "client_id": "https://agent-a.example/oauth/client.json",
+        "attestation": "vendor",
+        "class": "business"
+      },
+      "draft": {
+        "to": "lee@example.org",
+        "scope": "alp.briefing/1",
+        "type": "request",
+        "body": {
+          "topic": "Q4 launch staffing plan",
+          "depth": "headline"
+        },
+        "labels": [
+          "public",
+          "internal",
+          "confidential",
+          "restricted",
+          "confidential.financial"
+        ]
+      },
+      "grants": [],
+      "expected": {
+        "outcome": "rejected",
+        "code": "invalid_input"
+      }
+    },
+    {
+      "name": "a made-up label below a pattern the rules name (confidential.*) is refused too: a pattern names no new labels (spec 6.5)",
+      "caller": {
+        "principal": "alp:ana@example.org",
+        "principal_id": "ana-7f3a9c41d2e8b605",
+        "delegate": "alp:ana@example.org/agent-a",
+        "client_id": "https://agent-a.example/oauth/client.json",
+        "attestation": "vendor",
+        "class": "business"
+      },
+      "draft": {
+        "to": "lee@example.org",
+        "scope": "alp.briefing/1",
+        "type": "request",
+        "body": {
+          "topic": "Q4 launch staffing plan",
+          "depth": "headline"
+        },
+        "labels": [
+          "confidential.4111111111111111"
+        ]
+      },
+      "grants": [],
+      "expected": {
+        "outcome": "rejected",
+        "code": "invalid_input"
+      }
+    },
+    {
+      "name": "an added label the rules name exactly is accepted, and counts toward delivery minimums (spec 6.5, 6.11)",
+      "caller": {
+        "principal": "alp:ana@example.org",
+        "principal_id": "ana-7f3a9c41d2e8b605",
+        "delegate": "alp:ana@example.org/agent-a",
+        "client_id": "https://agent-a.example/oauth/client.json",
+        "attestation": "vendor",
+        "class": "business"
+      },
+      "draft": {
+        "to": "lee@example.org",
+        "scope": "alp.briefing/1",
+        "type": "request",
+        "body": {
+          "topic": "Q4 launch staffing plan",
+          "depth": "headline"
+        },
+        "labels": [
+          "confidential.financial"
+        ]
+      },
+      "grants": [],
+      "expected": {
+        "outcome": "allowed",
+        "grant": "default:analysts-leaders",
+        "labels": [
+          "confidential.financial",
+          "internal"
+        ],
+        "redacted": [],
+        "policy_ids": [
+          "example.org#12"
+        ],
+        "constraints": {
+          "deliver_to": {
+            "min_class": "business"
+          },
+          "no_training": true
+        },
+        "status": "queued"
+      }
+    },
+    {
+      "name": "reply held for the sender's own review",
+      "caller": {
+        "principal": "alp:lee@example.org",
+        "principal_id": "lee-2b8e61f0a9c4d735",
+        "delegate": "alp:lee@example.org/agent-b",
+        "client_id": "https://agent-b.example/oauth/client.json",
+        "attestation": "vendor",
+        "class": "business"
+      },
+      "draft": {
+        "to": "ana@example.org",
+        "scope": "alp.briefing/1",
+        "type": "inform",
+        "in_reply_to": "01M709QMR0V6NZ7VMP83Z8R91Q",
+        "body": {
+          "points": [
+            "The support team is two people short until January."
+          ],
+          "as_of": "2026-11-09T13:00:00Z"
+        }
+      },
+      "grants": [
+        {
+          "alp": "0.1",
+          "id": "01M6XQAXR0Y3KAYYN6V5RTRGEN",
+          "principal": "alp:lee@example.org",
+          "principal_id": "lee-2b8e61f0a9c4d735",
+          "counterparty": "alp:ana@example.org",
+          "basis": "narrowing",
+          "status": "active",
+          "scopes": {
+            "alp.briefing/1": {
+              "may": [
+                "request",
+                "inform",
+                "decline",
+                "ack",
+                "ask_human",
+                "error"
+              ],
+              "disclose": [
+                "/body/points/*",
+                "/body/as_of",
+                "/body/confidence",
+                "/body/follow_up"
+              ],
+              "receive": [
+                "/body/topic",
+                "/body/questions/*",
+                "/body/depth",
+                "/body/due_by",
+                "/body/context/project",
+                "/body/context/amount"
+              ],
+              "commit": "ask_me",
+              "redaction": "reject",
+              "hold_for_review": true
+            }
+          },
+          "created_at": "2026-11-08T14:00:00Z",
+          "updated_at": "2026-11-08T14:00:00Z",
+          "sealed": {
+            "by": "lee-2b8e61f0a9c4d735",
+            "method": "sso-stepup",
+            "at": "2026-11-08T14:00:00Z"
+          }
+        }
+      ],
+      "expected": {
+        "outcome": "allowed",
+        "grant": "01M6XQAXR0Y3KAYYN6V5RTRGEN",
+        "labels": [
+          "internal"
+        ],
+        "redacted": [],
+        "policy_ids": [
+          "example.org#12"
+        ],
+        "status": "held_for_review"
+      }
+    },
+    {
+      "name": "a reply asking a further question in an open thread is evaluated like a first request: the default's forward terms cover it",
+      "caller": {
+        "principal": "alp:ana@example.org",
+        "principal_id": "ana-7f3a9c41d2e8b605",
+        "delegate": "alp:ana@example.org/agent-a",
+        "client_id": "https://agent-a.example/oauth/client.json",
+        "attestation": "vendor",
+        "class": "business"
+      },
+      "draft": {
+        "to": "lee@example.org",
+        "scope": "alp.briefing/1",
+        "type": "request",
+        "thread": "01M709QMR0RC7YMDMNG81S2JG1",
+        "in_reply_to": "01M709QMR0T9QC6YEA9S909TDD",
+        "body": {
+          "topic": "Q4 launch staffing plan",
+          "questions": [
+            "Until when is support short?"
+          ],
+          "depth": "headline"
+        }
+      },
+      "grants": [],
+      "expected": {
+        "outcome": "allowed",
+        "grant": "default:analysts-leaders",
+        "labels": [
+          "internal"
+        ],
+        "redacted": [],
+        "policy_ids": [
+          "example.org#12"
+        ],
+        "status": "queued"
+      }
+    },
+    {
+      "name": "a question back (a request answering a request) needs the relationship's may in its own direction: the default's reverse terms (leader to analyst) have no request",
+      "caller": {
+        "principal": "alp:lee@example.org",
+        "principal_id": "lee-2b8e61f0a9c4d735",
+        "delegate": "alp:lee@example.org/agent-b",
+        "client_id": "https://agent-b.example/oauth/client.json",
+        "attestation": "vendor",
+        "class": "business"
+      },
+      "draft": {
+        "to": "ana@example.org",
+        "scope": "alp.briefing/1",
+        "type": "request",
+        "thread": "01M709QMR0RC7YMDMNG81S2JG1",
+        "in_reply_to": "01M709QMR0FDAVS914RB9CB45Q",
+        "body": {
+          "topic": "Q4 launch staffing plan",
+          "questions": [
+            "Do you mean contractors too?"
+          ],
+          "depth": "headline"
+        }
+      },
+      "grants": [],
+      "expected": {
+        "outcome": "rejected",
+        "code": "type_not_allowed"
+      }
+    },
+    {
+      "name": "an ack needs no may: the sender's narrowed grant allows only requests, and the ack that closes the thread is allowed",
+      "caller": {
+        "principal": "alp:ana@example.org",
+        "principal_id": "ana-7f3a9c41d2e8b605",
+        "delegate": "alp:ana@example.org/agent-a",
+        "client_id": "https://agent-a.example/oauth/client.json",
+        "attestation": "vendor",
+        "class": "business"
+      },
+      "draft": {
+        "to": "lee@example.org",
+        "scope": "alp.briefing/1",
+        "type": "ack",
+        "thread": "01M709QMR0RC7YMDMNG81S2JG1",
+        "in_reply_to": "01M709QMR0T9QC6YEA9S909TDD",
+        "body": {
+          "of": "01M709QMR0T9QC6YEA9S909TDD",
+          "status": "completed"
+        }
+      },
+      "grants": [
+        {
+          "alp": "0.1",
+          "id": "01M6XQAXR0S01WXYDM9DV6EBSW",
+          "principal": "alp:ana@example.org",
+          "principal_id": "ana-7f3a9c41d2e8b605",
+          "counterparty": "alp:lee@example.org",
+          "basis": "narrowing",
+          "status": "active",
+          "scopes": {
+            "alp.briefing/1": {
+              "may": [
+                "request"
+              ],
+              "disclose": [
+                "/body/topic",
+                "/body/questions/*",
+                "/body/depth",
+                "/body/due_by",
+                "/body/context/project",
+                "/body/context/amount"
+              ],
+              "receive": [
+                "/body/points/*",
+                "/body/as_of",
+                "/body/confidence",
+                "/body/follow_up"
+              ],
+              "commit": "ask_me",
+              "redaction": "reject"
+            }
+          },
+          "created_at": "2026-11-08T14:00:00Z",
+          "updated_at": "2026-11-08T14:00:00Z",
+          "sealed": {
+            "by": "ana-7f3a9c41d2e8b605",
+            "method": "webauthn-uv",
+            "at": "2026-11-08T14:00:00Z"
+          }
+        }
+      ],
+      "expected": {
+        "outcome": "allowed",
+        "grant": "01M6XQAXR0S01WXYDM9DV6EBSW",
+        "labels": [
+          "internal"
+        ],
+        "redacted": [],
+        "policy_ids": [
+          "example.org#12"
+        ],
+        "status": "queued"
+      }
+    },
+    {
+      "name": "a decline needs no may either: the default's forward terms (analyst to leader) list none, and the analyst can still turn down a question back",
+      "caller": {
+        "principal": "alp:ana@example.org",
+        "principal_id": "ana-7f3a9c41d2e8b605",
+        "delegate": "alp:ana@example.org/agent-a",
+        "client_id": "https://agent-a.example/oauth/client.json",
+        "attestation": "vendor",
+        "class": "business"
+      },
+      "draft": {
+        "to": "lee@example.org",
+        "scope": "alp.briefing/1",
+        "type": "decline",
+        "thread": "01M709QMR0RC7YMDMNG81S2JG1",
+        "in_reply_to": "01M709QMR0FDAVS914RB9CB45Q",
+        "body": {
+          "of": "01M709QMR0FDAVS914RB9CB45Q",
+          "reason": "not_available"
+        }
+      },
+      "grants": [],
+      "expected": {
+        "outcome": "allowed",
+        "grant": "default:analysts-leaders",
+        "labels": [
+          "internal"
+        ],
+        "redacted": [],
+        "policy_ids": [
+          "example.org#12"
+        ],
+        "status": "queued"
+      }
+    }
+  ]
+}

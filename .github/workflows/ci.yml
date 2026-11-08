@@ -1,0 +1,63 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  reference:
+    name: reference broker (typecheck, tests, vectors, demos)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: reference
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: ci
+          POSTGRES_PASSWORD: ci
+          POSTGRES_DB: ci
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U ci"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22.22.2"
+          cache: npm
+          cache-dependency-path: reference/package-lock.json
+      - run: npm ci
+      - run: npm run typecheck
+      - name: tests, including every conformance vector and the Postgres store
+        run: npm test
+        env:
+          ALP_TEST_POSTGRES_URL: postgres://ci:ci@127.0.0.1:5432/ci
+      - run: npm run demo
+      - run: npm run demo:federation
+      - run: npm run demo:core
+
+  spec:
+    name: specification (schemas, vectors, worked examples)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: tools/spec
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22.22.2"
+      - run: npm ci
+      - run: npm run check

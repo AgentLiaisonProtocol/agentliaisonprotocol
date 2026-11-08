@@ -1,0 +1,17 @@
+{
+  "name": "spec-tools",
+  "private": true,
+  "type": "module",
+  "description": "Generates and checks the specification's conformance vectors and worked examples.",
+  "license": "Apache-2.0",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "vectors": "node vectors.mjs ../..",
+    "examples": "node examples.mjs ../..",
+    "check": "node validate.mjs ../.."
+  },
+  "dependencies": {
+    "ajv": "8.20.0",
+    "ajv-formats": "3.0.1"
+  }
+}

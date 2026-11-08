@@ -1,0 +1,328 @@
+{
+  "description": "What one agent may read (spec 6.11, 12.1.4): one rule for alp_inbox, alp_thread and alp_ack. A received message (direction in) is visible if it is addressed to the person or to this agent (to_delegate), isn't held (or its held_until has passed), and the agent meets its delivery constraints with the client terms recorded for it. A sent message (direction out) is visible only to the agent that sent it (from_delegate), or to every agent when the broker sent it for the person (no from_delegate). A reader's since is when its binding started (spec 5.4): a received message addressed to it is visible only if its broker received it (stored_at) at or after since, and a message it sent only if its broker signed it (created_at) at or after since, so an agent that takes a disconnected agent's label reads nothing of the earlier agent's. A sent message's record may be stored after the binding started (it is stored once the receipt is back); its created_at decides. expected.visible lists the visible ids in order.",
+  "now": "2026-11-09T14:00:00Z",
+  "cases": [
+    {
+      "name": "a business agent reads a constrained reply; a consumer agent of the same person doesn't (thread, inbox and ack alike)",
+      "reader": {
+        "delegate": "alp:ana@example.org/agent-a",
+        "attestation": "vendor",
+        "class": "business",
+        "client": {
+          "no_training": true,
+          "retention_days": 30
+        }
+      },
+      "messages": [
+        {
+          "id": "01M7069S40GJCVZD54FN7WASVA",
+          "status": "delivered",
+          "direction": "in",
+          "constraints": {
+            "deliver_to": {
+              "min_class": "business"
+            }
+          }
+        }
+      ],
+      "expected": {
+        "visible": [
+          "01M7069S40GJCVZD54FN7WASVA"
+        ]
+      }
+    },
+    {
+      "name": "the same constrained reply, read by the consumer agent",
+      "reader": {
+        "delegate": "alp:ana@example.org/muse",
+        "attestation": "self",
+        "class": "consumer",
+        "client": {
+          "no_training": false
+        }
+      },
+      "messages": [
+        {
+          "id": "01M7069S40GJCVZD54FN7WASVA",
+          "status": "delivered",
+          "direction": "in",
+          "constraints": {
+            "deliver_to": {
+              "min_class": "business"
+            }
+          }
+        }
+      ],
+      "expected": {
+        "visible": []
+      }
+    },
+    {
+      "name": "addressed to the person or to this agent, not to another of the person's agents",
+      "reader": {
+        "delegate": "alp:ana@example.org/agent-a",
+        "attestation": "vendor",
+        "class": "business",
+        "client": {
+          "no_training": true,
+          "retention_days": 30
+        }
+      },
+      "messages": [
+        {
+          "id": "01M7069S40GNDMF5VEHH21NYGK",
+          "status": "delivered",
+          "direction": "in"
+        },
+        {
+          "id": "01M7069S40DQ8A954S51BGET3N",
+          "status": "delivered",
+          "direction": "in",
+          "to_delegate": "alp:ana@example.org/agent-a"
+        },
+        {
+          "id": "01M7069S40CK3GQXVTJKP3YF3A",
+          "status": "delivered",
+          "direction": "in",
+          "to_delegate": "alp:ana@example.org/muse"
+        }
+      ],
+      "expected": {
+        "visible": [
+          "01M7069S40GNDMF5VEHH21NYGK",
+          "01M7069S40DQ8A954S51BGET3N"
+        ]
+      }
+    },
+    {
+      "name": "held: hidden until held_until passes",
+      "reader": {
+        "delegate": "alp:ana@example.org/agent-a",
+        "attestation": "vendor",
+        "class": "business",
+        "client": {
+          "no_training": true,
+          "retention_days": 30
+        }
+      },
+      "messages": [
+        {
+          "id": "01M7069S40WBW4RBRWH3S8X781",
+          "status": "held",
+          "direction": "in"
+        },
+        {
+          "id": "01M7069S407ZEHM3H29EJANMQR",
+          "status": "held",
+          "direction": "in",
+          "held_until": "2026-11-09T12:00:00Z"
+        },
+        {
+          "id": "01M7069S40JNBSSR6RE6HTCMCE",
+          "status": "held",
+          "direction": "in",
+          "held_until": "2026-11-09T18:00:00Z"
+        }
+      ],
+      "expected": {
+        "visible": [
+          "01M7069S407ZEHM3H29EJANMQR"
+        ]
+      }
+    },
+    {
+      "name": "a training constraint the agent's recorded terms don't meet",
+      "reader": {
+        "delegate": "alp:ana@example.org/muse",
+        "attestation": "self",
+        "class": "consumer",
+        "client": {
+          "no_training": false
+        }
+      },
+      "messages": [
+        {
+          "id": "01M7069S4080B77629N3D7YA3M",
+          "status": "delivered",
+          "direction": "in",
+          "constraints": {
+            "no_training": true
+          }
+        },
+        {
+          "id": "01M7069S40KXEK436AZ6X77VFP",
+          "status": "delivered",
+          "direction": "in"
+        }
+      ],
+      "expected": {
+        "visible": [
+          "01M7069S40KXEK436AZ6X77VFP"
+        ]
+      }
+    },
+    {
+      "name": "sent messages: the reader's own and the broker's, never another agent's of the same person",
+      "reader": {
+        "delegate": "alp:ana@example.org/muse",
+        "attestation": "self",
+        "class": "consumer",
+        "client": {
+          "no_training": false
+        }
+      },
+      "messages": [
+        {
+          "id": "01M7069S40YF8E7S30CBCH2HQT",
+          "status": "delivered",
+          "direction": "out",
+          "from_delegate": "alp:ana@example.org/muse"
+        },
+        {
+          "id": "01M7069S40HKTXYS99K0P5YMB5",
+          "status": "delivered",
+          "direction": "out",
+          "from_delegate": "alp:ana@example.org/agent-a"
+        },
+        {
+          "id": "01M7069S40ATXFMYH7734M8407",
+          "status": "delivered",
+          "direction": "out"
+        }
+      ],
+      "expected": {
+        "visible": [
+          "01M7069S40YF8E7S30CBCH2HQT",
+          "01M7069S40ATXFMYH7734M8407"
+        ]
+      }
+    },
+    {
+      "name": "an agent that took a disconnected agent's label: nothing addressed to, or sent by, the earlier agent; messages to the person as before",
+      "reader": {
+        "delegate": "alp:ana@example.org/muse",
+        "attestation": "self",
+        "class": "consumer",
+        "client": {
+          "no_training": false
+        },
+        "since": "2026-11-09T13:00:00Z"
+      },
+      "messages": [
+        {
+          "id": "01M7069S40PY5N9EEWYBPKY085",
+          "status": "delivered",
+          "direction": "in",
+          "to_delegate": "alp:ana@example.org/muse",
+          "stored_at": "2026-11-09T12:00:00Z"
+        },
+        {
+          "id": "01M7069S407J5J93VTKJ6JAPK1",
+          "status": "delivered",
+          "direction": "in",
+          "to_delegate": "alp:ana@example.org/muse",
+          "stored_at": "2026-11-09T13:30:00Z"
+        },
+        {
+          "id": "01M7069S40KTBZREHT5EXVRRGJ",
+          "status": "delivered",
+          "direction": "out",
+          "from_delegate": "alp:ana@example.org/muse",
+          "created_at": "2026-11-09T12:00:00Z",
+          "stored_at": "2026-11-09T12:00:00Z"
+        },
+        {
+          "id": "01M7069S406HKT71TMCS89MQSS",
+          "status": "delivered",
+          "direction": "out",
+          "from_delegate": "alp:ana@example.org/muse",
+          "created_at": "2026-11-09T13:30:00Z",
+          "stored_at": "2026-11-09T13:30:00Z"
+        },
+        {
+          "id": "01M7069S40ECXE1Q2PNSJ5G74K",
+          "status": "delivered",
+          "direction": "in",
+          "stored_at": "2026-11-09T12:00:00Z"
+        }
+      ],
+      "expected": {
+        "visible": [
+          "01M7069S407J5J93VTKJ6JAPK1",
+          "01M7069S406HKT71TMCS89MQSS",
+          "01M7069S40ECXE1Q2PNSJ5G74K"
+        ]
+      }
+    },
+    {
+      "name": "a sent message counts from when its broker signed it: one the earlier agent signed and the broker stored after the new binding started stays hidden",
+      "reader": {
+        "delegate": "alp:ana@example.org/muse",
+        "attestation": "self",
+        "class": "consumer",
+        "client": {
+          "no_training": false
+        },
+        "since": "2026-11-09T13:00:00Z"
+      },
+      "messages": [
+        {
+          "id": "01M7069S408T5751QJFZKJ5X0W",
+          "status": "delivered",
+          "direction": "out",
+          "from_delegate": "alp:ana@example.org/muse",
+          "created_at": "2026-11-09T12:59:00Z",
+          "stored_at": "2026-11-09T13:01:00Z"
+        },
+        {
+          "id": "01M7069S40ZFA6XYJRYH3R55WW",
+          "status": "delivered",
+          "direction": "out",
+          "from_delegate": "alp:ana@example.org/muse",
+          "created_at": "2026-11-09T13:01:00Z",
+          "stored_at": "2026-11-09T13:02:00Z"
+        }
+      ],
+      "expected": {
+        "visible": [
+          "01M7069S40ZFA6XYJRYH3R55WW"
+        ]
+      }
+    },
+    {
+      "name": "a received message counts from when its broker received it, not from when its sender's broker signed it",
+      "reader": {
+        "delegate": "alp:ana@example.org/muse",
+        "attestation": "self",
+        "class": "consumer",
+        "client": {
+          "no_training": false
+        },
+        "since": "2026-11-09T13:00:00Z"
+      },
+      "messages": [
+        {
+          "id": "01M7069S40NDF358ZJ209VAX2A",
+          "status": "delivered",
+          "direction": "in",
+          "to_delegate": "alp:ana@example.org/muse",
+          "created_at": "2026-11-09T12:30:00Z",
+          "stored_at": "2026-11-09T13:05:00Z"
+        },
+        {
+          "id": "01M7069S40Q3NYA938P3749D26",
+          "status": "delivered",
+          "direction": "in",
+          "to_delegate": "alp:ana@example.org/muse",
+          "created_at": "2026-11-09T12:30:00Z",
+          "stored_at": "2026-11-09T12:59:00Z"
+        }
+      ],
+      "expected": {
+        "visible": [
+          "01M7069S40NDF358ZJ209VAX2A"
+        ]
+      }
+    }
+  ]
+}
