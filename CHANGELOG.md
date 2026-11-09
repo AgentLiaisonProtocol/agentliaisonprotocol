@@ -16,6 +16,7 @@ A patch: the protocol version (`"alp": "0.1"`), the schemas and the vectors don'
 ### Changed
 
 - Bridge kit (the Grok guide, its sources and the bridge-kit README) and CLAIMS.md: Grok's provider is named SpaceXSI (formerly xAI), as its documentation and consumer terms now say, and the Grok guide states what the consumer terms of October 27, 2026 say about agent actions. What the Acceptable Use Policy says about automated use stays unverified.
+- Specification Sections 12.4 and 17 (both informative), the announcement, the README and CLAIMS.md: related work checked again against primary sources on November 9, 2026. Section 17 now cites IBM's Agent Communication Protocol (merged into A2A in August 2025), the Common Agent Standards' person-to-person connections, OGP, AMTP, A4A, AgentLink, hosted MCP relays, TRAIL and two research papers; says which protocol each "ACP" is; dates the comparison with A2A to v1.0.1 and names the A2A work that would narrow the gap; and adds A2A's extension process to the venues. The announcement now says that recent specifications and hosted services connect different people's agents, the README links to Section 17, and CLAIMS.md gives the announcement's new claim about hosted services its evidence and limit.
 
 ## [0.1.0] - 2026-11-09 (draft for implementers)
 

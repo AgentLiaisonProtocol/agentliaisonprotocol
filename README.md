@@ -11,6 +11,7 @@ A leader's dot in his company's ChatGPT workspace, his company's Claude and his 
 
 - **Read the announcement:** [Introducing the Agent Liaison Protocol](announcement/introducing-agent-liaison-protocol.md) (https://agentliaisonprotocol.org)
 - **Read the specification:** [spec/alp-v0.1.md](spec/alp-v0.1.md)
+- **See related work:** how ALP relates to A2A, the Common Agent Standards, IBM's Agent Communication Protocol and others, in [specification Section 17](spec/alp-v0.1.md#17-relationship-to-other-work)
 - **Run the demo:** see [Try it](#try-it)
 - **Check the status:** [what's tested and what isn't](#status), and [KNOWN-GAPS.md](KNOWN-GAPS.md)
 
