@@ -2,6 +2,9 @@
 
 *Between people, through their agents.*
 
+<img width="1600" height="780" alt="image" src="https://github.com/user-attachments/assets/6fc4ac1c-c9b2-4deb-aa3f-48a4b723c84c" />
+
+
 MCP connects agents to tools. A2A connects agents to agents. ALP connects people through their agents, under each person's rules.
 
 A leader's dot in his company's ChatGPT workspace, his company's Claude and his personal Muse (Meta) come from three vendors and should work together, but not as equals: confidential board figures may reach his company agents, not his Muse without his say. When an analyst's agent needs something from his, her request shouldn't carry her sensitive fields or need a login to his tools, and his agent shouldn't answer anything that merely claims to be hers. The Agent Liaison Protocol (ALP), an open standard for work between people carried by their agents, handles both: each agent talks only to its own person's broker, which carries only what both people's rules allow.
