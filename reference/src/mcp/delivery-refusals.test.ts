@@ -23,7 +23,7 @@ async function setup(patLimit?: { count: number; per_seconds: number }) {
   const w = await buildWorld();
   await w.example.setGrant(w.ana.human(), { counterparty: PAT, scopes: { "alp.briefing/1": briefTerms } });
   await w.partner.setGrant(w.pat.human(), { counterparty: ANA, scopes: { "alp.briefing/1": briefTerms }, ...(patLimit ? { rate_limit: patLimit } : {}) });
-  const ctx: ToolContext = { broker: w.example, state: BindingState.memory(), catalog: toolCatalog(), policies: () => [], notifier: w.notifier, now: () => w.clock.now(), log: () => undefined };
+  const ctx: ToolContext = { broker: w.example, state: BindingState.memory(w.clock), catalog: toolCatalog(), policies: () => [], notifier: w.notifier, now: () => w.clock.now(), log: () => undefined };
   const ana = (await w.example.getPrincipal(ANA))!;
   const send = (extra: Record<string, unknown> = {}): Promise<ToolOutcome> => runTool(ctx, { caller: w.ana.agent, principal_id: ana.principal_id, scopes: ["read", "send"], via: "oauth", resource: "rest" }, "alp_send", { to: "pat@partner.example", scope: "alp.briefing/1", type: "request", body: { topic: "Q4", depth: "headline" }, ...extra });
   return { w, send };
@@ -88,7 +88,7 @@ test("unreachable: HTTP 502, which openapi.json documents for /alp_send as the r
 
 test("a draft to fix says the corrected one needs a new idempotency_key: the same key returns the first refusal for 24 hours, a new one is checked again", async () => {
   const w = await buildWorld({ domainDocs: false });
-  const ctx: ToolContext = { broker: w.example, state: BindingState.memory(), catalog: toolCatalog(), policies: () => [], notifier: w.notifier, now: () => w.clock.now(), log: () => undefined };
+  const ctx: ToolContext = { broker: w.example, state: BindingState.memory(w.clock), catalog: toolCatalog(), policies: () => [], notifier: w.notifier, now: () => w.clock.now(), log: () => undefined };
   const ana = (await w.example.getPrincipal(ANA))!;
   const auth = { caller: w.ana.agent, principal_id: ana.principal_id, scopes: ["read", "send"] as ("read" | "send")[], via: "oauth" as const, resource: "mcp" as const };
   const draft = (depth: string, key: string) => ({ to: "lee@example.org", scope: "alp.briefing/1", type: "request", idempotency_key: key, body: { topic: "Q4", depth } });
@@ -193,7 +193,7 @@ test("the MCP server's instructions say what thread_state asks for, when a threa
 
 test("when the binding store can't record the answer under its idempotency_key, the agent still gets the answer", async () => {
   const w = await buildWorld({ domainDocs: false });
-  const state = BindingState.memory();
+  const state = BindingState.memory(w.clock);
   const swap = state.swapIdempotency.bind(state);
   // The claim is written; recording the answer over it fails.
   state.swapIdempotency = async (key, seen, rec) => {
