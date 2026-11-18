@@ -30,7 +30,7 @@ function refused(o: ToolOutcome, code: string): Refusal & { text: string } {
 }
 
 async function agentOf(w: World, address: string, caller: DelegateCaller): Promise<(tool: string, args: Record<string, unknown>) => Promise<ToolOutcome>> {
-  const ctx: ToolContext = { broker: w.example, state: BindingState.memory(), catalog: toolCatalog(), policies: () => [], notifier: w.notifier, now: () => w.clock.now(), log: () => undefined };
+  const ctx: ToolContext = { broker: w.example, state: BindingState.memory(w.clock), catalog: toolCatalog(), policies: () => [], notifier: w.notifier, now: () => w.clock.now(), log: () => undefined };
   const p = (await w.example.getPrincipal(address))!;
   const auth: AuthContext = { caller, principal_id: p.principal_id, scopes: ["read", "send"], via: "oauth", resource: "mcp" };
   return (tool, args) => runTool(ctx, auth, tool, args);

@@ -24,6 +24,8 @@
 import { createHash, timingSafeEqual } from "node:crypto";
 import { chmodSync, existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
+import type { Clock } from "../core/clock.ts";
+import { systemClock } from "../core/clock.ts";
 import type { SealMethod } from "../core/types.ts";
 
 export type JsonValue = null | boolean | number | string | JsonValue[] | { [key: string]: JsonValue };
@@ -323,29 +325,34 @@ const clone = <T>(v: T): T => structuredClone(v);
 /** Marks a rotated refresh token whose one overlapping reuse has been spent. */
 export const REUSED_FIELD = "alp_reused_at";
 
-/** The memory and file BindingStore. Node runs it single-threaded and no method awaits midway, so each is atomic. */
+/**
+ * The memory and file BindingStore. Node runs it single-threaded and no method awaits midway, so each is atomic. It
+ * drops what has expired by its clock: the system clock unless it is given one, as tests give it the clock they move.
+ */
 export class BindingState implements BindingStore {
   readonly kind: string;
   readonly data: BindingStateData;
   private readonly path: string | undefined;
+  private readonly clock: Clock;
   private readonly sessions = new Map<string, WebSessionRecord>();
   private readonly challenges = new Map<string, StepUpChallenge>();
 
-  private constructor(data: BindingStateData, path: string | undefined) {
+  private constructor(data: BindingStateData, path: string | undefined, clock: Clock) {
     this.data = data;
     this.path = path;
+    this.clock = clock;
     this.kind = path ? "file" : "memory";
   }
 
-  static memory(): BindingState {
-    return new BindingState(empty(), undefined);
+  static memory(clock: Clock = systemClock): BindingState {
+    return new BindingState(empty(), undefined, clock);
   }
 
   /**
    * Loads (or creates) <dir>/binding.json. A file written before raw token ids were dropped (ID_IS_SECRET) is cleaned
    * as it loads: a stored `jti` whose SHA-256 is its key goes, and so does an interaction's copy of its session cookie.
    */
-  static file(dir: string): BindingState {
+  static file(dir: string, clock: Clock = systemClock): BindingState {
     mkdirSync(dir, { recursive: true, mode: 0o700 });
     const path = join(dir, "binding.json");
     let data = empty();
@@ -364,13 +371,13 @@ export class BindingState implements BindingStore {
         }
       }
     }
-    const state = new BindingState(data, path);
+    const state = new BindingState(data, path, clock);
     if (cleaned) state.save();
     return state;
   }
 
   /** Call after every change. Expired authorization-server artifacts and old idempotency records are dropped first. */
-  save(now: number = Date.now()): void {
+  save(now: number = this.clock.now().getTime()): void {
     for (const model of Object.values(this.data.oidc)) {
       for (const [k, e] of Object.entries(model)) if (e.expiresAt !== undefined && e.expiresAt <= now) delete model[k];
     }
@@ -537,7 +544,7 @@ export class BindingState implements BindingStore {
     return clone(this.sessions.get(idHash) ?? null);
   }
   async putWebSession(rec: WebSessionRecord): Promise<void> {
-    if (this.sessions.size > 10_000) for (const [k, s] of this.sessions) if (Date.now() - s.last_seen > 24 * 3600_000) this.sessions.delete(k);
+    if (this.sessions.size > 10_000) for (const [k, s] of this.sessions) if (this.clock.now().getTime() - s.last_seen > 24 * 3600_000) this.sessions.delete(k);
     this.sessions.set(rec.id_hash, clone(rec));
   }
   async deleteWebSession(idHash: string): Promise<void> {
@@ -548,7 +555,7 @@ export class BindingState implements BindingStore {
     for (const [k, s] of this.sessions) if (s.principal_id === principalId) await this.deleteWebSession(k);
   }
   async putChallenge(rec: StepUpChallenge): Promise<void> {
-    const now = Date.now();
+    const now = this.clock.now().getTime();
     for (const [k, c] of this.challenges) if (c.expires_at <= now) this.challenges.delete(k);
     this.challenges.set(rec.challenge, clone(rec));
   }

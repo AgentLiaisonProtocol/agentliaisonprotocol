@@ -27,7 +27,7 @@ interface Side {
 }
 
 async function sides(w: World): Promise<{ ctx: ToolContext; ana: Side; lee: Side }> {
-  const ctx: ToolContext = { broker: w.example, state: BindingState.memory(), catalog: toolCatalog(), policies: () => [], notifier: w.notifier, now: () => w.clock.now(), log: () => undefined };
+  const ctx: ToolContext = { broker: w.example, state: BindingState.memory(w.clock), catalog: toolCatalog(), policies: () => [], notifier: w.notifier, now: () => w.clock.now(), log: () => undefined };
   const side = async (address: string, caller: DelegateCaller): Promise<Side> => {
     const p = (await w.example.getPrincipal(address))!;
     const auth: AuthContext = { caller, principal_id: p.principal_id, scopes: ["read", "send"], via: "oauth", resource: "mcp" };

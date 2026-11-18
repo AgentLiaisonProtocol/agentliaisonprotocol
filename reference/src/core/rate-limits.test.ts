@@ -68,7 +68,7 @@ async function scenario(w: World): Promise<void> {
 
   // The client binding: retry_after in the structured error, the advice in the message.
   const ana = (await w.example.getPrincipal(ANA))!;
-  const ctx: ToolContext = { broker: w.example, state: BindingState.memory(), catalog: toolCatalog(), policies: () => [], notifier: w.notifier, now: () => w.clock.now(), log: () => undefined };
+  const ctx: ToolContext = { broker: w.example, state: BindingState.memory(w.clock), catalog: toolCatalog(), policies: () => [], notifier: w.notifier, now: () => w.clock.now(), log: () => undefined };
   const o = await runTool(ctx, { caller: muse, principal_id: ana.principal_id, scopes: ["read", "send"], via: "oauth", resource: "mcp" }, "alp_send", { to: "ana@example.org", to_delegate: "helper", scope: "alp.availability/1", type: "request", body: { window: WINDOW, duration_minutes: 30 } });
   assert.equal(o.ok, false);
   const err = (o.ok ? {} : o.structured?.["error"]) as Record<string, unknown>;
@@ -143,7 +143,7 @@ test("connection requests: the broker's 20 a day and the client binding's 5 held
 
   // alp_request_connection holds at most five a day for the person's approval; the sixth says when the oldest is a day old.
   const ana = (await w.example.getPrincipal(ANA))!;
-  const ctx: ToolContext = { broker: w.example, state: BindingState.memory(), catalog: toolCatalog(), policies: () => [], notifier: w.notifier, now: () => w.clock.now(), log: () => undefined };
+  const ctx: ToolContext = { broker: w.example, state: BindingState.memory(w.clock), catalog: toolCatalog(), policies: () => [], notifier: w.notifier, now: () => w.clock.now(), log: () => undefined };
   const ask = (to: string) => runTool(ctx, { caller: w.ana.agent, principal_id: ana.principal_id, scopes: ["read", "send"], via: "oauth", resource: "mcp" }, "alp_request_connection", { to, scopes: ["alp.briefing/1"], purpose: "briefing" });
   for (let i = 0; i < 5; i++) {
     const o = await ask(`held${i}@partner.example`);

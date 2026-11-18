@@ -9,6 +9,7 @@ import assert from "node:assert/strict";
 import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { ManualClock } from "../core/clock.ts";
 import { BindingState, ID_IS_SECRET, sha256b64u } from "../oauth/state.ts";
 import type { BindingStore, InviteRecord, JsonRecord, JsonValue, PasskeyRecord, PatRecord, PendingConnection, WebSessionRecord } from "../oauth/state.ts";
 import { StateAdapter } from "../oauth/adapter.ts";
@@ -17,6 +18,8 @@ import { createPostgresStore } from "./postgres.ts";
 import type { PostgresStore } from "./postgres.ts";
 import { PostgresBindingStore } from "./postgres-binding.ts";
 
+// The tests' moment. The memory and file stores drop what has expired by their clock, so theirs stays at T0 and these
+// tests don't depend on today's date.
 const T0 = Date.parse("2026-11-09T14:00:00.000Z");
 
 const pat = (id: string, extra: Partial<PatRecord> = {}): PatRecord => ({
@@ -312,7 +315,7 @@ async function conformance(name: string, make: () => Promise<BindingStore>): Pro
   });
 }
 
-await conformance("memory", async () => BindingState.memory());
+await conformance("memory", async () => BindingState.memory(new ManualClock(T0)));
 
 const dirs: string[] = [];
 process.on("exit", () => {
@@ -321,7 +324,7 @@ process.on("exit", () => {
 await conformance("file", async () => {
   const d = mkdtempSync(join(tmpdir(), "alp-binding-"));
   dirs.push(d);
-  return BindingState.file(d);
+  return BindingState.file(d, new ManualClock(T0));
 });
 
 test("file binding store: a file written before raw token ids were dropped is cleaned as it loads", async () => {
