@@ -66,7 +66,7 @@ test("spec 6.14: with no relationships, alp_whoami lists the scopes the agent ca
   let policy: OrgPolicy = examplePolicy(new Date("2026-11-09T14:00:00Z"), { default_relationships: [] });
   const w = await buildWorld({ domainDocs: false, policy: () => policy });
   const lee = (await w.example.getPrincipal(LEE))!;
-  const ctx: ToolContext = { broker: w.example, state: BindingState.memory(), catalog: toolCatalog(), policies: () => [policy], notifier: w.notifier, now: () => w.clock.now(), log: () => undefined };
+  const ctx: ToolContext = { broker: w.example, state: BindingState.memory(w.clock), catalog: toolCatalog(), policies: () => [policy], notifier: w.notifier, now: () => w.clock.now(), log: () => undefined };
   const muse = await w.example.registerDelegate({ principal: LEE, label: "muse", kind: "bridged", client_id: CLIENTS.consumer });
   const planner = await w.example.registerDelegate({ principal: LEE, label: "planner", kind: "bridged", client_id: CLIENTS.consumer });
   const old = await w.example.registerDelegate({ principal: LEE, label: "old", kind: "bridged", client_id: CLIENTS.consumer });
@@ -148,7 +148,7 @@ test("spec 6.14: with relationships and another agent, alp_whoami's scopes merge
   };
   const w = await buildWorld({ domainDocs: false, policy });
   const lee = (await w.example.getPrincipal(LEE))!;
-  const ctx: ToolContext = { broker: w.example, state: BindingState.memory(), catalog: toolCatalog(), policies: () => [policy(w.clock.now())], notifier: w.notifier, now: () => w.clock.now(), log: () => undefined };
+  const ctx: ToolContext = { broker: w.example, state: BindingState.memory(w.clock), catalog: toolCatalog(), policies: () => [policy(w.clock.now())], notifier: w.notifier, now: () => w.clock.now(), log: () => undefined };
   const muse = await w.example.registerDelegate({ principal: LEE, label: "muse", kind: "bridged", client_id: CLIENTS.consumer });
   const r = await whoamiAs(ctx, w.lee.agent, lee.principal_id);
 
@@ -206,7 +206,7 @@ test("spec 6.14: a person with no other agents is told there are none, never sho
   const w = await buildWorld({ domainDocs: false });
   const ana = (await w.example.getPrincipal(ANA))!;
   await w.example.registerDelegate({ principal: LEE, label: "muse", kind: "bridged", client_id: CLIENTS.consumer });
-  const ctx: ToolContext = { broker: w.example, state: BindingState.memory(), catalog: toolCatalog(), policies: () => [examplePolicy(w.clock.now())], notifier: w.notifier, now: () => w.clock.now(), log: () => undefined };
+  const ctx: ToolContext = { broker: w.example, state: BindingState.memory(w.clock), catalog: toolCatalog(), policies: () => [examplePolicy(w.clock.now())], notifier: w.notifier, now: () => w.clock.now(), log: () => undefined };
   const r = await whoamiAs(ctx, w.ana.agent, ana.principal_id);
   assert.match(r.text, /^You act for ana@example\.org \(Ana\) as delegate alp:ana@example\.org\/muse, .* Scopes you can use: alp\.availability\/1 \(request, decline, inform, ack, error\); alp\.briefing\/1 \(request, decline, inform, ask_human, ack, error\)\. Your person's other agents: none\. Call again with include_scopes: true for the body schemas\.$/);
   assert.doesNotMatch(r.text, /to_delegate|with them|with other people|\b(?:dot|claude) \(/, "nothing about Lee's or Fran's agents");
@@ -243,7 +243,7 @@ test("spec 6.14: past the 64 scopes tools.json allows, alp_whoami keeps what rel
   const status = w.scopes.require("alp.status/1").def;
   for (let i = 0; i < 60; i++) w.scopes.register({ ...structuredClone(status), id: `org.example.org.s${String(i).padStart(2, "0")}/1`, title: `Scope ${i}` });
   const lee = (await w.example.getPrincipal(LEE))!;
-  const ctx: ToolContext = { broker: w.example, state: BindingState.memory(), catalog: toolCatalog(), policies: () => [policy(w.clock.now())], notifier: w.notifier, now: () => w.clock.now(), log: () => undefined };
+  const ctx: ToolContext = { broker: w.example, state: BindingState.memory(w.clock), catalog: toolCatalog(), policies: () => [policy(w.clock.now())], notifier: w.notifier, now: () => w.clock.now(), log: () => undefined };
   const listed = async (): Promise<string[]> => listedOf((await whoamiAs(ctx, w.lee.agent, lee.principal_id)).structured).map((s) => s.id);
 
   assert.deepEqual(await listed(), ["alp.availability/1", "alp.briefing/1", last], "with no other agent, what relationships allow");
