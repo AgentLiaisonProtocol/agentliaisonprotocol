@@ -164,6 +164,8 @@ Then `systemctl reload alp` reloads the policy files, and `systemctl stop alp` s
 - an entry in your policy's `clients` (in `enforce` mode, a client the list doesn't name is refused): the example policy lists the confidential one as `org-client`, `enterprise`, which only a client that authenticates at the token endpoint may be (spec Section 5.4);
 - for a redirect URI that isn't loopback, its host in `ALP_REDIRECT_HOSTS`.
 
+**An agent with a published client identity, such as one it also uses for Poppy.** A client that signs in with a client ID metadata document needs no entry in `ALP_CLIENTS_FILE`. Add its redirect host to `ALP_REDIRECT_HOSTS`: the setting replaces the default list (`claude.ai,chatgpt.com`), so give the full list, for example `claude.ai,chatgpt.com,muse.ai`. The redirect URI must be on the document's own host, or loopback. List the document's exact URL as `client_id` in your policy's `clients`, with `attestation: "vendor"` and the class, scopes and `no_training` you choose for it. Never record it as `org-client` or `tenant`, or with class `enterprise`: the identity serves every account of the product (spec Section 5.4), and the broker doesn't check that for you. No agent that uses Poppy, the Personal Agent Protocol, has been tested ([KNOWN-GAPS.md](KNOWN-GAPS.md)).
+
 ### Rate limits
 
 Messages are counted in sliding windows. A draft the broker refuses before the limit is checked (a schema or policy refusal) doesn't count; one held for the person's review does.

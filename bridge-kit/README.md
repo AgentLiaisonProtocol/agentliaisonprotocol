@@ -33,7 +33,7 @@ In your agent's settings, add a custom connector:
 
 - **Name:** ALP
 - **URL:** your broker's connector URL
-- **Authentication:** OAuth. If the product asks how to register, its published identity (a client ID metadata document) is preferred; automatic registration also works, and so does a client ID your administrator registered at the broker.
+- **Authentication:** OAuth. If the product asks how to register, its published identity (a client ID metadata document) is preferred; automatic registration also works, and so does a client ID your administrator registered at the broker. An agent that already publishes a client identity for Poppy, the Personal Agent Protocol, may be able to use that same document; this is unverified ([below](#agents-that-also-use-poppy)).
 
 **If your agent can only send a fixed header** (an API key or bearer token), sign in to your broker's web page, create a **personal access token** for this agent, and paste it into the agent's secure credential setting. Never paste it into a chat. You can revoke it on the same page. A second token for an agent that already has one adds a token and doesn't replace the first: revoke the old one if you're replacing it.
 
@@ -132,6 +132,14 @@ Your broker has a small web page for you: connection requests, approvals for any
 
 If your agent can't add custom connectors, you can still take part. Your broker notifies you (by email by default; text messages are off unless your organization turns them on), and you act on the broker's page after signing in. (The reference broker doesn't send email yet; check your page.) Notifications only notify: no link, code or reply in them approves anything, so treat any message that claims otherwise as phishing.
 
+## Agents that also use Poppy
+
+Poppy, the Personal Agent Protocol, is for your agent's work with a business: an order, a booking, support. ALP is for work with another person, including a person who works at a business. An agent can use both, and neither replaces the other ([ALP and Poppy](https://agentliaisonprotocol.org/poppy/); spec Section 12.6).
+
+- **One identity.** Poppy identifies an agent by a client ID metadata document with `private_key_jwt`. A broker must accept the same kind of document as the agent's sign-in identity, and records it as `vendor`-attested. The reference broker's tests use an RS256 key; Poppy requires businesses to accept ES256 and PS384, and the reference broker doesn't yet accept PS384. **Unverified:** no Poppy agent has signed in to an ALP broker ([KNOWN-GAPS.md](../KNOWN-GAPS.md)).
+- **An address from a business.** If a business's agent gives your agent someone's ALP address, the [instruction snippet](agent-instructions.md) tells your agent to show you the address and wait. A connection request goes to that person, not to their agent.
+- **Your address.** Poppy gives you a different ID at each business. Your ALP address is the same everywhere, so the [instruction snippet](agent-instructions.md) tells your agent to give it to a business only when you ask.
+
 ## Where it works today
 
 From vendor documentation read on November 6, 2026 ([SOURCES.md](SOURCES.md) lists every page), and, where marked **tested**, from the test with real agents on November 7, 2026 ([below](#tested-with-real-agents)). Verified unless marked **reported** (secondary source only) or **unverified**. Each product's guide (linked above) has the details and what is still unverified.
@@ -172,6 +180,7 @@ Not tested: ChatGPT and dots (the ChatGPT Business workspace available for the t
 - Set `delivery_minimums` for your confidential labels, and choose for each whether a field your person's lower-trust agent doesn't qualify for is held for them (`otherwise: "hold"`, the default) or refused (`otherwise: "block"`).
 - Pre-approve relationships between groups in your policy, so people don't need a connection request per colleague. Individual grants can only narrow these defaults.
 - Deploy the instruction snippet as organization-wide instructions where the vendor supports it.
+- For an agent that signs in with a client identity it also uses for Poppy, list the exact URL of its client ID metadata document in your `clients` list with `attestation: "vendor"`, and set `ALP_REDIRECT_HOSTS` to the full list of redirect hosts, its own included: the setting replaces the default list (`claude.ai,chatgpt.com`), for example `claude.ai,chatgpt.com,muse.ai` ([SELF-HOST.md](../SELF-HOST.md#pre-registered-clients)). Don't record it as `org-client` or `tenant`: the same identity serves every account of the product (spec Section 5.4).
 
 ## Limits to know
 

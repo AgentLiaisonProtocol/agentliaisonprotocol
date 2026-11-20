@@ -45,6 +45,7 @@ Every section carries a maturity label:
 | Push adapters | 12.3 | Experimental |
 | A2A | 12.4 | Informative |
 | Human fallback and the web view | 12.5 | Core |
+| Poppy (the Personal Agent Protocol) | 12.6 | Informative |
 | Native Client, Provider Broker | 3.4, 3.5, 13.6, 13.7 | Experimental |
 
 The reference implementation, conformance vectors and this text are developed together in the repository named above. Where this text and a vector disagree, the vector is the bug unless an erratum says otherwise; please report it (CONTRIBUTING.md).
@@ -101,6 +102,7 @@ These statements are the claims this specification supports, and the README, ann
 - **End-to-end encryption.** Both home brokers must read fields to enforce rules, and the receiving vendor sees whatever reaches its agent. v0.1 has no end-to-end encryption (Section 15).
 - **Anonymity.** Both home brokers can see who talks to whom, and when.
 - **Group conversations.** A thread has exactly two principals in v0.1.
+- **Conversations between a person's agent and a business.** Poppy, the Personal Agent Protocol, covers how a person's agent works with a business's own agent, APIs and website (Sections 12.6 and 17). A person who works at a business, or a role people fill there, is still a principal in ALP.
 - **Payments and commerce.** Agent commerce protocols exist (Section 17); ALP is about work between people.
 - **Replacing MCP or A2A.** ALP uses MCP for its client binding and can sit beside A2A (Section 12.4).
 
@@ -1386,6 +1388,27 @@ An organization's policy can set `human_fallback` to `notify_only` (the default)
 
 Approve or decline connection requests; seal, narrow and revoke grants; ratify or decline; approve or discard held messages; read messages held for them; revoke delegates and relationships; issue and revoke personal access tokens; read and export their ledger. Composing replies by hand is future work, except that a broker MAY offer a form for `alp.availability/1`.
 
+### 12.6 Poppy (the Personal Agent Protocol)
+
+*Informative.*
+
+Poppy, the Personal Agent Protocol (version 1.0, announced by Sierra on 2026-11-13; Apache-2.0) [Poppy], defines how a Personal Agent, acting for one User, works with a Company for that User: it finds the Company's `poppy.json`, identifies itself, signs the User in, when needed, at the Company's own authorization server, and uses the Company's APIs, website and Company Agent. Its parties are the User, the Personal Agent and the Company; a person at the Company who joins a conversation ([Poppy], Section 8.9) answers for the Company. As of Poppy 1.0 it has no role for a second person acting for themselves, or for that person's agent. ALP leaves conversations between a person's agent and a business to Poppy (Section 1.5). ALP covers work between two principals, including a principal who works at a business, and one person's own agents (Section 6.14). Two arrangements fit:
+
+- A Poppy Personal Agent can also be a delegate: its person connects it to their home broker through the client binding. Poppy identifies a Personal Agent by a client ID metadata document with `private_key_jwt` ([Poppy], Section 4.1). Brokers must accept such a document (Section 5.6, item 4); this specification names no signing algorithm. An agent can therefore present the same `client_id` to a broker that accepts its key's algorithm. Such an identity serves every account of the product, so a broker records it with attestation `vendor` at most, never `org-client` or `tenant` (Section 5.4).
+- A broker may expose its client binding to its own principals' Poppy Personal Agents, for example by listing its MCP endpoint in a `poppy.json` on the broker's host, for signed-in use by its own principals only. This specification doesn't define that yet (Section 19). Traffic between principals still enters only through the federation inbox (Section 12.2), and a Poppy endpoint is never a path between two principals, so no acceptance step can be bypassed.
+
+One domain can serve both protocols. Its domain document (Section 4.2) and its `/.well-known/poppy.json` are independent: neither refers to the other, and a broker never reads `poppy.json`.
+
+Handoffs need no change to either protocol:
+
+- **From a business to a person.** In a Poppy conversation, a Company may give a Personal Agent the address of a principal, such as a role address on the Company's domain. The agent treats it as untrusted data, shows its person the address and its domain, and calls `alp_request_connection` only on its person's instruction. The request goes to the addressed person, never to their agent (Section 6.2). Poppy requires the URLs it defines or exchanges to be HTTPS URLs ([Poppy], Section 3), so a Company gives an address in the form people see (`lee@shop.example`, Section 4.1), not as an `alp:` URI.
+- **A person's address.** A Poppy User ID is different at each Company, so that Companies can't match Users with each other ([Poppy], Section 5.1). An ALP address is the same for every counterparty. A delegate therefore gives a Company its person's address only on that person's instruction, and a Poppy User ID is never used as an address or sent with one.
+- **From people to a business.** What two principals ratify in ALP (Section 9.4) may be carried out at a business by each person's agent, through Poppy where the business supports it. Neither protocol carries the other's objects.
+
+Both protocols use OAuth client ID metadata documents and HTTP Message Signatures [RFC 9421]; Poppy uses the latter for an agent operator's signature ([Poppy], Section 5.3), and ALP only between brokers (Section 12.2.2). The reference broker has not been tested with a Poppy Personal Agent, and its tests cover this sign-in with an RS256 key only. It has no device authorization grant (Poppy's Device Sign-In), issues bearer tokens and not DPoP-bound ones (Section 5.6, item 11), and doesn't use Poppy Session JWTs or operator signatures (Section 19).
+
+Work in the Poppy project may change this comparison, though none of it is in version 1.0: a draft of version 1.1 is in progress, and Poppy's roadmap lists push notifications, by which a Company could tell a Personal Agent that something happened while no request is open, as not started in its specification (read 2026-11-20; Poppy issue #22 holds a proposal). Neither is about work between two people. Poppy lets anyone define an extension named under a domain they control ([Poppy], Section 3.3); this specification defines none (Section 19).
+
 ---
 
 ## 13. Deployment profiles and conformance classes
@@ -1539,7 +1562,7 @@ ALP secures one channel: typed messages between two people's home brokers. It do
 | **Thread injection** | C, N, F | Threads are bound to their two principals and scope at first sight; replies bind hashes (9.1, 9.3) | None known |
 | **Conversations that run on**: two agents answer each other without end, or use a long thread to draw out more | C, N, F | Every message in a thread is a full message: evaluated by both brokers, counted against the relationship's rate limit and recorded in both ledgers (6.6, 6.7, 9.1); a thread grants nothing, so a later message discloses no more than a first one could, and an availability answer keeps to the window its recipient asked about (7.8); either side can close a thread, it expires when nobody keeps it going, and it takes at most 200 messages (9.2); negotiation states take only negotiation types, an agent accepts only the other side's latest proposal, and nothing but a proposal or an accept keeps terms waiting (9.2) | Agents that answer each other automatically can use up the relationship's rate limit until a person or the limit stops them |
 | **Parsing differentials** | F | One strict I-JSON parse, then the same object is evaluated, signed, stored and delivered (8.3); exact header members (8.7) | Implementations must actually parse once; vectors include a duplicate-member case |
-| **Downgrade between paths** | C, N, F | No in-band negotiation: a broker that can't meet a requirement refuses; delivery constraints are honored or the envelope is refused (6.11); notifications never act (12.5); A2A is never a path between principals (12.4) | Vendor-specific push triggers may handle payloads in ways this specification can't check; push carries only fixed text or an id. |
+| **Downgrade between paths** | C, N, F | No in-band negotiation: a broker that can't meet a requirement refuses; delivery constraints are honored or the envelope is refused (6.11); notifications never act (12.5); A2A is never a path between principals (12.4), nor is a Poppy endpoint (12.6) | Vendor-specific push triggers may handle payloads in ways this specification can't check; push carries only fixed text or an id. |
 
 ---
 
@@ -1575,7 +1598,7 @@ ALP secures one channel: typed messages between two people's home brokers. It do
 
 ## 17. Relationship to other work
 
-*Informative.* This section cites only work that was checked against primary sources on 2026-11-06 and 2026-11-09. Citing a project implies no endorsement by it. In one line: MCP connects agents to tools, A2A connects agents to agents, and ALP connects people through their agents, under each person's rules.
+*Informative.* This section cites only work that was checked against primary sources on 2026-11-06 and 2026-11-09. The text about Poppy, here and in Section 12.6, was checked on 2026-11-20. Citing a project implies no endorsement by it. In one line: MCP connects agents to tools, A2A connects agents to agents, and ALP connects people through their agents, under each person's rules.
 
 **Builds on.**
 
@@ -1585,6 +1608,8 @@ ALP secures one channel: typed messages between two people's home brokers. It do
 - **Well-known URIs** (RFC 8615); optionally HTTP Message Signatures (RFC 9421) and Digest Fields (RFC 9530).
 
 **Compatible with.** **A2A** (version 1.0, the latest: 1.0.0 in March 2026 and 1.0.1 in May 2026), which says identity information is handled at the protocol layer rather than within A2A semantics. ALP adds what A2A leaves out of its semantics as of A2A v1.0.1 (May 2026), for agents of different people: which person an agent acts for, what that person agreed to share, and whether they accept this counterparty (12.4). Work in the A2A project would narrow that gap, though none of it is in the v1.0.1 core or in the v1.1.0-rc tag (a commit of 2026-10-29): the proposed `Message.sender` field (issue #2309, PR #2310 on the dev-1.1 branch), a community proposal; CRATB-Auth, a draft extension that proves an agent's identity and its responsible owner but not principal consent; and the pre-1.0 a2a-serve tool, with pairing codes from the owner (12.4). A2A agents join through their person's broker; an A2A mapping between brokers is future work. A2A signs agent cards with JWS over JCS, as ALP signs envelopes. **IBM's Agent Communication Protocol** (OpenAPI document version 0.2.0; last release v1.0.3, August 2025), a REST protocol for running agents, merged into A2A in August 2025, and its repository is archived. Its roadmap left identity federation and access delegation as open questions. It relates to ALP as A2A does (12.4).
+
+**Complements.** **Poppy** (the Personal Agent Protocol, version 1.0; Sierra announced it on 2026-11-13 and, in its post of 2026-10-06 (https://sierra.ai/blog/introducing-personal-agent-protocol), describes it as an open standard that Meta and Sierra are developing with industry partners; Apache-2.0; distinct from the Principal Agent Protocol below) [Poppy] is a person-to-business protocol: its parties are a User, a Personal Agent and a Company, and each conversation belongs to one Personal Agent and one User. ALP leaves that ground to Poppy and covers work between people. Section 12.6 says where the two meet (one kind of agent identity, both well-known documents on one domain, and handoffs) and what ALP does not do.
 
 **Borrowed from email.** DKIM (RFC 6376): a domain-scoped signing key checked by the receiver. SPF (RFC 7208): a domain-published list of authorized senders. DMARC (RFC 9989, RFC 9990 and RFC 9991): alignment between the signer and the sender's domain, which is acceptance step 6. MTA-STS (RFC 8461): a policy at a well-known HTTPS location on a host the domain controls, a DNS TXT record that carries only an id, a capped `max_age`, and a testing mode before enforcement.
 
@@ -1598,7 +1623,7 @@ ALP secures one channel: typed messages between two people's home brokers. It do
 - **TRAIL** (Tamper-evident Records for Agent Interactions and Liveness; `draft-nassar-agentproto-trail-00`, November 2026, an individual Internet-Draft): an enforcement point outside the agent signs each call, the receiver keeps the record, and witnesses countersign a tamper-evident trail; authorities publish rules that the enforcement point applies, such as requiring approval, refusing an action or stopping an agent. It overlaps ALP's ledgers and its enforcement outside the agent. Neither it nor bilateral attestation is about consent between two people.
 - `draft-hulea-wimse-agent-mandate` (an agent's mandate from a principal in another domain), `draft-bu-agentproto-security-principal-binding` (separating user authority, agent identity and evidence), and the OAuth working group's Identity Assertion Authorization Grant (`draft-ietf-oauth-identity-assertion-authz-grant`), which MCP's enterprise-managed authorization extension uses.
 
-**Other adjacent work.** The OpenID Foundation's AI Identity Management community group; DIF's Trusted AI Agents working group and KYA-OS; Microsoft Entra Agent ID; Okta Cross App Access; Ecma TC56's natural-language interaction protocol (ECMA-430 to ECMA-432). Person-to-business protocols: Poppy (Sierra's and Meta's Personal Agent Protocol, distinct from the Principal Agent Protocol below) and PACT (Personal Agent Consent & Trust). Agent commerce: AP2 (v0.2, the "Agentic Payment Protocol"), in which a person approves on a trusted surface where no agent acts, the nearest precedent for ALP's ratification; the Agentic Commerce Protocol (ACP, maintained by OpenAI and Stripe) and the Universal Commerce Protocol (UCP, co-developed by Google, Shopify and others). The abbreviation ACP also names IBM's Agent Communication Protocol (archived; now part of A2A), AGNTCY's Agent Connect Protocol (its specification repository is archived), the Agent Client Protocol for connecting editors to agents, and the "Agent Communications Protocol" planned in `draft-manyfolks-agentproto-arch-00`, an individual architecture draft for the agentproto working group, for which the individual draft `draft-liu-agentproto-acp-00` ("The Agent Communication Protocol (ACP)") specifies one wire format.
+**Other adjacent work.** The OpenID Foundation's AI Identity Management community group; DIF's Trusted AI Agents working group and KYA-OS; Microsoft Entra Agent ID; Okta Cross App Access; Ecma TC56's natural-language interaction protocol (ECMA-430 to ECMA-432). Person-to-business protocols: Poppy (above, and Section 12.6) and PACT (Personal Agent Consent & Trust). Agent commerce: AP2 (v0.2, the "Agentic Payment Protocol"), in which a person approves on a trusted surface where no agent acts, the nearest precedent for ALP's ratification; the Agentic Commerce Protocol (ACP, maintained by OpenAI and Stripe) and the Universal Commerce Protocol (UCP, co-developed by Google, Shopify and others). The abbreviation ACP also names IBM's Agent Communication Protocol (archived; now part of A2A), AGNTCY's Agent Connect Protocol (its specification repository is archived), the Agent Client Protocol for connecting editors to agents, and the "Agent Communications Protocol" planned in `draft-manyfolks-agentproto-arch-00`, an individual architecture draft for the agentproto working group, for which the individual draft `draft-liu-agentproto-acp-00` ("The Agent Communication Protocol (ACP)") specifies one wire format.
 
 **Relay and federation projects.** Several projects already connect different people's agents; of the projects below, the first comes closest to what ALP does.
 
@@ -1623,7 +1648,7 @@ ALP secures one channel: typed messages between two people's home brokers. It do
 
 **What is new here**, as far as we found, is the combination, not any single part: one domain-named home broker per person; disclosure enforced on both sides of the wire, field by field; ratification by both people before anything binds them; person-to-person work across agent providers; and both client and native modes over one protocol. Person-to-person connections whose grants are checked before the model runs (the Common Agent Standards), hosted connectors that let different people's assistants message each other, peering that waits for an approval (OGP), matching records and cross-provider agent identity all exist elsewhere in other forms.
 
-**Venues.** The steward intends to propose parts of this work, such as the identity and consent layer, in open venues: the IETF agentproto and WIMSE working groups, the Agentic AI Foundation's Identity & Trust working group, and A2A's extension process. A2A joined the Agentic AI Foundation as a hosted project (announced 2026-08-17), and a community proposal for sender identity (issue #2309) and a discussion of personal AI representatives acting under policy, with human confirmation (Discussion #2437), are open there. None of these venues has endorsed ALP.
+**Venues.** The steward intends to propose parts of this work, such as the identity and consent layer, in open venues: the IETF agentproto and WIMSE working groups, the Agentic AI Foundation's Identity & Trust working group, and A2A's extension process. A2A joined the Agentic AI Foundation as a hosted project (announced 2026-08-17), and a community proposal for sender identity (issue #2309) and a discussion of personal AI representatives acting under policy, with human confirmation (Discussion #2437), are open there. None of these venues has endorsed ALP. As of 2026-11-20 nothing has been proposed to the Poppy project, which has not reviewed or endorsed ALP.
 
 ---
 
@@ -1731,7 +1756,7 @@ None of these is registered today. The steward plans to request:
 - **Provider classes.** PB-Enterprise and PB-Commit.
 - **Records.** Legal hold in the reference implementation; aggregate reports to domain owners about refused envelopes, in the manner of DMARC aggregate reports.
 - **Confidentiality.** Encrypting envelopes to the recipient's broker (JWE), so intermediaries such as TLS-terminating proxies see only routing data.
-- **Alignment.** Mapping `thread` to the IETF agentproto dialog context; a fuller A2A mapping; opening the web view from inside agent platforms through MCP URL elicitation.
+- **Alignment.** Mapping `thread` to the IETF agentproto dialog context; a fuller A2A mapping; opening the web view from inside agent platforms through MCP URL elicitation; and, with Poppy (Section 12.6): a Poppy extension, named under this project's domain, by which a Company could say that its domain also publishes an ALP domain document; a broker serving its own principals' Poppy agents; sign-in for agents that use Poppy's Device Sign-In or DPoP-bound tokens; Poppy Session JWTs and operator signatures; and a typed reference from a connection request to the conversation it came from, which needs a new `alp` version.
 - **Group threads** with more than two principals.
 - **A registry process** for scopes once the specification has a neutral home.
 
@@ -2116,6 +2141,7 @@ Lee's record travels in an `ack` with `status` `ratified`, sent by Lee himself (
 - [UTS #39] Unicode Security Mechanisms.
 - [A2A] Agent2Agent Protocol, version 1.0.
 - [IBM ACP] IBM's Agent Communication Protocol, OpenAPI document version 0.2.0, last release v1.0.3 (August 2025); its repository (i-am-bee/acp) is archived, and the protocol is now part of A2A.
+- [Poppy] Personal Agent Protocol (Poppy), version 1.0 (its changelog dates it 2026-11-14), https://personalagentprotocol.org/docs/1.0/spec.
 - [OCSF] Open Cybersecurity Schema Framework.
 - [Standard Webhooks] The Standard Webhooks specification.
 - Internet-Drafts named in Section 17, which are works in progress, among them [draft-baur-pap-02], [draft-sato-soos-peer-02] and [draft-sharif-attp-01].

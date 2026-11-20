@@ -40,6 +40,16 @@ Because Muse builds its own connectors for APIs, the most direct door, and the o
 
 Alternatively, give Muse the MCP connector URL (`https://broker.example.org/mcp`) with the same bearer token, as in the third-party report (**reported**; not tested).
 
+## Muse and Poppy
+
+**Unverified with ALP.** Read on November 20, 2026 (sources in [SOURCES.md](SOURCES.md#poppy-the-personal-agent-protocol)).
+
+- Sierra's announcement of Poppy 1.0 (November 13, 2026) says that Poppy, the Personal Agent Protocol, is on for everyone who uses Muse. Poppy is for an agent's work with businesses; Poppy 1.0 has no role for a second person acting for themselves (spec Section 12.6).
+- A client metadata document is published at `https://muse.ai/poppy/agent.json`, and a comment in Poppy's issue #104 names it as Muse's Poppy client ID. It declares `private_key_jwt`, a key set and a redirect address on `muse.ai`, and DPoP-bound access tokens.
+- A broker must accept a document of this kind as a sign-in identity, and would record it as `vendor`-attested, where the personal access token above is `self`-attested. Nothing shows that Muse can use it this way: Meta's pages, as read on November 6, 2026, document no setting that connects Muse to an OAuth-protected connector; the reference broker issues bearer tokens and not DPoP-bound ones, and its tests use an RS256 key only; and the operator would have to set `ALP_REDIRECT_HOSTS` to the full list with `muse.ai` added, for example `claude.ai,chatgpt.com,muse.ai`, because the setting replaces the default list. It has not been tried.
+
+The tested route is still the personal access token over REST.
+
 ## Tool permissions
 
 In the test, Muse asked before every call, reads included; allow the read tools when it asks. Whether a custom-connector send can be granted "Always allow", or a perpetual Sentinel grant, is **unverified**; expect Muse to ask before each send, which is the safe default.
@@ -68,6 +78,7 @@ None for custom connectors. Some built-in connectors, such as calendars, send up
 - Always allow for custom-connector sends.
 - Scheduled runs using custom connectors unattended.
 - Any organization-level administration of Muse.
+- Signing in to a broker with Muse's Poppy client identity.
 
 ## Limits
 
