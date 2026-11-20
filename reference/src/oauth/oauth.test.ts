@@ -11,7 +11,7 @@ import { createServer } from "node:http";
 import type { Server } from "node:http";
 import type { AddressInfo } from "node:net";
 import { SignJWT, decodeJwt, decodeProtectedHeader, exportJWK, generateKeyPair } from "jose";
-import type { JWK } from "jose";
+import type { CryptoKey, JWK } from "jose";
 import { Browser, TEST_SECRET, TestOAuthClient, csrfFrom, signInAndAllow, startTestBroker } from "../mcp/testkit.ts";
 import { onFreePorts } from "../test-ports.ts";
 import { StateAdapter } from "./adapter.ts";
@@ -90,6 +90,38 @@ DOCS[GPT_ID] = {
   response_types: ["code"],
 };
 DOCS["https://gpt.example/oauth/jwks.json"] = { keys: [gptJwk] };
+
+// Two confidential clients shaped like Poppy 1.0's sample agent metadata (Section 4.1): private_key_jwt with no fixed
+// signing algorithm, one key set signing with ES256 and one with PS384. The ES256 document also carries two members
+// this broker doesn't use, as a published document may: they are ignored (DPoP is off here, spec 19).
+const POPPY_ES_ID = "https://agent-es.example/agent.json";
+const poppyEsKeys = await generateKeyPair("ES256", { extractable: true });
+const poppyEsJwk: JWK = { ...(await exportJWK(poppyEsKeys.publicKey)), kid: "poppy-es-1", alg: "ES256", use: "sig" };
+DOCS[POPPY_ES_ID] = {
+  client_id: POPPY_ES_ID,
+  client_name: "ES256 agent",
+  redirect_uris: [REDIRECT],
+  token_endpoint_auth_method: "private_key_jwt",
+  jwks_uri: "https://agent-es.example/jwks.json",
+  grant_types: ["authorization_code", "refresh_token"],
+  response_types: ["code"],
+  dpop_bound_access_tokens: true,
+  extensions: { operations: { version: "2" } },
+};
+DOCS["https://agent-es.example/jwks.json"] = { keys: [poppyEsJwk] };
+const POPPY_PS_ID = "https://agent-ps.example/agent.json";
+const poppyPsKeys = await generateKeyPair("PS384", { extractable: true });
+const poppyPsJwk: JWK = { ...(await exportJWK(poppyPsKeys.publicKey)), kid: "poppy-ps-1", alg: "PS384", use: "sig" };
+DOCS[POPPY_PS_ID] = {
+  client_id: POPPY_PS_ID,
+  client_name: "PS384 agent",
+  redirect_uris: [REDIRECT],
+  token_endpoint_auth_method: "private_key_jwt",
+  jwks_uri: "https://agent-ps.example/jwks.json",
+  grant_types: ["authorization_code", "refresh_token"],
+  response_types: ["code"],
+};
+DOCS["https://agent-ps.example/jwks.json"] = { keys: [poppyPsJwk] };
 
 // Clients whose key sets break spec 4.3's fetch rules (each is refused before any key is used).
 const attacker = await generateKeyPair("RS256", { extractable: true });
@@ -233,6 +265,42 @@ describe("authorization server", () => {
     assert.ok(next["access_token"] && next["refresh_token"] !== tok["refresh_token"]);
     const noAssertion = await fetch(`${t.base}/oauth/token`, { method: "POST", headers: { "content-type": "application/x-www-form-urlencoded" }, body: new URLSearchParams({ grant_type: "refresh_token", refresh_token: String(next["refresh_token"]), client_id: GPT_ID }).toString() });
     assert.equal(noAssertion.status, 401, "a confidential client must authenticate");
+  });
+
+  /**
+   * The flow a Poppy agent runs (Poppy 1.0, Section 4.1): its client assertion names the authorization server's issuer
+   * identifier as audience, not the token endpoint. The token is for the REST mirror; it refreshes once; a token
+   * request without an assertion is refused. Returns the first token response.
+   */
+  async function issuerAudienceFlow(clientId: string, alg: string, kid: string, key: CryptoKey, delegate: string): Promise<Record<string, unknown>> {
+    const as = (await (await fetch(`${t.base}/.well-known/oauth-authorization-server`)).json()) as Record<string, unknown>;
+    const issuer = String(as["issuer"]);
+    assert.equal(issuer, t.base);
+    const rest = `${t.base}/rest`;
+    const { code, verifier } = await codeFlow(clientId, "openid read send offline_access", { prompt: "consent", resource: rest });
+    const assertion = async (): Promise<string> =>
+      new SignJWT({}).setProtectedHeader({ alg, kid }).setIssuer(clientId).setSubject(clientId).setAudience(issuer).setJti(randomUUID()).setIssuedAt().setExpirationTime("2m").sign(key);
+    const auth = async (): Promise<Record<string, string>> => ({ client_id: clientId, client_assertion_type: "urn:ietf:params:oauth:client-assertion-type:jwt-bearer", client_assertion: await assertion() });
+    const tok = await token({ grant_type: "authorization_code", code, redirect_uri: REDIRECT, code_verifier: verifier, resource: rest, ...(await auth()) });
+    assert.equal(decodeJwt(String(tok["access_token"])).aud, rest);
+    const r = await fetch(`${rest}/alp_whoami`, { method: "POST", headers: { "content-type": "application/json", authorization: `Bearer ${String(tok["access_token"])}` }, body: "{}" });
+    const who = (await r.json()) as Record<string, unknown>;
+    assert.equal(r.status, 200, JSON.stringify(who));
+    assert.equal(who["delegate"], delegate);
+    const next = await token({ grant_type: "refresh_token", refresh_token: String(tok["refresh_token"]), resource: rest, ...(await auth()) });
+    assert.ok(next["access_token"] && next["refresh_token"] !== tok["refresh_token"]);
+    const noAssertion = await fetch(`${t.base}/oauth/token`, { method: "POST", headers: { "content-type": "application/x-www-form-urlencoded" }, body: new URLSearchParams({ grant_type: "refresh_token", refresh_token: String(next["refresh_token"]), client_id: clientId }).toString() });
+    assert.equal(noAssertion.status, 401, "a confidential client must authenticate");
+    return tok;
+  }
+
+  test("a client ID metadata document client that signs with ES256 and names the issuer as audience, as a Poppy agent does, completes the flow and refreshes", async () => {
+    const tok = await issuerAudienceFlow(POPPY_ES_ID, "ES256", "poppy-es-1", poppyEsKeys.privateKey, "alp:lee@example.org/agent-es");
+    assert.equal(tok["token_type"], "Bearer", "a bearer token: the document's dpop_bound_access_tokens is ignored while DPoP is off");
+  });
+
+  test("the same with a PS384 key", async () => {
+    await issuerAudienceFlow(POPPY_PS_ID, "PS384", "poppy-ps-1", poppyPsKeys.privateKey, "alp:lee@example.org/agent-ps");
   });
 
   test("a pre-registered confidential client (client_secret_basic) completes the flow", async () => {

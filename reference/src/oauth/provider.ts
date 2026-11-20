@@ -337,6 +337,10 @@ export function createAuthServer(opts: AuthServerOptions): AuthServer {
     scopes: ["openid", "offline_access", ...OAUTH_SCOPES],
     responseTypes: ["code"],
     clientAuthMethods: ["none", "private_key_jwt", "client_secret_basic", "client_secret_post"],
+    // oidc-provider's default list plus PS384. Poppy 1.0 (Section 4.1) requires accepting client assertions signed with
+    // ES256 and PS384, so an agent can use here the keys it publishes for Poppy (spec 12.6). Setting this replaces the
+    // whole default.
+    enabledJWA: { clientAuthSigningAlgValues: ["HS256", "RS256", "PS256", "PS384", "ES256", "Ed25519", "EdDSA"] },
     clientDefaults: {
       grant_types: ["authorization_code", "refresh_token"],
       response_types: ["code"],
