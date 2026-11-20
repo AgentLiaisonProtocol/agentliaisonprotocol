@@ -12,6 +12,7 @@ A leader's dot in his company's ChatGPT workspace, his company's Claude and his 
 - **Read the announcement:** [Introducing the Agent Liaison Protocol](announcement/introducing-agent-liaison-protocol.md) (https://agentliaisonprotocol.org)
 - **Read the specification:** [spec/alp-v0.1.md](spec/alp-v0.1.md)
 - **See related work:** how ALP relates to A2A, the Common Agent Standards, IBM's Agent Communication Protocol and others, in [specification Section 17](spec/alp-v0.1.md#17-relationship-to-other-work)
+- **See how ALP and Poppy fit together:** Poppy, the Personal Agent Protocol, is for a person's agent and a business; ALP is for work between people. [ALP and Poppy](https://agentliaisonprotocol.org/poppy/) and [specification Section 12.6](spec/alp-v0.1.md#126-poppy-the-personal-agent-protocol)
 - **Run the demo:** see [Try it](#try-it)
 - **Check the status:** [what's tested and what isn't](#status), and [KNOWN-GAPS.md](KNOWN-GAPS.md)
 
@@ -70,7 +71,7 @@ The two are designed to interoperate: the same addresses, envelopes, scopes, gra
 | [bridge-kit/](bridge-kit/) | Client-mode setup: a generic guide, one guide per agent platform, and the instruction snippet for agents |
 | [SELF-HOST.md](SELF-HOST.md) | Running your own broker (Docker or Node; file or Postgres store), and what isn't built yet |
 | [announcement/](announcement/) | The announcement post |
-| [site/](site/) | The announcement page, served at https://agentliaisonprotocol.org |
+| [site/](site/) | The announcement page, served at https://agentliaisonprotocol.org, and the [ALP and Poppy](site/poppy/index.html) page, served at https://agentliaisonprotocol.org/poppy/ |
 | [CLAIMS.md](CLAIMS.md) | Every claim the README, the announcement and the bridge kit make, with its evidence or its limit |
 | [KNOWN-GAPS.md](KNOWN-GAPS.md) | The known gaps of v0.1 and its reference broker, for implementers and operators to plan around |
 | [GOVERNANCE.md](GOVERNANCE.md), [CONTRIBUTING.md](CONTRIBUTING.md), [SECURITY.md](SECURITY.md), [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md), [CHANGELOG.md](CHANGELOG.md) | How the project runs |
