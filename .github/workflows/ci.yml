@@ -62,6 +62,39 @@ jobs:
       - run: npm ci
       - run: npm run check
 
+  check:
+    name: broker checker (quotes, coverage, safety, requirements table, run against the reference broker)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: tools/check
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22.22.2"
+      - run: npm ci
+      - name: tests (in memory; no socket is opened)
+        run: npm test
+      - name: install the reference broker
+        working-directory: reference
+        run: npm ci
+      # The reference broker with federation on, on 127.0.0.1, and alp-check against example.org through a
+      # development host map (plain HTTP on loopback, so no TLS or DNS check runs). See the script's header.
+      - name: alp-check against the reference broker
+        timeout-minutes: 8
+        run: ci/run-against-reference.sh
+        env:
+          ALP_CHECK_WORK: ${{ runner.temp }}/alp-check-reference
+      - name: keep alp-check's JSON report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: alp-check-reference-report
+          path: ${{ runner.temp }}/alp-check-reference/report/alp-check-report.json
+          if-no-files-found: warn
+
   site:
     name: documentation site (tests, build, checks)
     runs-on: ubuntu-24.04

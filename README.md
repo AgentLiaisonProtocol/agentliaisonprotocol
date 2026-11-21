@@ -68,15 +68,18 @@ The two are designed to interoperate: the same addresses, envelopes, scopes, gra
 | [schemas/](schemas/) | JSON Schemas (2020-12) for every object, the five core scopes, the fixed client-binding tool list ([schemas/client/tools.json](schemas/client/tools.json)) and the REST mirror's OpenAPI document |
 | [vectors/](vectors/) | Conformance vectors: canonicalization, signatures, envelope validity, sender-side and recipient-side policy decisions, federation acceptance, threads, ledgers and delivery sanitizing. The keys are TEST-ONLY. |
 | [tools/spec/](tools/spec/) | The specification tools: they generate the vectors and the specification's worked examples, and check every schema and vector with an evaluator written independently of the reference broker (`cd tools/spec && npm ci && npm run check`) |
+| [tools/check/](tools/check/) | `alp-check`: points at a running broker or a domain that federates and checks, with no credentials, part of what the specification requires at its public surface; every check quotes the sentence it enforces, and every report says what it does not check |
+| [IMPLEMENTING.md](IMPLEMENTING.md) | A guide for building a broker or a client from the specification: which class, an order of work, and what the vectors, the evaluator in `tools/spec` and `alp-check` each tell you |
+| [CONFORMANCE.md](CONFORMANCE.md) | Every numbered requirement of Section 13, with the vector files that exercise it and the `alp-check` checks that observe part of it from outside (generated from the specification) |
 | [reference/](reference/) | The reference broker (TypeScript, Node 22), its tests and the demo ([ARCHITECTURE.md](reference/ARCHITECTURE.md)), under its own license, FSL-1.1-ALv2 ([reference/LICENSE.md](reference/LICENSE.md); see [License](#license)) |
 | [bridge-kit/](bridge-kit/) | Client-mode setup: a generic guide, one guide per agent platform, and the instruction snippet for agents |
 | [SELF-HOST.md](SELF-HOST.md) | Running your own broker (Docker or Node; file or Postgres store), and what isn't built yet |
 | [announcement/](announcement/) | The announcement post |
 | [site/](site/) | The website's own sources: the hand-written pages in [site/pages/](site/pages/) (among them the overview at https://agentliaisonprotocol.org and the [ALP and Poppy](https://agentliaisonprotocol.org/poppy/) page), the walkthrough's steps ([site/walkthroughs.mjs](site/walkthroughs.mjs)), figures, the stylesheet and script. Every other page is built from the repository's documents |
 | [tools/site/](tools/site/) | The site build: it renders the specification and the other documents into https://agentliaisonprotocol.org and fails when a link, an anchor or an example is broken (`cd tools/site && npm ci && npm test && npm run build`) |
-| [CLAIMS.md](CLAIMS.md) | Every claim the README, the announcement and the bridge kit make, with its evidence or its limit |
+| [CLAIMS.md](CLAIMS.md) | Every claim the README, the announcement, the bridge kit, the website's hand-written pages and the checker's documents make, with its evidence or its limit |
 | [KNOWN-GAPS.md](KNOWN-GAPS.md) | The known gaps of v0.1 and its reference broker, for implementers and operators to plan around |
-| [GOVERNANCE.md](GOVERNANCE.md), [CONTRIBUTING.md](CONTRIBUTING.md), [SECURITY.md](SECURITY.md), [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md), [CHANGELOG.md](CHANGELOG.md) | How the project runs |
+| [GOVERNANCE.md](GOVERNANCE.md), [CONTRIBUTING.md](CONTRIBUTING.md), [SECURITY.md](SECURITY.md), [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md), [CHANGELOG.md](CHANGELOG.md), [AGENTS.md](AGENTS.md) | How the project runs (AGENTS.md is for coding agents working here) |
 
 ## Try it
 
@@ -102,7 +105,7 @@ npm test                  # the test suite, including every conformance vector i
 7. The same story on example.org's own broker, including a meeting both people ratify on their own approvals pages. (The in-organization Local profile, with no domain document at all, is what the test suite's Act 1 runs.)
 8. A person whose agent has no connector support approves on their approvals page, from a notification that only notifies.
 
-To run your own broker, see [SELF-HOST.md](SELF-HOST.md); to evaluate `npm start` with scripts on one machine, before any TLS or identity provider, follow [Evaluate on one machine](SELF-HOST.md#evaluate-on-one-machine). The broker can sign people in through their organization's OpenID provider, such as Microsoft Entra ID (binding each person to the provider's issuer and subject, for Entra the tenant and object id; app roles or groups as policy groups; a re-check at the provider at every token refresh). The demo and `npm run dev` use test identities. Implementers can test against `vectors/`; [vectors/README.md](vectors/README.md) explains the format, and the reference runs every vector in its own test suite.
+To run your own broker, see [SELF-HOST.md](SELF-HOST.md); to evaluate `npm start` with scripts on one machine, before any TLS or identity provider, follow [Evaluate on one machine](SELF-HOST.md#evaluate-on-one-machine). The broker can sign people in through their organization's OpenID provider, such as Microsoft Entra ID (binding each person to the provider's issuer and subject, for Entra the tenant and object id; app roles or groups as policy groups; a re-check at the provider at every token refresh). The demo and `npm run dev` use test identities. Implementers can test against `vectors/`; [vectors/README.md](vectors/README.md) explains the format, and the reference runs every vector in its own test suite. To check a broker you run, point [`alp-check`](tools/check/README.md) at its domain, or at its endpoints in the Local profile; [IMPLEMENTING.md](IMPLEMENTING.md) says what it, the vectors and the evaluator in `tools/spec` each tell you.
 
 ## Status
 
@@ -128,7 +131,7 @@ Three licenses apply, each to its own paths, as the table below shows. The root 
 |---|---|---|
 | [spec/](spec/) | The specification text | [CC BY 4.0](LICENSE-SPEC) |
 | [schemas/](schemas/), [vectors/](vectors/) | The JSON Schemas and the conformance vectors | [Apache-2.0](LICENSE) |
-| [tools/spec/](tools/spec/), [tools/site/](tools/site/), [site/assets/site.css](site/assets/site.css), [site/assets/site.js](site/assets/site.js), [bridge-kit/poller/](bridge-kit/poller/) | The specification tools, the site build, the website's stylesheet and script, and the bridge kit's code, like any other code outside `reference/` | [Apache-2.0](LICENSE) |
+| [tools/spec/](tools/spec/), [tools/check/](tools/check/), [tools/site/](tools/site/), [site/assets/site.css](site/assets/site.css), [site/assets/site.js](site/assets/site.js), [bridge-kit/poller/](bridge-kit/poller/) | The specification tools, the broker checker, the site build, the website's stylesheet and script, and the bridge kit's code, like any other code outside `reference/` | [Apache-2.0](LICENSE) |
 | [bridge-kit/](bridge-kit/) (its other files), [announcement/](announcement/), [site/](site/) (its other files), and the Markdown documents at the root, such as this README, [SELF-HOST.md](SELF-HOST.md) and [GOVERNANCE.md](GOVERNANCE.md) | Other documentation: the bridge kit, the agent instruction snippet, the announcement, the website's pages, figures and walkthrough text, and the project's own documents | [CC BY 4.0](LICENSE-SPEC) |
 | [reference/](reference/) | The reference broker: its source, tests, migrations, deployment files, Dockerfile and demo | [FSL-1.1-ALv2](reference/LICENSE.md) (Functional Source License, Version 1.1, ALv2 Future License); licensor: Lucaryin LLC, which holds its copyright and is ALP's author and initial steward |
 

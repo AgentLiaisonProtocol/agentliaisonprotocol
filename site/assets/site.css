@@ -208,7 +208,7 @@ h2:hover .anchor,h3:hover .anchor,h4:hover .anchor,.anchor:focus{opacity:1}
 .table-wrap td code,.table-wrap th code{font-size:.86em;overflow-wrap:break-word}
 .table-wrap td:first-child{min-width:9ch}
 .table-wrap thead:not(:has(th:not(:empty))){display:none}
-@media (max-width:640px){.table-wrap table:has(th:nth-child(3)){min-width:600px}}
+@media (max-width:640px){.table-wrap table:has(th:nth-child(3)){min-width:600px}.table-wrap table:has(th:nth-child(5)){min-width:720px}}
 
 /* ---------------------------------------------------------------- code */
 pre{background:var(--code-bg);border:1px solid var(--line);border-radius:12px;padding:14px 16px;overflow-x:auto;font:13.5px/1.6 var(--mono);margin:12px 0 18px;color:var(--ink);tab-size:2}
