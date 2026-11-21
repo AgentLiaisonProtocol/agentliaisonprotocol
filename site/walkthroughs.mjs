@@ -9,7 +9,7 @@
 //
 // Inline markup in text: `code`, and [text](target) with target glossary:<id>, spec:<section> or a site path.
 //
-// A scenario: { id, title, short (tab label), appendix, intro, sides: { a, b, c?, cKey? },
+// A scenario: { id, title, short (tab label), appendix, maturity?: { label, text }, intro, sides: { a, b, c?, cKey? },
 //   nodes: [{ id, label (one or two lines), side: "a" | "b" | "shared" | "c", kind: "agent" | "broker" |
 //            "person" | "doc", col, row, span? }],
 //   hops: [{ id, from, to, refused?, link?, offset? }],
@@ -110,6 +110,8 @@ export const walkthroughs = [
     title: "A request between two organizations",
     short: "Between two organizations",
     appendix: ["A.2", "A.4"],
+    // The specification's status table and Section 12.2's own maturity line.
+    maturity: { label: "experimental", text: "Federation between brokers is Experimental in version 0.1: specified and testable, but more likely to change ([Section 12.2](spec:12.2))." },
     intro: "Pat works at `partner.example`, which has its own broker. Pat has a relationship with Lee, at `example.org`, for status updates (`alp.status/1`).",
     sides: { a: "Pat", b: "Lee", c: "Impostors", cKey: "brokers that don’t speak for the sender" },
     nodes: [

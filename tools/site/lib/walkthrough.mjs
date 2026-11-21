@@ -241,13 +241,14 @@ export function nodeName(w, id) {
 
 /**
  * Both drawings of a scenario's diagram in one container. On a small screen the turned drawing keeps its
- * labels at 12px; when it has three or more columns it is wider than a phone, so the container scrolls
- * sideways and a line under it says so.
+ * labels at 12px; when it has two or more columns it can be wider than a phone, so the container scrolls
+ * sideways and a line under it says so (shown at the widths where the drawing doesn't fit).
  */
 function diagramBlock(w, base) {
-  const scrolls = layout(w, true).cols >= 3;
+  const cols = layout(w, true).cols;
+  const scrolls = cols >= 2;
   const box = scrolls ? ' tabindex="0" role="group" aria-label="Diagram: scroll sideways to see all of it"' : "";
-  const hint = scrolls ? '\n<p class="wt-scroll-hint">Scroll sideways to see the whole diagram.</p>' : "";
+  const hint = scrolls ? `\n<p class="wt-scroll-hint wt-hint-cols-${cols}">Scroll sideways to see the whole diagram.</p>` : "";
   return `<div class="wt-svgs${scrolls ? " wt-svgs-scroll" : ""}"${box}>
 ${diagramSvg(w, base)}
 ${diagramSvg(w, base, true)}
@@ -292,6 +293,7 @@ export function validateWalkthroughs(list, env) {
       if (sentences < 1 || sentences > 3) problems.push(`${where} step ${k + 1}: ${sentences} sentences (one to three)`);
     });
     for (const r of [].concat(w.appendix)) if (!env.specIds.has(r)) problems.push(`${where}: appendix section ${r} doesn't exist`);
+    if (w.maturity && (!["core", "experimental", "future", "informative"].includes(w.maturity.label) || !w.maturity.text)) problems.push(`${where}: maturity needs a label (core, experimental, future or informative) and a text`);
   }
   return problems;
 }
@@ -368,7 +370,7 @@ ${objects}
     const appx = [].concat(w.appendix).map((r) => secLink(r, ctx)).join(" and ");
     return `<section class="wt-scenario" id="${base}" aria-labelledby="${base}-title" data-wt-scenario>
 <${hs} class="wt-title" id="${base}-title">${single ? "" : `<span class="wt-title-n">${wi + 1}.</span> `}${esc(w.title)}</${hs}>
-<p class="wt-intro">${inline(w.intro, ctx)} <span class="wt-from">From ${appx}.</span></p>
+${w.maturity ? `<p class="wt-maturity"><span class="maturity maturity-${esc(w.maturity.label)}">${inline(w.maturity.text, ctx)}</span></p>\n` : ""}<p class="wt-intro">${inline(w.intro, ctx)} <span class="wt-from">From ${appx}.</span></p>
 <figure class="wt-diagram">
 ${diagramBlock(w, base)}
 <figcaption class="wt-legend"><span class="wt-key wt-key-a">${esc(w.sides.a)}’s side</span> <span class="wt-key wt-key-b">${esc(w.sides.b)}’s side</span>${w.sides.c ? ` <span class="wt-key wt-key-c">${esc(w.sides.cKey || w.sides.c)}</span>` : ""}</figcaption>

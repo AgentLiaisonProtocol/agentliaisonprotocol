@@ -102,6 +102,35 @@ test("the overview follows one exchange and links to the other three; the walkth
   assert.match(page, /href="#wt-meeting-title"/);
 });
 
+test("the scenario between two organizations says under its title that federation is Experimental, linking to Section 12.2", () => {
+  const { read } = site();
+  const page = read("docs/walkthroughs/index.html");
+  const m = /<h2 class="wt-title" id="wt-two-organizations-title">[\s\S]*?<\/h2>\n<p class="wt-maturity">([\s\S]*?)<\/p>/.exec(page);
+  assert.ok(m, "no maturity line directly under the title");
+  assert.equal(textContent(m[1]), "Federation between brokers is Experimental in version 0.1: specified and testable, but more likely to change (Section 12.2).");
+  assert.match(m[1], /class="maturity maturity-experimental"/);
+  assert.match(m[1], /href="\.\.\/spec\/#122-the-federation-binding"/);
+  assert.equal([...page.matchAll(/class="wt-maturity"/g)].length, 1);
+});
+
+test("every turned diagram of two or more columns scrolls inside its frame, with the line that says so", () => {
+  const { read } = site();
+  const page = read("docs/walkthroughs/index.html");
+  const blocks = [...page.matchAll(/<div class="wt-svgs([^"]*)"[^>]*>[\s\S]*?<svg class="wt-svg wt-svg-narrow wt-cols-(\d)"[\s\S]*?<\/div>(\n<p class="wt-scroll-hint wt-hint-cols-(\d)">)?/g)];
+  assert.equal(blocks.length, 4);
+  for (const [, cls, cols, hint, hintCols] of blocks) {
+    if (Number(cols) >= 2) {
+      assert.equal(cls, " wt-svgs-scroll");
+      assert.ok(hint, `a ${cols}-column drawing has no scroll line`);
+      assert.equal(hintCols, cols);
+    } else {
+      assert.equal(cls, "");
+      assert.ok(!hint);
+    }
+  }
+  assert.deepEqual(blocks.map((b) => b[2]), ["1", "3", "2", "2"]);
+});
+
 test("the overview's order, and no sentence implies a hosted broker one can use or a third-party evaluator", () => {
   const { read } = site();
   const home = read("index.html");

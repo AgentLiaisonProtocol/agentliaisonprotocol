@@ -471,6 +471,7 @@ h2 .n{display:inline-block;min-width:1.6em;color:var(--muted);font-weight:600;fo
 @media (min-width:640px){.wt-scenario{padding:22px 26px 10px}}
 .wt .wt-title{font-size:20px;line-height:1.3;margin:0 0 6px;letter-spacing:-.008em}
 .wt-title-n{color:var(--muted);font-variant-numeric:tabular-nums}
+.wt-maturity{margin:0 0 8px;max-width:70ch}
 .wt-intro{color:var(--ink-2);margin:0 0 12px;max-width:70ch}
 .wt-from{color:var(--muted);font-size:14.5px}
 .wt-diagram{margin:6px 0 16px;padding:10px 8px 8px;background:var(--bg);border:1px solid var(--line);border-radius:12px}
@@ -481,17 +482,21 @@ h2 .n{display:inline-block;min-width:1.6em;color:var(--muted);font-weight:600;fo
 .wt-svg.wt-cols-4{max-width:765px}
 .wt-svg-narrow{display:none}
 .wt-scroll-hint{display:none;margin:6px 0 0;font-size:13px;color:var(--muted)}
-@media (max-width:559px){.wt-scroll-hint{display:block}}
+/* the line shows at the widths where the turned drawing (306, 472 or 638px, plus 88px of frame) doesn't fit */
+@media (max-width:393px){.wt-hint-cols-2{display:block}}
+@media (max-width:559px){.wt-hint-cols-3{display:block}}
+@media (max-width:600px){.wt-hint-cols-4{display:block}}
 .wt-svgs-scroll:focus-visible{outline:2px solid var(--link);outline-offset:2px}
 @media (max-width:600px){
   .wt-svg-wide{display:none}
   .wt-svg-narrow{display:block}
-  /* The turned drawing keeps its 12px labels: a three-column one is wider than a phone and scrolls. */
+  /* The turned drawing keeps its 12px labels: one of two or more columns can be wider than a phone and scrolls. */
   .wt-svgs-scroll{overflow-x:auto;overscroll-behavior-x:contain;
     background:linear-gradient(to right,var(--bg) 30%,transparent) left center/32px 100% no-repeat local,
       linear-gradient(to left,var(--bg) 30%,transparent) right center/32px 100% no-repeat local,
       radial-gradient(farthest-side at 0 50%,rgba(0,0,0,.16),transparent) left center/12px 100% no-repeat scroll,
       radial-gradient(farthest-side at 100% 50%,rgba(0,0,0,.16),transparent) right center/12px 100% no-repeat scroll}
+  .wt-svgs-scroll .wt-svg-narrow.wt-cols-2{min-width:306px}
   .wt-svgs-scroll .wt-svg-narrow.wt-cols-3,.wt-svgs-scroll .wt-svg-narrow.wt-cols-4{max-width:none}
   .wt-svgs-scroll .wt-svg-narrow.wt-cols-3{width:472px;min-width:472px}
   .wt-svgs-scroll .wt-svg-narrow.wt-cols-4{width:638px;min-width:638px}
