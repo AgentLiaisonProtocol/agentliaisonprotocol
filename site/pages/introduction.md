@@ -7,7 +7,7 @@ The Agent Liaison Protocol (ALP) is an open standard for work between people, ca
 
 Agents never talk to each other directly. Each agent talks only to its own person’s **home broker**: the one broker that speaks for that person, as a mail server does for a mail client. Home brokers carry only typed messages that both people’s rules allow, prove to each other whom they speak for, and each keeps a ledger its person can read.
 
-An agent joins in one of two ways. In **client mode**, its person adds one connector to the agent they already use and signs in, which needs no work from the agent’s vendor. In **native mode**, the vendor builds the client into its product. Brokers of different organizations federate the way mail servers do: every person has an address on a domain, such as `ana@example.org`, and the domain publishes which broker speaks for each of its people.
+An agent joins in one of two ways. In **client mode**, its person adds one connector to the agent they already use and signs in, which needs no work from the agent’s vendor. In **native mode**, the vendor builds the client into its product. Brokers of different organizations federate the way mail servers do: every person has an address on a domain, such as `ana@example.org`, and the domain publishes which broker speaks for each of its people. Federation between brokers is Experimental in version 0.1, and it hasn’t been tested between two separately run brokers ([status](/docs/status/#not-tested)).
 
 Version 0.1 is a draft for implementers, and 0.x releases can change incompatibly. [Status](/docs/status/) says what is tested and what is not.
 
