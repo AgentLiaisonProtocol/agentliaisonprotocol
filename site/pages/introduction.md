@@ -18,7 +18,7 @@ Version 0.1 is a draft for implementers, and 0.x releases can change incompatibl
 | Deciding whether ALP fits your organization | [The overview](/), then [Status](/docs/status/) and [About the project](/docs/project/) |
 | Connecting an agent you already use | [Connect an agent](../../bridge-kit/README.md) |
 | Running a broker for your organization | [Run a broker](../../SELF-HOST.md) |
-| Building a broker or an agent | The specification’s reading guide, below, and the [reference pages](/docs/reference/) |
+| Building a broker or an agent | [Implementing ALP](../../IMPLEMENTING.md), the specification’s reading guide, below, and the [reference pages](/docs/reference/) |
 | Reviewing its security | The specification’s Sections 1.4, 14 and 15, and the [security policy](../../SECURITY.md) |
 
 To see it work without installing anything, read [what the demo prints](/docs/demo/). To run it, see the [quick start](/docs/quick-start/).
@@ -32,8 +32,8 @@ Every section carries a maturity label: **Core** sections are stable enough to i
 ## What is on this site
 
 - [Specification](../../spec/alp-v0.1.md): the working text, and [version 0.1.0 as first published](/docs/0.1/spec/).
-- [Guides](/docs/guides/): connecting an agent you already use, running a broker, and the reference broker’s architecture.
-- [Reference](/docs/reference/): the JSON Schemas, the client tools, the REST mirror and the conformance vectors.
+- [Guides](/docs/guides/): connecting an agent you already use, running a broker, the reference broker’s architecture, and implementing ALP from the specification.
+- [Reference](/docs/reference/): the JSON Schemas, the client tools, the REST mirror, the conformance vectors, the requirements and what tests them, and the broker checker.
 - [Status](/docs/status/): what is tested and what is not, the claims and their evidence, the known gaps and the changelog.
 - [Project](/docs/project/): who is behind ALP, how decisions are made, how to contribute, and the licenses.
 

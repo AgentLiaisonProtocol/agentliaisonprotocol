@@ -1,0 +1,51 @@
+name: Specification feedback
+description: A gap, an ambiguity, a contradiction or a question about the specification, the schemas or the vectors.
+title: "Spec: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Security vulnerabilities go privately to security@agentliaisonprotocol.org, as [SECURITY.md](https://github.com/AgentLiaisonProtocol/agentliaisonprotocol/blob/main/SECURITY.md) says, not in a public issue.**
+
+        Use this form for feedback on the Agent Liaison Protocol (ALP) specification and the files that go with it. For a change to anything normative (a MUST, a new field, message type or scope, or an algorithm), describe the problem here first; [CONTRIBUTING.md](https://github.com/AgentLiaisonProtocol/agentliaisonprotocol/blob/main/CONTRIBUTING.md) says how a proposal continues.
+  - type: dropdown
+    id: document
+    attributes:
+      label: Which document
+      options:
+        - The specification (spec/alp-v0.1.md)
+        - A schema (schemas/)
+        - A vector (vectors/)
+        - The specification tools (tools/spec/)
+        - The broker checker (tools/check/) or CONFORMANCE.md
+        - Another document
+    validations:
+      required: true
+  - type: input
+    id: section
+    attributes:
+      label: Section, file or requirement
+      description: For example "Section 12.2.4, step 1", "schemas/envelope.schema.json" or "BC-15".
+    validations:
+      required: true
+  - type: dropdown
+    id: kind
+    attributes:
+      label: Kind of feedback
+      options:
+        - A gap (something the text doesn't say)
+        - Ambiguous (the text can be read two ways)
+        - A contradiction (two places disagree)
+        - A privacy concern, or a limit the specification should state (a flaw that breaks its guarantees goes privately to SECURITY.md)
+        - A simpler way to do the same thing
+        - Wording
+        - A question
+    validations:
+      required: true
+  - type: textarea
+    id: feedback
+    attributes:
+      label: The feedback
+      description: Quote the text you mean, say what you expected, and give an example if you can. Use reserved domains (example.org, partner.example) and the TEST-ONLY keys in examples.
+    validations:
+      required: true

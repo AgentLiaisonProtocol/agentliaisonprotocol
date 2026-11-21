@@ -3,7 +3,7 @@ title: Quick start
 ---
 # Quick start
 
-Three ways to start, from the least to the most set-up. The first two need a developer and Node 22.18 or later; the third needs a broker that someone runs.
+Four ways to start, from the least to the most set-up. The first two need a developer and Node 22.18 or later; the third needs a broker that someone runs; the fourth is for building a broker or a client of your own.
 
 ## 1. Run the demo
 
@@ -39,3 +39,19 @@ In client mode an agent you already use joins your home broker through one custo
 - an agent that accepts a custom MCP connector (also called a custom connector or remote MCP server).
 
 Then [the setup](../../bridge-kit/README.md#setup) has six steps: add the connector, sign in, allow its tools, add the instructions, set a recurring inbox check, and test it. [Connect an agent](../../bridge-kit/README.md) has a guide for each agent platform, with what was tested and what wasn’t.
+
+## 4. Build it from the specification
+
+[Implementing ALP](../../IMPLEMENTING.md) is a guide for anyone building a broker or a client from the specification. It adds no requirement of its own: it suggests an order for reading the specification, names the schemas, vectors and requirements that go with each part, and says what each way of checking in this repository tells you. Next to it:
+
+- [Requirements and what tests them](../../CONFORMANCE.md) lists every numbered requirement of the specification’s Section 13, with the vector files that exercise it and the checks of `alp-check` that observe part of it from outside.
+- The [conformance vectors](../../vectors/README.md) are how an implementation checks its own logic: you run them through your own code.
+- [`alp-check`](../../tools/check/README.md) is the complement for a running broker. You point it at your domain, or at a broker in the Local profile, and it reports what it can observe from outside, with no credentials. It checks a part of the specification, and every report says which part; a report with no failures does not mean an implementation conforms.
+
+```sh
+cd tools/check
+npm ci                     # Node 22.18 or later
+node check.mjs example.org  # example.org stands for your own domain
+```
+
+Run it against domains and brokers you operate, or are allowed to test.

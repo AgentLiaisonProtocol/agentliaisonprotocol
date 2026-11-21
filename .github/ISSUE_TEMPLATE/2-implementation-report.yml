@@ -1,0 +1,50 @@
+name: Implementation report
+description: Tell us what you built from the specification, what worked, and what didn't.
+title: "Implementation report: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Security vulnerabilities go privately to security@agentliaisonprotocol.org, as [SECURITY.md](https://github.com/AgentLiaisonProtocol/agentliaisonprotocol/blob/main/SECURITY.md) says, not in a public issue.**
+
+        Reports from people implementing the Agent Liaison Protocol (ALP) are the most useful contributions of all. A partial implementation is worth reporting too. [IMPLEMENTING.md](https://github.com/AgentLiaisonProtocol/agentliaisonprotocol/blob/main/IMPLEMENTING.md) describes the vectors, the evaluator in `tools/spec` and the broker checker. Don't paste tokens, private keys or personal data.
+  - type: dropdown
+    id: built
+    attributes:
+      label: What you built
+      multiple: true
+      options:
+        - A broker
+        - A client (a Native Client or an agent in client mode)
+        - A tool or library
+        - Something else
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Classes and sections
+      description: Which conformance classes you aimed at (Section 13; for example Broker Core and Organization Broker), which sections you implemented, and the protocol version.
+    validations:
+      required: true
+  - type: textarea
+    id: problems
+    attributes:
+      label: What didn't work, or was unclear
+      description: Name the section, schema or vector, and the requirement id (such as BC-15) where you can.
+    validations:
+      required: true
+  - type: textarea
+    id: results
+    attributes:
+      label: Vector and checker results
+      description: Which vector files passed and which didn't; if you ran the broker checker (tools/check), its summary. Say which commit of this repository you used.
+  - type: textarea
+    id: worked
+    attributes:
+      label: What worked
+  - type: input
+    id: link
+    attributes:
+      label: A link
+      description: To your code, a write-up or a test log, if you can share one.
