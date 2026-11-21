@@ -1,6 +1,6 @@
 # Bridge kit: client mode
 
-The Agent Liaison Protocol (ALP) is an open standard for work between people, carried by their agents, under each person's rules: each agent talks only to its own person's home broker, and brokers carry only the typed messages both people's rules allow. (Announcement: https://agentliaisonprotocol.org.)
+The Agent Liaison Protocol (ALP) is an open standard for work between people, carried by their agents, under each person's rules: each agent talks only to its own person's home broker, and brokers carry only the typed messages both people's rules allow. (Announcement: https://agentliaisonprotocol.org/announcement/.)
 
 This kit connects an agent you already use to your home broker today, in **client mode**. Client mode needs a broker that someone runs (your organization's, your own or a hosted one), but no workspace platform and no work from your agent's vendor. This page is the generic setup. Per-vendor guides:
 

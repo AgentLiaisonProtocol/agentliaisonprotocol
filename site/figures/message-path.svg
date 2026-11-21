@@ -1,0 +1,69 @@
+<svg class="fg" viewBox="0 0 960 486" role="img" aria-labelledby="fig-mp-title fig-mp-desc" xmlns="http://www.w3.org/2000/svg">
+<title id="fig-mp-title">How a message travels: Ana’s agent in example.org reaches Pat’s agent in partner.example through their two home brokers</title>
+<desc id="fig-mp-desc">Two organizations. In example.org: Ana (person); Ana’s agent, in client mode with one MCP connector; Ana’s home broker, broker.example.org; and the domain document example.org/.well-known/alp.json. In partner.example: Pat (person); Pat’s agent, a native client; Pat’s home broker, broker.partner.example; and partner.example/.well-known/alp.json. Ana’s agent reaches Ana’s home broker with an OAuth 2.1 token and MCP tools. Step 1: Ana’s home broker applies the sender rules, then sends a signed envelope (JWS over JCS, aud = Pat’s broker) to Pat’s home broker. Step 2, dotted: Pat’s home broker asks example.org’s domain document whether broker.example.org is Ana’s home broker, and which keys it uses. Dotted: Ana’s home broker reads Pat’s home broker and inbox from partner.example’s domain document. Step 3: Pat’s home broker applies the recipient rules, then delivers to Pat’s agent. Step 4: Pat’s home broker returns a signed receipt to Ana’s home broker. Dotted, no direction: Ana uses the web view of her broker to approve, ratify and read the ledger; Pat uses a native app or the web view of Pat’s broker.</desc>
+<defs>
+<marker id="fig-mp-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="fg-head" d="M0 0L10 5L0 10z"/></marker>
+</defs>
+<rect class="fg-org fg-org-a" x="8" y="8" width="360" height="470" rx="16"/>
+<rect class="fg-org fg-org-b" x="592" y="8" width="360" height="470" rx="16"/>
+<text class="fg-org-label fg-ink-a" x="24" y="38">example.org</text>
+<text class="fg-org-label fg-ink-b" x="936" y="38" text-anchor="end">partner.example</text>
+
+<path class="fg-edge" d="M310 118V192" marker-end="url(#fig-mp-arrow)"/>
+<text class="fg-label" x="302" y="148" text-anchor="end">OAuth 2.1 token,</text>
+<text class="fg-label" x="302" y="166" text-anchor="end">MCP tools</text>
+<path class="fg-edge fg-dotted" d="M72 106V226H142"/>
+<text class="fg-label" x="80" y="138">web view:</text>
+<text class="fg-label" x="80" y="156">approve,</text>
+<text class="fg-label" x="80" y="174">ratify,</text>
+<text class="fg-label" x="80" y="192">ledger</text>
+
+<path class="fg-edge" d="M362 214H594" marker-end="url(#fig-mp-arrow)"/>
+<text class="fg-label" x="480" y="134" text-anchor="middle">1. sender rules, then</text>
+<text class="fg-label" x="480" y="152" text-anchor="middle">a signed envelope</text>
+<text class="fg-label" x="480" y="170" text-anchor="middle">(JWS over JCS,</text>
+<text class="fg-label" x="480" y="188" text-anchor="middle">aud = Pat’s broker)</text>
+<path class="fg-edge" d="M598 238H366" marker-end="url(#fig-mp-arrow)"/>
+<text class="fg-label" x="480" y="262" text-anchor="middle">4. signed receipt</text>
+
+<path class="fg-edge fg-dotted" d="M610 256L366 397" marker-end="url(#fig-mp-arrow)"/>
+<text class="fg-label" x="618" y="286">2. is broker.example.org</text>
+<text class="fg-label" x="618" y="304">Ana’s home broker?</text>
+<text class="fg-label" x="618" y="322">which keys?</text>
+<path class="fg-edge fg-dotted" d="M350 256L594 397" marker-end="url(#fig-mp-arrow)"/>
+<text class="fg-label" x="342" y="286" text-anchor="end">Pat’s home broker</text>
+<text class="fg-label" x="342" y="304" text-anchor="end">and inbox</text>
+
+<path class="fg-edge" d="M640 196V122" marker-end="url(#fig-mp-arrow)"/>
+<text class="fg-label" x="648" y="148">3. recipient rules,</text>
+<text class="fg-label" x="648" y="166">then delivery</text>
+<path class="fg-edge fg-dotted" d="M888 106V226H818"/>
+<text class="fg-label" x="880" y="148" text-anchor="end">native app</text>
+<text class="fg-label" x="880" y="166" text-anchor="end">or web view</text>
+
+<rect class="fg-person fg-a" x="18" y="70" width="108" height="36" rx="18"/>
+<text class="fg-title" x="72" y="93" text-anchor="middle">Ana (person)</text>
+<rect class="fg-node fg-a" x="142" y="58" width="220" height="60" rx="10"/>
+<text class="fg-title fg-ink-a" x="252" y="84" text-anchor="middle">Ana’s agent</text>
+<text class="fg-sub" x="252" y="104" text-anchor="middle">client mode: one MCP connector</text>
+<rect class="fg-broker fg-a" x="142" y="196" width="220" height="60" rx="10"/>
+<text class="fg-title" x="252" y="222" text-anchor="middle">Ana’s home broker</text>
+<text class="fg-mono" x="252" y="242" text-anchor="middle">broker.example.org</text>
+<path class="fg-doc" d="M142 384a110 12 0 0 1 220 0V436a110 12 0 0 1-220 0Z"/>
+<path class="fg-doc-rim" d="M142 384a110 12 0 0 0 220 0"/>
+<text class="fg-mono" x="252" y="414" text-anchor="middle">example.org</text>
+<text class="fg-mono" x="252" y="432" text-anchor="middle">/.well-known/alp.json</text>
+
+<rect class="fg-node fg-b" x="598" y="58" width="220" height="60" rx="10"/>
+<text class="fg-title fg-ink-b" x="708" y="84" text-anchor="middle">Pat’s agent</text>
+<text class="fg-sub" x="708" y="104" text-anchor="middle">native client</text>
+<rect class="fg-person fg-b" x="834" y="70" width="108" height="36" rx="18"/>
+<text class="fg-title" x="888" y="93" text-anchor="middle">Pat (person)</text>
+<rect class="fg-broker fg-b" x="598" y="196" width="220" height="60" rx="10"/>
+<text class="fg-title" x="708" y="222" text-anchor="middle">Pat’s home broker</text>
+<text class="fg-mono" x="708" y="242" text-anchor="middle">broker.partner.example</text>
+<path class="fg-doc" d="M598 384a110 12 0 0 1 220 0V436a110 12 0 0 1-220 0Z"/>
+<path class="fg-doc-rim" d="M598 384a110 12 0 0 0 220 0"/>
+<text class="fg-mono" x="708" y="414" text-anchor="middle">partner.example</text>
+<text class="fg-mono" x="708" y="432" text-anchor="middle">/.well-known/alp.json</text>
+</svg>

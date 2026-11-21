@@ -1,14 +1,12 @@
 name: Pages
 
-# Publishes site/ (the announcement page) to GitHub Pages at the custom domain
-# configured in the repository's Pages settings. With an Actions-based deploy,
-# GitHub ignores a CNAME file; the domain is set in Settings > Pages.
+# Builds the documentation site from the repository's own files with tools/site (its README says how), runs
+# the site's tests and checks, and publishes _site to GitHub Pages at the custom domain configured in the
+# repository's Pages settings. Every push to main rebuilds it, because any document can change a page. With
+# an Actions-based deploy, GitHub ignores a CNAME file; the domain is set in Settings > Pages.
 on:
   push:
     branches: [main]
-    paths:
-      - "site/**"
-      - ".github/workflows/pages.yml"
   workflow_dispatch:
 
 permissions:
@@ -28,9 +26,23 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22.22.2"
+          cache: npm
+          cache-dependency-path: tools/site/package-lock.json
+      - run: npm ci
+        working-directory: tools/site
+      - run: npm test
+        working-directory: tools/site
+      - name: build the site and run its checks
+        run: node build.mjs
+        working-directory: tools/site
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: site
+          path: _site
       - id: deployment
         uses: actions/deploy-pages@v4
