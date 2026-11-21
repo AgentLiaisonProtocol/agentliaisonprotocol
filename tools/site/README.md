@@ -67,7 +67,7 @@ Add an entry to `pages` in `site.config.mjs`:
 | `group`, `order` | Its docs group (`start`, `specification`, `guides`, `reference`, `status`, `project`) and position in it; `group: null` puts a page outside the docs, in the article layout. |
 | `parent` | For a child page in the navigation, the parent's `url` (one level only). |
 | `layout` | `"docs"` (the default for grouped pages) or `"article"`. |
-| `options` | Kind-specific settings, such as `allowRawHtml: ["<your tenant>"]` for a document whose text has something that looks like an HTML tag. |
+| `options` | Kind-specific settings, such as `allowRawHtml: ["<your tenant>"]` for a document whose text has something that looks like an HTML tag, or `editorComment` for a generated document's note to its editors (below). |
 
 Kinds (in `lib/pages.mjs`):
 
@@ -98,7 +98,7 @@ Without JavaScript every scenario and step is visible in order, as ordered lists
 
 ## How Markdown is rendered
 
-- **Raw HTML stays escaped.** micromark runs with its defaults, so an HTML tag in a document shows as text. Any HTML comment or tag outside code fails the build with the file and line, unless the page's `options.allowRawHtml` lists it. The specification's example markers are the exception: they are read, then removed.
+- **Raw HTML stays escaped.** micromark runs with its defaults, so an HTML tag in a document shows as text. Any HTML comment or tag outside code fails the build with the file and line, unless the page's `options.allowRawHtml` lists it. The specification's example markers are an exception: they are read, then removed. So is a generated document's note to its editors, an HTML comment on a line of its own that the page's `options.editorComment` names exactly (CONFORMANCE.md's): it is left out of the page and its mirror, and the build fails if the file no longer has that line.
 - **Heading ids match GitHub's** (`lib/slug.mjs`): lower-case, drop everything but letters, digits, spaces, hyphens and underscores, spaces to hyphens, `-1`, `-2` for repeats. A test checks every `#fragment` the repository's documents use. h2 to h4 get a permalink.
 - **Links.** A relative link to a document that has a page goes to that page, keeping the fragment; any other repository path goes to GitHub (`blob/main/…`, or `tree/main/…` for a folder), and a path that doesn't exist fails the build. Links to `https://agentliaisonprotocol.org/…` become relative links. Mirrors get absolute site URLs instead.
 - **Section references.** On the specification's pages, "Section 6.6", "Sections 4.2–4.8", "Section 12.2.4" and "Appendix A" in running text link to that heading; references that cite another document ("RFC 6749, Section 3.3", "[Poppy], Section 4.1") are left alone. On other pages, "spec Section 5.3", "specification Section 5.3", "the specification's Section 5.4" and the short form "Spec 6.6" or "spec 6.14" (each number of a list such as "Spec 4.2, 4.3 and 12.6") link into `/docs/spec/`. A reference to a section that doesn't exist fails the build.

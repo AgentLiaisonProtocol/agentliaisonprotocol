@@ -73,7 +73,20 @@ export function repoMarkdown(page, env, { md, sourcePath, ref, date, spec, appen
   // Only the specification has example markers. They are read, then removed from the page and its mirror
   // (they mean nothing to a reader). In any other document the same text is kept as written.
   if (spec) extractExamples(md, file); // a malformed example fails here, before anything renders
-  const stripped = spec ? stripExampleMarkers(md) : md;
+  let stripped = spec ? stripExampleMarkers(md) : md;
+  // A generated document's note to its editors (an HTML comment on a line of its own, named exactly in
+  // options.editorComment) is removed from the page and its mirror; it means nothing to a reader. If the file no
+  // longer has that line, the build fails, so the manifest follows the generator.
+  const editorComment = page.options?.editorComment;
+  if (editorComment) {
+    const lines = stripped.split("\n");
+    const at = lines.indexOf(editorComment);
+    if (at < 0) problems.push(`${file}: has no line "${editorComment.slice(0, 60)}…", which options.editorComment in site.config.mjs names`);
+    else {
+      lines.splice(at, lines[at + 1] === "" ? 2 : 1);
+      stripped = lines.join("\n");
+    }
+  }
   const facts = analyzeMarkdown(stripped);
   const allow = new Set(page.options?.allowRawHtml || []);
   for (const h of facts.html) {

@@ -44,4 +44,4 @@ These vectors exercise the Agent Liaison Protocol (ALP) v0.1 specification ([spe
 
 ## Checking an implementation
 
-Run the vectors through your implementation's own code paths: parse, canonicalize, verify, evaluate. A failing vector is a bug in the implementation or in the vector; please report it (see [CONTRIBUTING.md](../CONTRIBUTING.md)). The steward's generator and independent checker are described in [tools/spec/README.md](../tools/spec/README.md).
+Run the vectors through your implementation's own code paths: parse, canonicalize, verify, evaluate. A failing vector is a bug in the implementation or in the vector; please report it (see [CONTRIBUTING.md](../CONTRIBUTING.md)). The steward's generator and independent checker are described in [tools/spec/README.md](../tools/spec/README.md). The vectors check an implementation's logic; for a running broker, [`alp-check`](../tools/check/README.md) is the complement: it checks, from outside and with no credentials, part of what the specification requires at the broker's public surface.

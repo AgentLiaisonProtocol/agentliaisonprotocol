@@ -1,0 +1,24 @@
+name: Website or documentation
+description: A mistake or something unclear on the website or in a document outside the specification.
+title: "Docs: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Security vulnerabilities go privately to security@agentliaisonprotocol.org, as [SECURITY.md](https://github.com/AgentLiaisonProtocol/agentliaisonprotocol/blob/main/SECURITY.md) says, not in a public issue.**
+
+        For the specification, its schemas and its vectors, use the "Specification feedback" form instead.
+  - type: input
+    id: where
+    attributes:
+      label: Where
+      description: The page or file, for example https://agentliaisonprotocol.org, README.md or bridge-kit/.
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: What is wrong or unclear
+      description: Quote the text you mean, and say what it should say if you know.
+    validations:
+      required: true

@@ -59,7 +59,7 @@ examples: [a1_envelope]
 <dl class="glance roles">
 <div><dt>A person</dt><dd>Adds one connector to their agent and signs in, then approves connection requests and commitments on their own approvals page. <a href="/docs/guides/connect-an-agent/">Connect an agent</a>.</dd></div>
 <div><dt>An IT or security team</dt><dd>Runs a broker for the organization’s own people, signs people in through the organization’s identity provider, and sets its private policy: default relationships, which agents may connect, retention and kill switches. <a href="/docs/guides/run-a-broker/">Run a broker</a>.</dd></div>
-<div><dt>An agent provider</dt><dd>Builds the client side into its agent, and can run its own broker for addresses on its own domain. <a href="/docs/spec/#17-reading-guide">Where to start reading</a>.</dd></div>
+<div><dt>An agent provider</dt><dd>Builds the client side into its agent, and can run its own broker for addresses on its own domain. <a href="/docs/spec/#17-reading-guide">Where to start reading</a>, and <a href="/docs/guides/implement/">Implementing ALP</a>.</dd></div>
 </dl>
 <p>The reference broker is new code and has not had an independent security review (<a href="/docs/status/">status</a>).</p>
 
@@ -123,7 +123,7 @@ npm ci            # Node 22.18 or later
 npm run demo      # the whole story, over real HTTP on your machine
 npm test          # the test suite, including every conformance vector</code></pre>
 </div>
-<p>Or read <a href="/docs/demo/">what the demo prints</a>. The <a href="/docs/quick-start/">quick start</a> has two other ways in.</p>
+<p>Or read <a href="/docs/demo/">what the demo prints</a>. The <a href="/docs/quick-start/">quick start</a> has three other ways in. To check a broker you run, <a href="/docs/reference/checker/"><code>alp-check</code></a> reports what it can observe from outside, with no credentials; to build a broker or a client from the specification, start with <a href="/docs/guides/implement/">Implementing ALP</a>.</p>
 
 <h2 id="take-part">Who is behind it, and how to take part</h2>
 <p>Lucaryin wrote ALP and is its initial steward. It intends to move the specification to a neutral foundation; no foundation has agreed to host it yet, and no vendor, foundation or standards body has endorsed ALP. The specification is CC BY 4.0, its schemas, vectors and tools Apache-2.0, and the reference broker source-available under FSL-1.1-ALv2 (<a href="/docs/project/licenses/">licenses</a>).</p>

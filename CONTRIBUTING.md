@@ -22,13 +22,17 @@ Run the checks before you open the pull request:
 ```sh
 cd tools/spec && npm ci && npm run vectors && npm run examples && npm run check
 cd ../../reference && npm ci && npm run check
+cd ../tools/check && npm ci && npm test && node requirements.mjs --check
+cd ../site && npm ci && npm test && npm run build
 ```
+
+The third line runs the broker checker's tests (from the repository root, `node --test tools/check` runs the same tests once its dependencies are installed) and checks that [CONFORMANCE.md](CONFORMANCE.md) is current. After a change to Section 13 of the specification, regenerate it with `node tools/check/requirements.mjs`. The last line builds the website and runs its checks (below).
 
 A change that a vector can't express usually needs more precise text.
 
 ## The website
 
-The website, https://agentliaisonprotocol.org, is built from this repository's own files by `tools/site/` ([its README](tools/site/README.md)), so a change to a document changes its page. Before you open a pull request that touches a document, the specification or `site/`, run `cd tools/site && npm ci && npm test && npm run build`: the build fails on a broken link, anchor or example.
+The website, https://agentliaisonprotocol.org, is built from this repository's own files by `tools/site/` ([its README](tools/site/README.md)), so a change to a document changes its page, including the pages made from IMPLEMENTING.md, CONFORMANCE.md and the checker's README. Before you open a pull request that touches a document, the specification or `site/`, run `cd tools/site && npm ci && npm test && npm run build`: the build fails on a broken link, anchor or example.
 
 ## Smaller changes
 
