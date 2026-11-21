@@ -26,6 +26,10 @@ cd ../../reference && npm ci && npm run check
 
 A change that a vector can't express usually needs more precise text.
 
+## The website
+
+The website, https://agentliaisonprotocol.org, is built from this repository's own files by `tools/site/` ([its README](tools/site/README.md)), so a change to a document changes its page. Before you open a pull request that touches a document, the specification or `site/`, run `cd tools/site && npm ci && npm test && npm run build`: the build fails on a broken link, anchor or example.
+
 ## Smaller changes
 
 Typo fixes, clearer wording and new vectors for existing behavior can go straight to a pull request.

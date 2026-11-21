@@ -58,6 +58,7 @@ For [README.md](README.md#agents-that-also-use-poppy) and [muse.md](muse.md#muse
 - Poppy 1.0 specification (Sections 1 and 2, scope and terms; Section 3, discovery and the HTTPS rule; Section 3.3, extensions; Section 4.1, agent identity; Section 5.1, User IDs): https://personalagentprotocol.org/docs/1.0/spec
 - Poppy's introduction and roadmap (push notifications): https://personalagentprotocol.org/docs/introduction
 - Poppy's changelog (version 1.0 dated November 14, 2026; a draft of 1.1 in progress): https://personalagentprotocol.org/docs/changelog
+- Poppy's archived changelog (version 0.1, "Published October 9, 2026, the first published draft"): https://personalagentprotocol.org/docs/changelog/archive#v0-1
 - Sierra, "Introducing Personal Agent Protocol" (October 6, 2026; Sierra's description of Poppy as an open standard that Meta and Sierra are developing with industry partners): https://sierra.ai/blog/introducing-personal-agent-protocol
 - Sierra, "Releasing Personal Agent Protocol 1.0" (November 13, 2026; its statements about Muse and Shopify): https://sierra.ai/blog/releasing-poppy
 - The client metadata document published at muse.ai: https://muse.ai/poppy/agent.json

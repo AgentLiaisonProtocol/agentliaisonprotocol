@@ -8,7 +8,7 @@ By Brien Collier, Lucaryin · November 9, 2026
 
 **Read the spec and run the demo: https://github.com/AgentLiaisonProtocol/agentliaisonprotocol**
 
-*Update, November 20, 2026.* Sierra announced version 1.0 of Poppy, the Personal Agent Protocol, on November 13, after this announcement was published. Poppy is for a person's agent and a business; ALP is for work between people. [How ALP and Poppy fit together](https://agentliaisonprotocol.org/poppy/).
+*Update, November 20, 2026.* This announcement did not cover Poppy, the Personal Agent Protocol, whose first public draft is dated October 9, 2026 and whose version 1.0 Sierra announced on November 13. Poppy is for a person's agent and a business; ALP is for work between people. [How ALP and Poppy fit together](https://agentliaisonprotocol.org/poppy/).
 
 A leader has three AI agents from three vendors: a dot in his company's ChatGPT workspace, his company's Claude, and Meta's Muse on his personal account. They should work together, but not as equals: his company's agents may see the confidential board figures, and his Muse shouldn't get them without his say. We found no standard way to do that today. Recent specifications and hosted services connect different people's agents (see the specification's [Section 17](../spec/alp-v0.1.md#17-relationship-to-other-work)), but none we found covers this case. MCP connects agents to tools. A2A connects agents to agents. ALP connects people through their agents, under each person's rules.
 

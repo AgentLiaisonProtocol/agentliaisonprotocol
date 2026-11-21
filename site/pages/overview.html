@@ -1,0 +1,137 @@
+---
+title: Agent Liaison Protocol
+examples: [a1_envelope]
+---
+<div class="wide home-hero">
+<div class="home-hero-text">
+<p class="eyebrow">Agent Liaison Protocol · version 0.1 draft</p>
+<h1>Between people, through their agents.</h1>
+<p class="dek">The Agent Liaison Protocol (ALP) is an open standard for work between people, carried by their agents, under each person’s rules.</p>
+<p class="home-actions"><a class="btn" href="/docs/">Read the docs</a><a class="btn secondary" href="#follow-one-request">Follow one request</a><a class="home-spec" href="/docs/spec/">Read the specification</a></p>
+</div>
+<figure class="home-figure">
+<div class="home-figure-scroll" tabindex="0" role="group" aria-label="Figure: on a narrow screen, scroll sideways to see all of it">
+{{figure:one-exchange}}
+</div>
+<p class="fig-scroll-hint">Scroll sideways to see the whole figure.</p>
+<figcaption>One request across two brokers. The agents never talk to each other directly.</figcaption>
+</figure>
+</div>
+
+<div class="wrap home">
+<h2 id="at-a-glance">At a glance</h2>
+<dl class="glance">
+<div><dt>What it is</dt><dd>An open standard for work between people, carried by their agents, under each person’s rules. Each agent talks only to its own person’s <strong>home broker</strong>, which is to the agent what a mail server is to a mail client, and brokers carry only what both people’s rules allow.</dd></div>
+<div><dt>Status</dt><dd>Version 0.1, a draft for implementers. One implementation, the reference broker in this project; we know of no implementation outside this project. Real agent products were tested together once, on November 7, 2026, with test identities. <a href="/docs/status/">Status</a>.</dd></div>
+<div><dt>Who it is for</dt><dd>Organizations and people whose members use agents from different vendors, and those who build agents and agent platforms.</dd></div>
+<div><dt>Who is behind it</dt><dd>Brien Collier at Lucaryin wrote ALP. Lucaryin is its initial steward and the licensor of the reference broker, and intends to move the specification to a neutral foundation. No foundation has agreed to host it yet, and no vendor, foundation or standards body has endorsed it. <a href="/docs/project/">About the project</a>.</dd></div>
+<div><dt>What it costs</dt><dd>Anyone can implement ALP without asking, including in a broker of their own that they sell. The reference broker is free for any organization to use, modify and run for itself, under its <a href="/docs/project/licenses/">license</a>.</dd></div>
+<div><dt>Agreements needed</dt><dd>None to implement it. Implementing ALP needs no agreement with Lucaryin. Nor does using, running or modifying the reference broker for any purpose its license permits.</dd></div>
+</dl>
+
+<h2 id="problem">The problem</h2>
+<p>An analyst preparing a quarterly review needs the priorities of the leader she reports to, and an hour on his calendar. Her agent and his come from different vendors. Three things go wrong at once:</p>
+<ul class="risks">
+<li><span class="tag">Data leakage</span><span>Her agent’s request shouldn’t carry her draft numbers, and his agent shouldn’t answer with more than he would share.</span></li>
+<li><span class="tag">Access sprawl</span><span>Her agent shouldn’t need a login to his calendar, mailbox or documents to get an answer.</span></li>
+<li><span class="tag">Impersonation</span><span>His agent shouldn’t respond to anything that merely claims to be hers.</span></li>
+</ul>
+
+<h2 id="guarantees">Three guarantees</h2>
+<p>In ALP, agents never talk to each other directly. Each talks only to its own person’s home broker, and brokers keep three promises:</p>
+<ol class="guarantees">
+<li><strong>Nothing crosses that both people’s rules don’t allow.</strong> Each message type’s schema classifies every field, and a field crosses only if the sender’s permissions, each side’s organization policy and the recipient’s rules allow it. Free text is off unless the recipient opts in, capped at 280 characters, checked for sensitive data and labeled untrusted.</li>
+<li><strong>No agent gets into another person’s accounts.</strong> Each agent signs in only to its own person’s broker and never holds another person’s tokens, cookies or sessions.</li>
+<li><strong>Senders are proven, not claimed.</strong> Identity is proven by the sender’s domain and home broker, never by the message. Strangers can only send a connection request, which goes to the person, not the agent.</li>
+</ol>
+<p class="scope"><strong>What ALP can’t do.</strong> These hold on the ALP channel: nothing leaves a person’s side that their rules don’t allow, and nothing reaches their agent from anyone they, or their organization’s policy, haven’t approved. ALP can’t control what a vendor’s agent does with what it reads, or how a vendor stores it, and a stolen sign-in or a compromised broker can still speak for its own people until it’s revoked.</p>
+</div>
+
+<div class="wide home">
+<h2 id="follow-one-request">Follow one request</h2>
+<p class="wt-lede">These steps restate the specification’s worked examples (Appendix A). They are not recordings of a running system: what has been tested with real agents, and what has not, is on the <a href="/docs/status/">status page</a>. Each object shown is copied from the conformance vectors; the signed ones are signed with keys published for testing only.</p>
+{{walkthrough:one-organization}}
+<p class="wt-more">Three more exchanges, step by step: <a href="/docs/walkthroughs/#wt-two-organizations">a request between two organizations</a>, <a href="/docs/walkthroughs/#wt-connection-request">someone new asks to connect</a> and <a href="/docs/walkthroughs/#wt-meeting">agreeing on a meeting</a>.</p>
+</div>
+
+<div class="wrap home">
+<h2 id="what-you-would-do">What your organization would do</h2>
+<dl class="glance roles">
+<div><dt>A person</dt><dd>Adds one connector to their agent and signs in, then approves connection requests and commitments on their own approvals page. <a href="/docs/guides/connect-an-agent/">Connect an agent</a>.</dd></div>
+<div><dt>An IT or security team</dt><dd>Runs a broker for the organization’s own people, signs people in through the organization’s identity provider, and sets its private policy: default relationships, which agents may connect, retention and kill switches. <a href="/docs/guides/run-a-broker/">Run a broker</a>.</dd></div>
+<div><dt>An agent provider</dt><dd>Builds the client side into its agent, and can run its own broker for addresses on its own domain. <a href="/docs/spec/#17-reading-guide">Where to start reading</a>.</dd></div>
+</dl>
+<p>The reference broker is new code and has not had an independent security review (<a href="/docs/status/">status</a>).</p>
+
+<h2 id="your-data">What happens to your data</h2>
+<ul class="plain data-list">
+<li><strong>What leaves a person’s side:</strong> only fields both people’s rules allow, checked by the sender’s broker before anything leaves and by the recipient’s before anything is delivered.</li>
+<li><strong>Who sees messages:</strong> both home brokers, in plaintext, because they must read fields to enforce rules, and each agent’s vendor, for whatever reaches its agent. There is no end-to-end encryption in v0.1.</li>
+<li><strong>What each ledger records:</strong> what crossed, the scope, the fields disclosed and every decision. Free text and notes are kept in a separately encrypted payload by default, and typed values only where the organization allows.</li>
+<li><strong>Who can read a ledger:</strong> the person, at any time, and the organization’s compliance roles, as its policy allows.</li>
+<li><strong>Where a broker runs:</strong> on an organization’s own servers or inside its workspace platform. The specification also defines hosted brokers, which a third party runs under a published operator statement (<a href="/docs/spec/#33-deployment-profiles">Sections 3.3</a> and <a href="/docs/spec/#139-the-operator-statement">13.9</a>); the repository’s <a href="/docs/guides/run-a-broker/hosted/">note on a hosted deployment</a> says: “Nothing has been deployed this way.”</li>
+<li><strong>What ALP can’t control:</strong> what a vendor’s agent does with what it reads, or how a vendor stores it.</li>
+</ul>
+<p>From the specification’s <a href="/docs/spec/#14-what-alp-guarantees-stated-precisely">Section 1.4</a>, <a href="/docs/spec/#11-ledger">Section 11</a> and <a href="/docs/spec/#15-privacy-considerations">Section 15</a>.</p>
+</div>
+
+<div class="wide home">
+<h2 id="tested">What is tested and what is not</h2>
+<div class="table-wrap status-wrap">
+<table class="status-table">
+<thead><tr><th scope="col">Tested</th><th scope="col">Not tested</th><th scope="col">Not built yet</th></tr></thead>
+<tbody><tr>
+<td data-label="Tested"><ul>
+<li>Every conformance vector, in the reference broker’s tests and by an evaluator written independently of the reference broker, by the same project.</li>
+<li>November 7, 2026: real agent products, as two test people on a development broker, exchanged a typed request and its reply.</li>
+<li>November 8, 2026: sign-in through Microsoft Entra ID, an organization’s identity provider, with test users.</li>
+</ul></td>
+<td data-label="Not tested"><ul>
+<li>The other agent products the bridge kit covers.</li>
+<li>Federation between two separately run brokers.</li>
+<li>An independent security review of the reference broker, which is new code.</li>
+<li>Sign-in by a Poppy agent (as of November 20, 2026).</li>
+</ul></td>
+<td data-label="Not built yet"><ul>
+<li>Push to agents: agents check their inbox on a schedule.</li>
+<li>Notifications by email or SMS: the reference broker prints them.</li>
+<li>The approvals page behind an organization’s single sign-on.</li>
+<li>Retention: <code>retention.ledger_days</code> is recorded, but nothing is purged.</li>
+</ul></td>
+</tr></tbody>
+</table>
+</div>
+<p class="table-note">Details on the <a href="/docs/status/">status page</a>, the <a href="/docs/status/known-gaps/">known gaps</a> (as of November 8, 2026) and <a href="/docs/status/claims/">claims and evidence</a>.</p>
+</div>
+
+<div class="wrap home">
+<h2 id="two-ways-in">Two ways in</h2>
+<div class="ways">
+<section class="way" aria-labelledby="client-mode-h"><h3 id="client-mode-h">Client mode: no vendor work</h3><p>A person adds one custom connector to the agent they already use and signs in with their own account. The broker enforces the rules, so the guarantees hold though the vendor did nothing. Which agent products have been connected so far is on the <a href="/docs/status/">status page</a>.</p></section>
+<section class="way" aria-labelledby="native-mode-h"><h3 id="native-mode-h">Native mode: the vendor builds it in</h3><p>A vendor’s agent includes the client side itself, so no connector is needed. Both modes share addresses, messages, permissions and ledgers.</p></section>
+</div>
+
+<h2 id="other-protocols">ALP and other protocols</h2>
+<p class="interop">MCP connects agents to tools. A2A connects agents to agents. ALP connects people through their agents, under each person’s rules.</p>
+<p>Poppy (the Personal Agent Protocol) is for a person’s agent and a business; ALP is for work between people. The test is the counterpart: a business’s service that any customer uses means Poppy, and a named person or role with its own ALP address, reached under both sides’ rules, means ALP. <a href="/poppy/">ALP and Poppy</a>, <a href="/docs/other-protocols/">ALP and other protocols</a> and the specification’s <a href="/docs/spec/#17-relationship-to-other-work">Section 17</a>.</p>
+
+<h2 id="try-it">Try it</h2>
+<p>This needs a developer and Node 22.18 or later.</p>
+<div class="prose try-it">
+<pre><code>git clone https://github.com/AgentLiaisonProtocol/agentliaisonprotocol alp &amp;&amp; cd alp/reference
+npm ci            # Node 22.18 or later
+npm run demo      # the whole story, over real HTTP on your machine
+npm test          # the test suite, including every conformance vector</code></pre>
+</div>
+<p>Or read <a href="/docs/demo/">what the demo prints</a>. The <a href="/docs/quick-start/">quick start</a> has two other ways in.</p>
+
+<h2 id="take-part">Who is behind it, and how to take part</h2>
+<p>Lucaryin wrote ALP and is its initial steward. It intends to move the specification to a neutral foundation; no foundation has agreed to host it yet, and no vendor, foundation or standards body has endorsed ALP. The specification is CC BY 4.0, its schemas, vectors and tools Apache-2.0, and the reference broker source-available under FSL-1.1-ALv2 (<a href="/docs/project/licenses/">licenses</a>).</p>
+<ol class="take-part">
+<li><strong>Read the <a href="/docs/spec/">specification</a></strong> and say where it’s wrong, unclear or incomplete.</li>
+<li><strong>Run the demo and the tests</strong>; the <a href="/docs/reference/vectors/">vectors</a> test your own implementation too.</li>
+<li><strong>Implement it</strong>: agent providers, workspace and collaboration platforms, agent frameworks, and organizations running their own broker.</li>
+<li><strong>Contribute and file issues</strong> on <a href="https://github.com/AgentLiaisonProtocol/agentliaisonprotocol/issues">GitHub</a> (<a href="/docs/project/contributing/">contributing</a>).</li>
+</ol>
+<p class="contact">Questions: <a href="mailto:hello@agentliaisonprotocol.org">hello@agentliaisonprotocol.org</a>. Security vulnerabilities go privately to <a href="mailto:security@agentliaisonprotocol.org">security@agentliaisonprotocol.org</a> (<a href="/docs/project/security/">security policy</a>), not to a public issue.</p>
+</div>
