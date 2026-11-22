@@ -1,0 +1,34 @@
+name: Proposal
+description: Propose a change or an addition to the protocol, starting from the problem.
+title: "Proposal: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Security vulnerabilities go privately to security@agentliaisonprotocol.org, as [SECURITY.md](https://github.com/AgentLiaisonProtocol/agentliaisonprotocol/blob/main/SECURITY.md) says, not in a public issue.**
+
+        Anything normative starts with an issue that describes the problem before the solution ([CONTRIBUTING.md](https://github.com/AgentLiaisonProtocol/agentliaisonprotocol/blob/main/CONTRIBUTING.md)). A pull request then changes the specification text, the schemas and the vectors together and, for Core sections, the reference broker, which the maintainers can change.
+  - type: textarea
+    id: problem
+    attributes:
+      label: The problem
+      description: What can't be done, or goes wrong, today? Give a concrete example, with reserved domains (example.org, partner.example) and fictional people.
+    validations:
+      required: true
+  - type: textarea
+    id: who
+    attributes:
+      label: Who needs it
+      description: Which people, organizations or implementers meet this problem, and how often.
+    validations:
+      required: true
+  - type: textarea
+    id: approach
+    attributes:
+      label: A proposed approach
+      description: Optional. Which sections, schemas and vectors would change, and what an existing implementation would have to do.
+  - type: textarea
+    id: prior-art
+    attributes:
+      label: Prior art
+      description: Optional. How other protocols or standards handle this, with links.
