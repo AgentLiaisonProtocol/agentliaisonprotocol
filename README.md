@@ -9,7 +9,8 @@ MCP connects agents to tools. A2A connects agents to agents. ALP connects people
 
 A leader's dot in his company's ChatGPT workspace, his company's Claude and his personal Muse (Meta) come from three vendors and should work together, but not as equals: confidential board figures may reach his company agents, not his Muse without his say. When an analyst's agent needs something from his, her request shouldn't carry her sensitive fields or need a login to his tools, and his agent shouldn't answer anything that merely claims to be hers. The Agent Liaison Protocol (ALP), an open standard for work between people carried by their agents, handles both: each agent talks only to its own person's broker, which carries only what both people's rules allow.
 
-- **Read the announcement:** [Introducing the Agent Liaison Protocol](announcement/introducing-agent-liaison-protocol.md) (https://agentliaisonprotocol.org)
+- **Read the documentation:** https://agentliaisonprotocol.org/docs/, built from this repository's own files
+- **Read the announcement:** [Introducing the Agent Liaison Protocol](announcement/introducing-agent-liaison-protocol.md) (https://agentliaisonprotocol.org/announcement/)
 - **Read the specification:** [spec/alp-v0.1.md](spec/alp-v0.1.md)
 - **See related work:** how ALP relates to A2A, the Common Agent Standards, IBM's Agent Communication Protocol and others, in [specification Section 17](spec/alp-v0.1.md#17-relationship-to-other-work)
 - **See how ALP and Poppy fit together:** Poppy, the Personal Agent Protocol, is for a person's agent and a business; ALP is for work between people. [ALP and Poppy](https://agentliaisonprotocol.org/poppy/) and [specification Section 12.6](spec/alp-v0.1.md#126-poppy-the-personal-agent-protocol)
@@ -71,7 +72,8 @@ The two are designed to interoperate: the same addresses, envelopes, scopes, gra
 | [bridge-kit/](bridge-kit/) | Client-mode setup: a generic guide, one guide per agent platform, and the instruction snippet for agents |
 | [SELF-HOST.md](SELF-HOST.md) | Running your own broker (Docker or Node; file or Postgres store), and what isn't built yet |
 | [announcement/](announcement/) | The announcement post |
-| [site/](site/) | The announcement page, served at https://agentliaisonprotocol.org, and the [ALP and Poppy](site/poppy/index.html) page, served at https://agentliaisonprotocol.org/poppy/ |
+| [site/](site/) | The website's own sources: the hand-written pages in [site/pages/](site/pages/) (among them the overview at https://agentliaisonprotocol.org and the [ALP and Poppy](https://agentliaisonprotocol.org/poppy/) page), the walkthrough's steps ([site/walkthroughs.mjs](site/walkthroughs.mjs)), figures, the stylesheet and script. Every other page is built from the repository's documents |
+| [tools/site/](tools/site/) | The site build: it renders the specification and the other documents into https://agentliaisonprotocol.org and fails when a link, an anchor or an example is broken (`cd tools/site && npm ci && npm test && npm run build`) |
 | [CLAIMS.md](CLAIMS.md) | Every claim the README, the announcement and the bridge kit make, with its evidence or its limit |
 | [KNOWN-GAPS.md](KNOWN-GAPS.md) | The known gaps of v0.1 and its reference broker, for implementers and operators to plan around |
 | [GOVERNANCE.md](GOVERNANCE.md), [CONTRIBUTING.md](CONTRIBUTING.md), [SECURITY.md](SECURITY.md), [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md), [CHANGELOG.md](CHANGELOG.md) | How the project runs |
@@ -126,8 +128,8 @@ Three licenses apply, each to its own paths, as the table below shows. The root 
 |---|---|---|
 | [spec/](spec/) | The specification text | [CC BY 4.0](LICENSE-SPEC) |
 | [schemas/](schemas/), [vectors/](vectors/) | The JSON Schemas and the conformance vectors | [Apache-2.0](LICENSE) |
-| [tools/spec/](tools/spec/), [bridge-kit/poller/](bridge-kit/poller/) | The specification tools and the bridge kit's code, like any other code outside `reference/` | [Apache-2.0](LICENSE) |
-| [bridge-kit/](bridge-kit/) (its other files), [announcement/](announcement/), [site/](site/), and the Markdown documents at the root, such as this README, [SELF-HOST.md](SELF-HOST.md) and [GOVERNANCE.md](GOVERNANCE.md) | Other documentation: the bridge kit, the agent instruction snippet, the announcement and the project's own documents | [CC BY 4.0](LICENSE-SPEC) |
+| [tools/spec/](tools/spec/), [tools/site/](tools/site/), [site/assets/site.css](site/assets/site.css), [site/assets/site.js](site/assets/site.js), [bridge-kit/poller/](bridge-kit/poller/) | The specification tools, the site build, the website's stylesheet and script, and the bridge kit's code, like any other code outside `reference/` | [Apache-2.0](LICENSE) |
+| [bridge-kit/](bridge-kit/) (its other files), [announcement/](announcement/), [site/](site/) (its other files), and the Markdown documents at the root, such as this README, [SELF-HOST.md](SELF-HOST.md) and [GOVERNANCE.md](GOVERNANCE.md) | Other documentation: the bridge kit, the agent instruction snippet, the announcement, the website's pages, figures and walkthrough text, and the project's own documents | [CC BY 4.0](LICENSE-SPEC) |
 | [reference/](reference/) | The reference broker: its source, tests, migrations, deployment files, Dockerfile and demo | [FSL-1.1-ALv2](reference/LICENSE.md) (Functional Source License, Version 1.1, ALv2 Future License); licensor: Lucaryin LLC, which holds its copyright and is ALP's author and initial steward |
 
 **The specification is an open standard.** Anyone can implement ALP from the specification, schemas and vectors, and use, give away or sell their implementation, a broker included, without asking. The licenses grant those rights on their terms, such as attribution; CC BY 4.0 grants no patent license ([GOVERNANCE.md](GOVERNANCE.md#licenses-and-patents)). Code copied or adapted from `reference/` stays under the reference broker's license until the version it came from becomes Apache-2.0.

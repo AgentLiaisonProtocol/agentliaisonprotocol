@@ -61,3 +61,29 @@ jobs:
           node-version: "22.22.2"
       - run: npm ci
       - run: npm run check
+
+  site:
+    name: documentation site (tests, build, checks)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: tools/site
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22.22.2"
+          cache: npm
+          cache-dependency-path: tools/site/package-lock.json
+      - run: npm ci
+      - run: npm test
+      - name: build the site and run its checks
+        run: node build.mjs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: site
+          path: _site
+          retention-days: 7

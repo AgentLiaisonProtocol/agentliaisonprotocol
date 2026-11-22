@@ -1,0 +1,40 @@
+<svg class="fg fg-exchange" viewBox="0 0 420 318" role="img" aria-labelledby="exchange-title exchange-desc">
+<title id="exchange-title">One exchange between two people’s agents</title>
+<desc id="exchange-desc">Ana’s agent talks only to Ana’s home broker, with her own sign-in. Ana’s home broker checks Ana’s rules and refuses before anything leaves, then sends a signed envelope to Lee’s home broker. Lee’s home broker checks the signature and Lee’s own rules, delivers to Lee’s agent and returns a signed receipt. Ana’s ledger and Lee’s ledger record the same hash.</desc>
+<rect class="fg-node fg-a" x="8" y="8" width="144" height="44" rx="10"/>
+<text class="fg-title fg-ink-a" x="80" y="35" text-anchor="middle">Ana’s agent</text>
+<rect class="fg-node fg-b" x="268" y="8" width="144" height="44" rx="10"/>
+<text class="fg-title fg-ink-b" x="340" y="35" text-anchor="middle">Lee’s agent</text>
+<path class="fg-edge" d="M80 52V100"/>
+<path class="fg-head" d="M80 108l-5-9h10z"/>
+<text class="fg-sub" x="88" y="84">her own sign-in</text>
+<path class="fg-edge" d="M340 108V60"/>
+<path class="fg-head" d="M340 52l-5 9h10z"/>
+<text class="fg-sub" x="332" y="84" text-anchor="end">delivered</text>
+<rect class="fg-broker fg-a" x="8" y="108" width="144" height="74" rx="12"/>
+<text class="fg-title" x="80" y="132" text-anchor="middle">Ana’s home broker</text>
+<text class="fg-sub" x="80" y="151" text-anchor="middle">checks Ana’s rules</text>
+<text class="fg-sub" x="80" y="168" text-anchor="middle">before anything leaves</text>
+<rect class="fg-broker fg-b" x="268" y="108" width="144" height="74" rx="12"/>
+<text class="fg-title" x="340" y="132" text-anchor="middle">Lee’s home broker</text>
+<text class="fg-sub" x="340" y="151" text-anchor="middle">checks the signature</text>
+<text class="fg-sub" x="340" y="168" text-anchor="middle">and Lee’s own rules</text>
+<path class="fg-edge" d="M154 130H258"/>
+<path class="fg-head" d="M266 130l-9-5v10z"/>
+<text class="fg-label fg-small" x="210" y="121" text-anchor="middle">signed envelope</text>
+<path class="fg-edge" d="M266 162H162"/>
+<path class="fg-head" d="M154 162l9-5v10z"/>
+<text class="fg-label fg-small" x="210" y="180" text-anchor="middle">signed receipt</text>
+<path class="fg-edge" d="M80 182V244"/>
+<path class="fg-head" d="M80 252l-5-9h10z"/>
+<path class="fg-edge" d="M340 182V244"/>
+<path class="fg-head" d="M340 252l-5-9h10z"/>
+<path class="fg-doc" d="M8 252h144v52h-144z"/>
+<text class="fg-title" x="80" y="276" text-anchor="middle">Ana’s ledger</text>
+<text class="fg-sub" x="80" y="294" text-anchor="middle">she can read it</text>
+<path class="fg-doc" d="M268 252h144v52h-144z"/>
+<text class="fg-title" x="340" y="276" text-anchor="middle">Lee’s ledger</text>
+<text class="fg-sub" x="340" y="294" text-anchor="middle">he can read it</text>
+<path class="fg-edge fg-dotted" d="M154 278H266"/>
+<text class="fg-label fg-small" x="210" y="270" text-anchor="middle">same hash</text>
+</svg>
